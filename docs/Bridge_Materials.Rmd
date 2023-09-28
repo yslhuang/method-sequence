@@ -12,14 +12,6 @@ editor_options:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-colorize <- function(x, color) {
-  if (knitr::is_latex_output()) {
-    sprintf("\\textcolor{%s}{%s}", color, x)
-  } else if (knitr::is_html_output()) {
-    sprintf("<span style='color: %s;'>%s</span>", color,
-      x)
-  } else x
-}
 ```
 
 ### Preamble
@@ -120,7 +112,7 @@ starts.
     -   [ ] Check *Section IV* below to start getting familiar with
         LaTeX.
         
-`r colorize("*** Just a reminder, *Sections I-VI* are not in order, per se. It is just a list to lay out different topics we would like you to start to get familiar with.", "dimgrey")`
+*** Just a reminder, *Sections I-VI* are not in order, per se. It is just a list to lay out different topics we would like you to start to get familiar with.
 
 ### Section I. Some Mathematical & Statistics Materials
 
@@ -204,7 +196,7 @@ If you prefer not to download the LaTeX compiler and editor to your laptop, you 
 - To create a nice table output in Overleaf, [TablesGenerator](https://www.tablesgenerator.com/) is very helpful. You can also use stargazer in R to create regression tables in LaTeX form and copy them into Overleaf. Here is a [handout](https://ignacioriveros1.github.io/r/2021/03/25/stargazer-for-amazing-academic-tables.html) of how to use the stargazer package.
 - To insert math equations in Overleaf, [LaTeX Equation Editor](https://latex.codecogs.com/eqneditor/editor.php) would be your go-to.
 
-`r colorize("*** I’d like to thank Alice, Forrest, Haley, Jill, Julian, Paige, and Patrick for kindly sharing their thoughts and brilliant ideas and Amber and Ryan for giving wonderful feedback!", "dimgrey")`
+*** I’d like to thank Alice, Forrest, Haley, Jill, Julian, Paige, and Patrick for kindly sharing their thoughts and brilliant ideas and Amber and Ryan for giving wonderful feedback!
 
 
 
