@@ -81,7 +81,7 @@ For the following topic on exploring a new dataset using R, all the materials wi
 
 \newline
 
-#### 3. Exploring a New Dataset using R I 
+#### 3. Exploring a New Dataset using R (Part I) 
 Note: All these R codes are prepared by Prof. Ryan Hubert.
 
 ##### a. Load R packages
