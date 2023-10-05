@@ -1,0 +1,1096 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={211-DiscussionI},
+  pdfauthor={Yu-Shiuan (Lily) Huang},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{211-DiscussionI}
+\author{Yu-Shiuan (Lily) Huang}
+\date{2023-10-03}
+
+\begin{document}
+\maketitle
+
+\hypertarget{exploring-a-new-dataset-using-r-part-i}{%
+\paragraph{Exploring a New Dataset using R (Part
+I)}\label{exploring-a-new-dataset-using-r-part-i}}
+
+Note: All these R codes are prepared by Prof.~Ryan Hubert.
+
+\hypertarget{a.-load-r-packages}{%
+\subparagraph{a. Load R packages}\label{a.-load-r-packages}}
+
+There are many useful packages in R that can be installed freely. If it
+is the first time you are going to use a package, here are the steps:
+
+\begin{itemize}
+\tightlist
+\item
+  Install it
+\item
+  library it (which means telling R you are going to use it)
+\end{itemize}
+
+Once you have installed the package, you don't have to install it every
+time you open R studio. However, you still have to load it through the
+\texttt{library} function every time.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Install packages}
+\CommentTok{\# install.packages("tidyverse") \# manipulate data }
+\CommentTok{\# install.packages("Matrix") \# calculate rank}
+\DocumentationTok{\#\# these are the packages we will use for today }
+
+\CommentTok{\# load packages}
+\FunctionTok{library}\NormalTok{(tidyverse)}
+\FunctionTok{library}\NormalTok{(Matrix) }
+\end{Highlighting}
+\end{Shaded}
+
+The \texttt{tidyverse} is a powerful collection of R packages that are
+actually data tools for transforming and visualizing data. All packages
+of the \texttt{tidyverse} share an underlying philosophy and common
+APls.
+
+\includegraphics[width=0.6\textwidth,height=\textheight]{https://cdn.analyticsvidhya.com/wp-content/uploads/2019/05/ggplot_hive.jpg}
+
+The core packages within the \texttt{tidyverse} are:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{ggplot2}, which implements the grammar of graphics. You can
+  use it to visualize your data.
+\item
+  \texttt{dplyr} is a grammar of data. You can use it to solve the most
+  common data manipulation challenges.
+\item
+  \texttt{tidyr} helps you to create tidy data or data where each
+  variable is in a column, each observation is a row end each value is a
+  column, each observation is a row end each value is a cell.
+\item
+  \texttt{readr} is a fast and friendly way to read rectangular
+\item
+  \texttt{purrr} enhances R's functional programming (FP) toolkit by
+  providing a complete and consistent set of tools for working with
+  functions and vectors.
+\item
+  \texttt{tibble} is a modern re-imaginging of the data
+\item
+  \texttt{stringr} provides a cohesive set of functions designed to make
+  working with strings as easy as possible
+\item
+  \texttt{forcats} provide a suite of useful tools that solve common
+  problems with factors.
+\end{itemize}
+
+Highly recommend this
+\href{https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf}{data
+wrangling cheat sheet} with \texttt{dplyr} and \texttt{tidyr} in R!
+
+\hypertarget{b.-import-data}{%
+\subparagraph{b. Import data}\label{b.-import-data}}
+
+For today, we are using \texttt{USDC-DATASET-JOP.csv}. You can download
+this csv file from Canvas or from
+\href{https://dataverse.harvard.edu/file.xhtml?fileId=4306747\&version=1.0.}{here}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Import data}
+\NormalTok{df }\OtherTok{\textless{}{-}} \FunctionTok{read\_csv}\NormalTok{(}\StringTok{"/Users/yu{-}shiuanhuang/Desktop/method{-}sequence/data/USDC{-}DATASET{-}JOP.csv"}\NormalTok{) }\CommentTok{\# Here we assign the dataset as an object called “df”}
+
+\DocumentationTok{\#\# Note: you create new objects by assigning them with the \textasciigrave{}\textless{}{-}\textasciigrave{} phrase. You can also use an equal sign \textasciigrave{}=\textasciigrave{}.}
+\end{Highlighting}
+\end{Shaded}
+
+Here are some tips for how to find the file path of the data you are
+going to use.
+
+\begin{itemize}
+\item
+  First, where did you store your data? In which folder? In my case, I
+  stored the data in the \texttt{data} folder within the
+  \texttt{method-sequence} folder.
+\item
+  Second, use \texttt{getwd} function to get the grasp of how does a
+  file path look like. \texttt{getwd} function returns an absolute file
+  path representing the current working directory of the R process.
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+  \FunctionTok{getwd}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "/Users/yu-shiuanhuang/Desktop/method-sequence/POL211"
+\end{verbatim}
+
+As you can see, my current working directory is
+\texttt{"/Users/yu-shiuanhuang/Desktop/method-sequence/docs"}. Since I
+know that I stored the data in the \texttt{data} folder within the
+\texttt{method-sequence} folder, I can simply just change the file path
+to
+\texttt{"/Users/yu-shiuanhuang/Desktop/method-sequence/data/USDC-DATASET-JOP.csv"}
+and put it in the \texttt{read\_csv} function so R knows where to read
+the file you want.
+
+If you import the data successfully, you should be able to see df
+popping up in the environment section.
+
+\includegraphics[width=0.6\textwidth,height=\textheight]{/Users/yu-shiuanhuang/Desktop/method-sequence/figures/environment.png}
+
+Sometimes the dataset we are interested in may be stored in a different
+form, such as \texttt{dta}, \texttt{spss}, \texttt{xlsx}, \texttt{rds},
+\texttt{rdata}, etc. You can find the corresponded codes from
+\href{https://www.datafiles.samhsa.gov/get-help/format-specific-issues/how-do-i-read-data-r}{here}.
+
+\hypertarget{c.-basic-information-about-the-dataset}{%
+\subparagraph{c.~Basic information about the
+dataset}\label{c.-basic-information-about-the-dataset}}
+
+What is the size of the dataset?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# the number of row is:}
+\FunctionTok{nrow}\NormalTok{(df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 97725
+\end{verbatim}
+
+How many observations (rows) and variables (columns) we have in the
+dataset?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# the number of column is:}
+\FunctionTok{ncol}\NormalTok{(df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 54
+\end{verbatim}
+
+You can also use \texttt{dim} function to get the size of the dataset.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{dim}\NormalTok{(df) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 97725    54
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\# this function gives you the number of rows and columns at the same time}
+\end{Highlighting}
+\end{Shaded}
+
+The size of this dataset is 97,725 x 54.
+
+What does the dataset actually look like?
+
+If you want to just quickly see the first six rows to get a feel for
+what the dataset looks like:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{head}\NormalTok{(df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 6 x 54
+##   file      OUTCOME jrepublican jpresident jid_anon jyears APPEAL judge_replaced
+##   <chr>     <chr>         <dbl> <chr>         <dbl>  <dbl>  <dbl>          <dbl>
+## 1 /dockets~ jud_de~           1 Reagan        90059     13      0              0
+## 2 /dockets~ dism_o~           1 Reagan        90048      9      0              0
+## 3 /dockets~ dism_p~           1 Reagan        90012     11      0              0
+## 4 /dockets~ dism_o~           1 Bush41        90016      3      0              0
+## 5 /dockets~ dism_v~           1 Reagan        90096     10      0              0
+## 6 /dockets~ dism_v~           1 Reagan        90158     11      0              0
+## # i 46 more variables: jsenior <dbl>, court <chr>, division <dbl>, YEAR <dbl>,
+## #   QUARTER <chr>, nature_of_suit <dbl>, SECTION <chr>, ORIGIN <dbl>,
+## #   JURIS <chr>, jury_demand <chr>, PROSE <dbl>, COUNTY <chr>, pla_count <dbl>,
+## #   pla_count_prose <dbl>, pla_count_anonymous <dbl>, pla_count_IND <dbl>,
+## #   pla_count_BUS <dbl>, pla_count_GOV <dbl>, pla_count_LAW <dbl>,
+## #   pla_count_OTH <dbl>, pla_count_repeat <dbl>, pla_acount <dbl>,
+## #   pla_acount_repeat <dbl>, def_count <dbl>, def_count_prose <dbl>, ...
+\end{verbatim}
+
+Note that a lot of the variables are not visible because R will try to
+clean up output.
+
+One convenient thing is that you can see the type of each
+variable.\href{https://tibble.tidyverse.org/articles/types.html}{Here}
+is the full list of all the possible types of variables (in tidyverse).
+
+If you want to look at the whole dataset, use \texttt{View(df)} command
+and it will open in a new tab in R.
+
+\hypertarget{d.-exploring-the-variables}{%
+\subparagraph{d.~Exploring the
+variables}\label{d.-exploring-the-variables}}
+
+Most people prefer to look at variables using their names.
+
+How to ask R to tell us the name of each variables?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Name of each column}
+\FunctionTok{colnames}\NormalTok{(df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] "file"                "OUTCOME"             "jrepublican"        
+##  [4] "jpresident"          "jid_anon"            "jyears"             
+##  [7] "APPEAL"              "judge_replaced"      "jsenior"            
+## [10] "court"               "division"            "YEAR"               
+## [13] "QUARTER"             "nature_of_suit"      "SECTION"            
+## [16] "ORIGIN"              "JURIS"               "jury_demand"        
+## [19] "PROSE"               "COUNTY"              "pla_count"          
+## [22] "pla_count_prose"     "pla_count_anonymous" "pla_count_IND"      
+## [25] "pla_count_BUS"       "pla_count_GOV"       "pla_count_LAW"      
+## [28] "pla_count_OTH"       "pla_count_repeat"    "pla_acount"         
+## [31] "pla_acount_repeat"   "def_count"           "def_count_prose"    
+## [34] "def_count_anonymous" "def_count_IND"       "def_count_BUS"      
+## [37] "def_count_GOV"       "def_count_LAW"       "def_count_OTH"      
+## [40] "def_count_repeat"    "def_acount"          "def_acount_repeat"  
+## [43] "oth_count"           "oth_count_prose"     "oth_count_anonymous"
+## [46] "oth_count_IND"       "oth_count_BUS"       "oth_count_GOV"      
+## [49] "oth_count_LAW"       "oth_count_OTH"       "oth_count_repeat"   
+## [52] "oth_acount"          "oth_acount_repeat"   "ifp_denial"
+\end{verbatim}
+
+How to call out one specific variable we are interested in from the
+dataset? There are multiple ways to look at an arbitrary variable:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\# Use column number}
+\NormalTok{df[, }\DecValTok{2}\NormalTok{] }
+\NormalTok{df[[}\DecValTok{2}\NormalTok{]]}
+
+\DocumentationTok{\#\# Use variable name}
+\NormalTok{df[, }\StringTok{"OUTCOME"}\NormalTok{]}
+\NormalTok{df[[}\StringTok{"OUTCOME"}\NormalTok{]]}
+\NormalTok{df}\SpecialCharTok{$}\NormalTok{OUTCOME }\DocumentationTok{\#\# This is the most common way to do it}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{head}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{OUTCOME) }\DocumentationTok{\#\# To see the first six rows of this variable}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "jud_default_plaintiff" "dism_other"            "dism_pros"            
+## [4] "dism_other"            "dism_vol"              "dism_vol"
+\end{verbatim}
+
+What kind of variable is the \texttt{OUTCOME} variable? It looks like a
+categorical variable!
+
+The next question would be what are the categories (called ``levels'' in
+R) of this variable?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# This asks R to give us a list of all the values used in this variable.}
+\FunctionTok{unique}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{OUTCOME)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] "jud_default_plaintiff"  "dism_other"             "dism_pros"             
+##  [4] "dism_vol"               "settlement"             "jud_motion_defendant"  
+##  [7] "dism_juris"             "remand"                 "jud_misc_NA"           
+## [10] "jud_misc_both"          "jud_motion_plaintiff"   "jud_misc_defendant"    
+## [13] "jud_jury_defendant"     "transfer"               "jud_bench_defendant"   
+## [16] "jud_misc_plaintiff"     "jud_consent_plaintiff"  "jud_jury_plaintiff"    
+## [19] "jud_default_both"       "jud_motion_both"        "jud_default_defendant" 
+## [22] "jud_bench_plaintiff"    "jud_jury_both"          "jud_consent_both"      
+## [25] "jud_bench_both"         "jud_directed_defendant" "jud_consent_defendant" 
+## [28] "jud_motion_NA"          "jud_jury_NA"            "jud_bench_NA"          
+## [31] "jud_consent_NA"         "jud_directed_plaintiff" "jud_default_NA"        
+## [34] "jud_directed_NA"
+\end{verbatim}
+
+There are 34 categories in this variable.
+
+Here's an issue: when R loaded the dataset, it didn't code this variable
+as a categorical variable. Since the \texttt{OUTCOME} variable is coded
+as strings/texts in the dataset, in R, the type of this variable is
+character.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Look at what this says about the variable type:}
+\FunctionTok{type\_sum}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{OUTCOME)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "chr"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# When you summarize it in R, R doesn’t provide you with meaningful information}
+\FunctionTok{summary}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{OUTCOME)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    Length     Class      Mode 
+##     97725 character character
+\end{verbatim}
+
+Good news is that we can transform the type of a variable in R.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# lets\textquotesingle{}s change the type to a categorical variable, known as a "factor" variable in R:}
+\NormalTok{df}\SpecialCharTok{$}\NormalTok{OUTCOME }\OtherTok{\textless{}{-}} \FunctionTok{as.factor}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{OUTCOME) }
+\DocumentationTok{\#\# In order to override the original variable, we have to assign the new version of the variable to the original one.}
+
+\CommentTok{\# After factorizing, R can summarize in a more meaningful way: what is the number of each category?}
+\FunctionTok{summary}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{OUTCOME)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##             dism_juris             dism_other              dism_pros 
+##                   1321                  16198                   3123 
+##               dism_vol         jud_bench_both    jud_bench_defendant 
+##                  17805                     10                    192 
+##           jud_bench_NA    jud_bench_plaintiff       jud_consent_both 
+##                     22                    110                    199 
+##  jud_consent_defendant         jud_consent_NA  jud_consent_plaintiff 
+##                     48                     93                    391 
+##       jud_default_both  jud_default_defendant         jud_default_NA 
+##                      5                     69                      7 
+##  jud_default_plaintiff jud_directed_defendant        jud_directed_NA 
+##                    228                     34                      1 
+## jud_directed_plaintiff          jud_jury_both     jud_jury_defendant 
+##                      6                     73                   1260 
+##            jud_jury_NA     jud_jury_plaintiff          jud_misc_both 
+##                    121                    528                    399 
+##     jud_misc_defendant            jud_misc_NA     jud_misc_plaintiff 
+##                   1355                   2239                    413 
+##        jud_motion_both   jud_motion_defendant          jud_motion_NA 
+##                    428                  10510                    821 
+##   jud_motion_plaintiff                 remand             settlement 
+##                    629                   4546                  32627 
+##               transfer 
+##                   1914
+\end{verbatim}
+
+\hypertarget{e.-exploring-the-observations}{%
+\subparagraph{e. Exploring the
+observations}\label{e.-exploring-the-observations}}
+
+Each row (observation) in this dataset is a court case. We can also use
+R to look at an arbitrary one.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df[}\DecValTok{5}\NormalTok{,] }\CommentTok{\# This means that we want to call out the fifth row of the data.}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1 x 54
+##   file      OUTCOME jrepublican jpresident jid_anon jyears APPEAL judge_replaced
+##   <chr>     <fct>         <dbl> <chr>         <dbl>  <dbl>  <dbl>          <dbl>
+## 1 /dockets~ dism_v~           1 Reagan        90096     10      0              0
+## # i 46 more variables: jsenior <dbl>, court <chr>, division <dbl>, YEAR <dbl>,
+## #   QUARTER <chr>, nature_of_suit <dbl>, SECTION <chr>, ORIGIN <dbl>,
+## #   JURIS <chr>, jury_demand <chr>, PROSE <dbl>, COUNTY <chr>, pla_count <dbl>,
+## #   pla_count_prose <dbl>, pla_count_anonymous <dbl>, pla_count_IND <dbl>,
+## #   pla_count_BUS <dbl>, pla_count_GOV <dbl>, pla_count_LAW <dbl>,
+## #   pla_count_OTH <dbl>, pla_count_repeat <dbl>, pla_acount <dbl>,
+## #   pla_acount_repeat <dbl>, def_count <dbl>, def_count_prose <dbl>, ...
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# If you want to see all the variables for that observation, here are some options:}
+\FunctionTok{t}\NormalTok{(df[}\DecValTok{5}\NormalTok{,]) }\DocumentationTok{\#\# downside: this treats all the values like strings!}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                     [,1]                                  
+## file                "/dockets-cacd/1995/199501-00068.html"
+## OUTCOME             "dism_vol"                            
+## jrepublican         "1"                                   
+## jpresident          "Reagan"                              
+## jid_anon            "90096"                               
+## jyears              "10"                                  
+## APPEAL              "0"                                   
+## judge_replaced      "0"                                   
+## jsenior             "0"                                   
+## court               "cacd"                                
+## division            "2"                                   
+## YEAR                "1995"                                
+## QUARTER             "1995Q1"                              
+## nature_of_suit      "442"                                 
+## SECTION             "1983"                                
+## ORIGIN              "1"                                   
+## JURIS               "federal_question"                    
+## jury_demand         "Plaintiff"                           
+## PROSE               NA                                    
+## COUNTY              "06037"                               
+## pla_count           "1"                                   
+## pla_count_prose     "0"                                   
+## pla_count_anonymous "0"                                   
+## pla_count_IND       "0.7538"                              
+## pla_count_BUS       "0.1453"                              
+## pla_count_GOV       "0.0485"                              
+## pla_count_LAW       "0.0315"                              
+## pla_count_OTH       "0.021"                               
+## pla_count_repeat    "0"                                   
+## pla_acount          "1"                                   
+## pla_acount_repeat   "1"                                   
+## def_count           "4"                                   
+## def_count_prose     "0"                                   
+## def_count_anonymous "1"                                   
+## def_count_IND       "2.7986"                              
+## def_count_BUS       "0.7653"                              
+## def_count_GOV       "0.2055"                              
+## def_count_LAW       "0.1402"                              
+## def_count_OTH       "0.0903"                              
+## def_count_repeat    "1"                                   
+## def_acount          "0"                                   
+## def_acount_repeat   "0"                                   
+## oth_count           "0"                                   
+## oth_count_prose     "0"                                   
+## oth_count_anonymous "0"                                   
+## oth_count_IND       "0"                                   
+## oth_count_BUS       "0"                                   
+## oth_count_GOV       "0"                                   
+## oth_count_LAW       "0"                                   
+## oth_count_OTH       "0"                                   
+## oth_count_repeat    "0"                                   
+## oth_acount          "0"                                   
+## oth_acount_repeat   "0"                                   
+## ifp_denial          "0"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{as.data.frame}\NormalTok{(df[}\DecValTok{5}\NormalTok{,]) }\DocumentationTok{\#\# downside: sort of ugly and hard to see}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                                   file  OUTCOME jrepublican jpresident jid_anon
+## 1 /dockets-cacd/1995/199501-00068.html dism_vol           1     Reagan    90096
+##   jyears APPEAL judge_replaced jsenior court division YEAR QUARTER
+## 1     10      0              0       0  cacd        2 1995  1995Q1
+##   nature_of_suit SECTION ORIGIN            JURIS jury_demand PROSE COUNTY
+## 1            442    1983      1 federal_question   Plaintiff    NA  06037
+##   pla_count pla_count_prose pla_count_anonymous pla_count_IND pla_count_BUS
+## 1         1               0                   0        0.7538        0.1453
+##   pla_count_GOV pla_count_LAW pla_count_OTH pla_count_repeat pla_acount
+## 1        0.0485        0.0315         0.021                0          1
+##   pla_acount_repeat def_count def_count_prose def_count_anonymous def_count_IND
+## 1                 1         4               0                   1        2.7986
+##   def_count_BUS def_count_GOV def_count_LAW def_count_OTH def_count_repeat
+## 1        0.7653        0.2055        0.1402        0.0903                1
+##   def_acount def_acount_repeat oth_count oth_count_prose oth_count_anonymous
+## 1          0                 0         0               0                   0
+##   oth_count_IND oth_count_BUS oth_count_GOV oth_count_LAW oth_count_OTH
+## 1             0             0             0             0             0
+##   oth_count_repeat oth_acount oth_acount_repeat ifp_denial
+## 1                0          0                 0          0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\# To draw out an element from a data, you have to specify a row number and a column number.}
+\NormalTok{df[}\DecValTok{5}\NormalTok{, }\DecValTok{1}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1 x 1
+##   file                                
+##   <chr>                               
+## 1 /dockets-cacd/1995/199501-00068.html
+\end{verbatim}
+
+Usually, you only need to see some of the variables. For example:
+suppose we want to know which judge heard this case
+(\texttt{jid\_anon}), what the case outcome was (\texttt{OUTCOME}) and
+the party of the judge's appointing president (\texttt{jrepublican}).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df[}\DecValTok{5}\NormalTok{, }\FunctionTok{c}\NormalTok{(}\StringTok{"jid\_anon"}\NormalTok{, }\StringTok{"OUTCOME"}\NormalTok{, }\StringTok{"jrepublican"}\NormalTok{)]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1 x 3
+##   jid_anon OUTCOME  jrepublican
+##      <dbl> <fct>          <dbl>
+## 1    90096 dism_vol           1
+\end{verbatim}
+
+A more neat way to write the code by using \texttt{tidyverse} package.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# using pipes to do the same thing; use select function from tidyverse to pick variables }
+\NormalTok{df[}\DecValTok{5}\NormalTok{, ] }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(jid\_anon, OUTCOME, jrepublican)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1 x 3
+##   jid_anon OUTCOME  jrepublican
+##      <dbl> <fct>          <dbl>
+## 1    90096 dism_vol           1
+\end{verbatim}
+
+\texttt{\%\textgreater{}\%} is called ``pipes.'' Pipes take the output
+from one function and feed it to the first argument of the next
+function.
+
+We can also find a row by ``filtering'' the data based on some criteria.
+
+What if I want to find a case by its ID number? Eg,
+``/dockets-cacd/2007/200738-00195.html''
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# use filter function from tidyverse to set the condition }
+\NormalTok{df }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(file }\SpecialCharTok{==} \StringTok{"/dockets{-}cacd/2007/200738{-}00195.html"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1 x 54
+##   file      OUTCOME jrepublican jpresident jid_anon jyears APPEAL judge_replaced
+##   <chr>     <fct>         <dbl> <chr>         <dbl>  <dbl>  <dbl>          <dbl>
+## 1 /dockets~ settle~           1 Bush43        90104      0      0              0
+## # i 46 more variables: jsenior <dbl>, court <chr>, division <dbl>, YEAR <dbl>,
+## #   QUARTER <chr>, nature_of_suit <dbl>, SECTION <chr>, ORIGIN <dbl>,
+## #   JURIS <chr>, jury_demand <chr>, PROSE <dbl>, COUNTY <chr>, pla_count <dbl>,
+## #   pla_count_prose <dbl>, pla_count_anonymous <dbl>, pla_count_IND <dbl>,
+## #   pla_count_BUS <dbl>, pla_count_GOV <dbl>, pla_count_LAW <dbl>,
+## #   pla_count_OTH <dbl>, pla_count_repeat <dbl>, pla_acount <dbl>,
+## #   pla_acount_repeat <dbl>, def_count <dbl>, def_count_prose <dbl>, ...
+\end{verbatim}
+
+What if I want to find all cases heard by judges appointed by Bush 43?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(jpresident }\SpecialCharTok{==} \StringTok{"Bush43"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 17,622 x 54
+##    file     OUTCOME jrepublican jpresident jid_anon jyears APPEAL judge_replaced
+##    <chr>    <fct>         <dbl> <chr>         <dbl>  <dbl>  <dbl>          <dbl>
+##  1 /docket~ jud_mo~           1 Bush43        90131      1      0              0
+##  2 /docket~ dism_v~           1 Bush43        90131      0      0              0
+##  3 /docket~ dism_p~           1 Bush43        90131      0      0              0
+##  4 /docket~ dism_j~           1 Bush43        90131      0      0              0
+##  5 /docket~ dism_o~           1 Bush43        90159      0      0              0
+##  6 /docket~ dism_p~           1 Bush43        90159      0      0              0
+##  7 /docket~ dism_o~           1 Bush43        90159      0      0              0
+##  8 /docket~ dism_o~           1 Bush43        90159      0      0              0
+##  9 /docket~ dism_o~           1 Bush43        90131      0      1              0
+## 10 /docket~ dism_o~           1 Bush43        90159      0      1              1
+## # i 17,612 more rows
+## # i 46 more variables: jsenior <dbl>, court <chr>, division <dbl>, YEAR <dbl>,
+## #   QUARTER <chr>, nature_of_suit <dbl>, SECTION <chr>, ORIGIN <dbl>,
+## #   JURIS <chr>, jury_demand <chr>, PROSE <dbl>, COUNTY <chr>, pla_count <dbl>,
+## #   pla_count_prose <dbl>, pla_count_anonymous <dbl>, pla_count_IND <dbl>,
+## #   pla_count_BUS <dbl>, pla_count_GOV <dbl>, pla_count_LAW <dbl>,
+## #   pla_count_OTH <dbl>, pla_count_repeat <dbl>, pla_acount <dbl>, ...
+\end{verbatim}
+
+The reason why we need to add quotation mark when setting the condition
+in the \texttt{filter} function is that both of the \texttt{file} and
+\texttt{jpresident} variables are coded in character type (categorical)
+in R. If we filter our cases based on whether the judge of the case is
+assigned by a Republican president (when \texttt{jrepublican} == 1), we
+don't have to add quotation mark in the condition as this variable is
+coded as the type of double (dbl) in R, which is a class of numeric.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(jrepublican }\SpecialCharTok{==} \DecValTok{1}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 42,679 x 54
+##    file     OUTCOME jrepublican jpresident jid_anon jyears APPEAL judge_replaced
+##    <chr>    <fct>         <dbl> <chr>         <dbl>  <dbl>  <dbl>          <dbl>
+##  1 /docket~ jud_de~           1 Reagan        90059     13      0              0
+##  2 /docket~ dism_o~           1 Reagan        90048      9      0              0
+##  3 /docket~ dism_p~           1 Reagan        90012     11      0              0
+##  4 /docket~ dism_o~           1 Bush41        90016      3      0              0
+##  5 /docket~ dism_v~           1 Reagan        90096     10      0              0
+##  6 /docket~ dism_v~           1 Reagan        90158     11      0              0
+##  7 /docket~ settle~           1 Reagan        90158     11      0              0
+##  8 /docket~ settle~           1 Ford          90218     19      0              0
+##  9 /docket~ jud_mo~           1 Nixon         90148     24      0              0
+## 10 /docket~ dism_j~           1 Reagan        90005     13      0              0
+## # i 42,669 more rows
+## # i 46 more variables: jsenior <dbl>, court <chr>, division <dbl>, YEAR <dbl>,
+## #   QUARTER <chr>, nature_of_suit <dbl>, SECTION <chr>, ORIGIN <dbl>,
+## #   JURIS <chr>, jury_demand <chr>, PROSE <dbl>, COUNTY <chr>, pla_count <dbl>,
+## #   pla_count_prose <dbl>, pla_count_anonymous <dbl>, pla_count_IND <dbl>,
+## #   pla_count_BUS <dbl>, pla_count_GOV <dbl>, pla_count_LAW <dbl>,
+## #   pla_count_OTH <dbl>, pla_count_repeat <dbl>, pla_acount <dbl>, ...
+\end{verbatim}
+
+\hypertarget{f.-some-measurement-issues}{%
+\subparagraph{f.~Some measurement
+issues}\label{f.-some-measurement-issues}}
+
+What kinds of variable do we have?
+
+There are slight differences between the way a computer
+stores/understands data and the way we conceptualize it. In this
+dataset, we have some variables on cardinal scales.
+
+For example: How many plaintiffs are named in each case? (Why is this on
+a cardinal scale?)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{head}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{pla\_count)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 1 1 1 1 1 1
+\end{verbatim}
+
+What is the data type? It's ``dbl'' which means it's a number that need
+not be an integer (can be fractional number, 3.51)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{type\_sum}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{pla\_count)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "dbl"
+\end{verbatim}
+
+Note: this variable is actually comprised of integers, we could convert
+it if we want, but this doesn't really matter. (Why? 11.0 = 11)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df}\SpecialCharTok{$}\NormalTok{pla\_count }\OtherTok{\textless{}{-}} \FunctionTok{as.integer}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{pla\_count)}
+\FunctionTok{type\_sum}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{pla\_count)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "int"
+\end{verbatim}
+
+We also have some variables that are ordinal.
+
+For example, in what years were cases filed? (Why is this on an ordinal
+scale?)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{head}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{YEAR)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 1995 1995 1995 1995 1995 1995
+\end{verbatim}
+
+What is the data type? It's also ``dbl''.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{type\_sum}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{YEAR)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "dbl"
+\end{verbatim}
+
+Acknowledge, this is bad! We do not want R to treat this as a cardinal
+variable.
+
+For example, it (incorrectly) allows us to add them:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df}\SpecialCharTok{$}\NormalTok{YEAR[}\DecValTok{1}\NormalTok{] }\SpecialCharTok{+}\NormalTok{ df}\SpecialCharTok{$}\NormalTok{YEAR[}\DecValTok{2}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 3990
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\# Notice here the change in indexing! Remember that when you call out one variable from the data, it is a vector. To draw out an element from a vector, you only have to specify one number inside [ ].}
+\end{Highlighting}
+\end{Shaded}
+
+So, we should change it to a factor variable so that we don't make this
+mistake.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df}\SpecialCharTok{$}\NormalTok{YEAR }\OtherTok{\textless{}{-}} \FunctionTok{as.factor}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{YEAR)}
+\NormalTok{df}\SpecialCharTok{$}\NormalTok{YEAR[}\DecValTok{1}\NormalTok{] }\SpecialCharTok{+}\NormalTok{ df}\SpecialCharTok{$}\NormalTok{YEAR[}\DecValTok{2}\NormalTok{] }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] NA
+\end{verbatim}
+
+We got an error when we tried to do something silly, which is good!
+
+In the analysis for Ryan's paper, they had to convert the
+\texttt{OUTCOME} variable to dummies. How can we do it in R?
+
+Recall that there are 34 unique categories in the \texttt{OUTCOME}
+variable.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{unique}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{OUTCOME) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] jud_default_plaintiff  dism_other             dism_pros             
+##  [4] dism_vol               settlement             jud_motion_defendant  
+##  [7] dism_juris             remand                 jud_misc_NA           
+## [10] jud_misc_both          jud_motion_plaintiff   jud_misc_defendant    
+## [13] jud_jury_defendant     transfer               jud_bench_defendant   
+## [16] jud_misc_plaintiff     jud_consent_plaintiff  jud_jury_plaintiff    
+## [19] jud_default_both       jud_motion_both        jud_default_defendant 
+## [22] jud_bench_plaintiff    jud_jury_both          jud_consent_both      
+## [25] jud_bench_both         jud_directed_defendant jud_consent_defendant 
+## [28] jud_motion_NA          jud_jury_NA            jud_bench_NA          
+## [31] jud_consent_NA         jud_directed_plaintiff jud_default_NA        
+## [34] jud_directed_NA       
+## 34 Levels: dism_juris dism_other dism_pros dism_vol ... transfer
+\end{verbatim}
+
+When we want to make each category of this variable into dummies, it
+means that we need to create 34 new dummy variables (34 new columns for
+the dataset). For example, the new dummy variable \texttt{dism\_other}
+will be coded as 1 if the \texttt{OUTCOME} variable is coded as
+dism\_other. Let's use \texttt{ifesle} function to create this dummy!
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df}\SpecialCharTok{$}\NormalTok{dism\_other }\OtherTok{\textless{}{-}} \FunctionTok{ifelse}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{OUTCOME }\SpecialCharTok{==} \StringTok{"dism\_other"}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Let's check if we did it correctly.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(OUTCOME, dism\_other) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{head}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 6 x 2
+##   OUTCOME               dism_other
+##   <fct>                      <dbl>
+## 1 jud_default_plaintiff          0
+## 2 dism_other                     1
+## 3 dism_pros                      0
+## 4 dism_other                     1
+## 5 dism_vol                       0
+## 6 dism_vol                       0
+\end{verbatim}
+
+But there is a total of 34 categories in the \texttt{OUTCOME} variable,
+it would be a waste of time to generate all 34 dummies if we have to
+retype the above one by one for each category. Luckily, R is here to
+help us! We can run a \texttt{forloop} function to ask R to do the same
+thing for all the 34 categories.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ControlFlowTok{for}\NormalTok{(v }\ControlFlowTok{in} \FunctionTok{levels}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{OUTCOME))\{}
+  \FunctionTok{print}\NormalTok{(v)}
+\NormalTok{  df[[v]] }\OtherTok{\textless{}{-}} \FunctionTok{ifelse}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{OUTCOME }\SpecialCharTok{==}\NormalTok{ v, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{) }\DocumentationTok{\#\# df[[v]] is a way to call out/create a variable}
+\NormalTok{\} }\DocumentationTok{\#\# This is called "forloop."}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "dism_juris"
+## [1] "dism_other"
+## [1] "dism_pros"
+## [1] "dism_vol"
+## [1] "jud_bench_both"
+## [1] "jud_bench_defendant"
+## [1] "jud_bench_NA"
+## [1] "jud_bench_plaintiff"
+## [1] "jud_consent_both"
+## [1] "jud_consent_defendant"
+## [1] "jud_consent_NA"
+## [1] "jud_consent_plaintiff"
+## [1] "jud_default_both"
+## [1] "jud_default_defendant"
+## [1] "jud_default_NA"
+## [1] "jud_default_plaintiff"
+## [1] "jud_directed_defendant"
+## [1] "jud_directed_NA"
+## [1] "jud_directed_plaintiff"
+## [1] "jud_jury_both"
+## [1] "jud_jury_defendant"
+## [1] "jud_jury_NA"
+## [1] "jud_jury_plaintiff"
+## [1] "jud_misc_both"
+## [1] "jud_misc_defendant"
+## [1] "jud_misc_NA"
+## [1] "jud_misc_plaintiff"
+## [1] "jud_motion_both"
+## [1] "jud_motion_defendant"
+## [1] "jud_motion_NA"
+## [1] "jud_motion_plaintiff"
+## [1] "remand"
+## [1] "settlement"
+## [1] "transfer"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ncol}\NormalTok{(df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 88
+\end{verbatim}
+
+You can find that the number of columns increased to 88 from 54 after
+creating 34 dummies.
+
+\hypertarget{g.-the-rank-of-a-matrix}{%
+\subparagraph{g. The rank of a matrix}\label{g.-the-rank-of-a-matrix}}
+
+The rank of a dataset is the number of ``linearly independent''
+variables.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(Matrix) }\DocumentationTok{\#\# This package has a function for calculating the rank of a matrix}
+
+\CommentTok{\# Let\textquotesingle{}s create a fake dataset}
+\NormalTok{df2 }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{var1 =} \FunctionTok{seq}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{100}\NormalTok{, }\DecValTok{3}\NormalTok{)) }\DocumentationTok{\#\# Creates 34 rows}
+
+\NormalTok{df2}\SpecialCharTok{$}\NormalTok{var2 }\OtherTok{\textless{}{-}}\NormalTok{ (df2}\SpecialCharTok{$}\NormalTok{var1}\SpecialCharTok{/}\NormalTok{pi) }\DocumentationTok{\#\# create a new variable called var2 in df2}
+\NormalTok{pi }\DocumentationTok{\#\# pi is an inbuilt R constant whose value is 3.141593}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 3.141593
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df2}\SpecialCharTok{$}\NormalTok{var3 }\OtherTok{\textless{}{-}} \DecValTok{6} 
+\NormalTok{df2}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    var1       var2 var3
+## 1     1  0.3183099    6
+## 2     4  1.2732395    6
+## 3     7  2.2281692    6
+## 4    10  3.1830989    6
+## 5    13  4.1380285    6
+## 6    16  5.0929582    6
+## 7    19  6.0478878    6
+## 8    22  7.0028175    6
+## 9    25  7.9577472    6
+## 10   28  8.9126768    6
+## 11   31  9.8676065    6
+## 12   34 10.8225361    6
+## 13   37 11.7774658    6
+## 14   40 12.7323954    6
+## 15   43 13.6873251    6
+## 16   46 14.6422548    6
+## 17   49 15.5971844    6
+## 18   52 16.5521141    6
+## 19   55 17.5070437    6
+## 20   58 18.4619734    6
+## 21   61 19.4169031    6
+## 22   64 20.3718327    6
+## 23   67 21.3267624    6
+## 24   70 22.2816920    6
+## 25   73 23.2366217    6
+## 26   76 24.1915513    6
+## 27   79 25.1464810    6
+## 28   82 26.1014107    6
+## 29   85 27.0563403    6
+## 30   88 28.0112700    6
+## 31   91 28.9661996    6
+## 32   94 29.9211293    6
+## 33   97 30.8760590    6
+## 34  100 31.8309886    6
+\end{verbatim}
+
+What is the rank of this matrix (the fake dataset we created)?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{rankMatrix}\NormalTok{(}\FunctionTok{as.matrix}\NormalTok{(df2)) }\DocumentationTok{\#\# The input must be a numeric matrix, which means we have to covert df2 from a dataframe to a matrix}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 2
+## attr(,"method")
+## [1] "tolNorm2"
+## attr(,"useGrad")
+## [1] FALSE
+## attr(,"tol")
+## [1] 7.549517e-15
+\end{verbatim}
+
+There are 3 variables in df2, but there are only 2 linearly independent
+variables since the generation of var2 is based on var1.
+
+\end{document}

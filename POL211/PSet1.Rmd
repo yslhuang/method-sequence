@@ -6,45 +6,44 @@ output:
   pdf_document: default
 ---
 
-
-In this problem set, we will analyze the relationship between various demographic traits and pro-feminist voting behavior among circuit court judges. In a paper, Adam N. Glynn and Maya Sen argue that having a female child causes circuit court judges to make more pro-feminist decisions. The paper can be found at: 
+In this problem set, we will analyze the relationship between various demographic traits and pro-feminist voting behavior among circuit court judges. In a paper, Adam N. Glynn and Maya Sen argue that having a female child causes circuit court judges to make more pro-feminist decisions. The paper can be found at:
 
 > Glynn, Adam N., and Maya Sen. (2015). ["Identifying Judicial Empathy: Does Having Daughters Cause Judges to Rule for Women's Issues?."](https://doi.org/10.1111/ajps.12118) *American Journal of Political Science* Vol. 59, No. 1, pp. 37--54.
 
-
 The dataset `dbj.csv` contains the following variables about individual judges:
 
-
-| Name                | Description                                                                                                                                                  |
-|---------------------|------------------------------------------------------------------------------|
-| `name`              | The judge’s name                                                                                                                                             |
-| `child`             | The number of children each judge has.                                                                                                                       |
-| `circuit.1`         | Which federal circuit the judge serves in.                                                                                                                   |
-| `girls`             | The number of female children the judge has.                                                                                                                 |
-| `progressive.vote`              | The proportion of the judge’s votes on women’s issues which were decided in a pro-feminist direction.                                                        |
-| `race`              | The judge’s race (`1` = white, `2` = African-American, `3` = Hispanic, `4` = Asian-American).                                                                |
-| `religion`          | The judge’s religion (`1` = Unitarian, `2` = Episcopalian, `3` = Baptist, `4` = Catholic, `5` = Jewish, `7` = Presbyterian, `8` = Protestant, `9` = Congregationalist, `10` = Methodist, `11` = Church of Christ, `16` = Baha'i, `17` = Mormon, `21` = Anglican, `24` = Lutheran, `99` = unknown).  |
-| `republican`        | Takes a value of `1` if the judge was appointed by a Republican president, `0` otherwise. Used as a proxy for the judge’s party.                               |
-| `sons`              | The number of male children the judge has.                                                                                                                   |
-| `woman`             | Takes a value of `1` if the judge is a woman, `0` otherwise.                                                                                                 |
-| `X`                 | Indicator for the observation number.                                                                                                                        |
-| `yearb`             | The year the judge was born.                                                                                                                                 |
+| Name               | Description                                                                                                                                                                                                                                                                                        |
+|-----------------|-------------------------------------------------------|
+| `name`             | The judge's name                                                                                                                                                                                                                                                                                   |
+| `child`            | The number of children each judge has.                                                                                                                                                                                                                                                             |
+| `circuit.1`        | Which federal circuit the judge serves in.                                                                                                                                                                                                                                                         |
+| `girls`            | The number of female children the judge has.                                                                                                                                                                                                                                                       |
+| `progressive.vote` | The proportion of the judge's votes on women's issues which were decided in a pro-feminist direction.                                                                                                                                                                                              |
+| `race`             | The judge's race (`1` = white, `2` = African-American, `3` = Hispanic, `4` = Asian-American).                                                                                                                                                                                                      |
+| `religion`         | The judge's religion (`1` = Unitarian, `2` = Episcopalian, `3` = Baptist, `4` = Catholic, `5` = Jewish, `7` = Presbyterian, `8` = Protestant, `9` = Congregationalist, `10` = Methodist, `11` = Church of Christ, `16` = Baha'i, `17` = Mormon, `21` = Anglican, `24` = Lutheran, `99` = unknown). |
+| `republican`       | Takes a value of `1` if the judge was appointed by a Republican president, `0` otherwise. Used as a proxy for the judge's party.                                                                                                                                                                   |
+| `sons`             | The number of male children the judge has.                                                                                                                                                                                                                                                         |
+| `woman`            | Takes a value of `1` if the judge is a woman, `0` otherwise.                                                                                                                                                                                                                                       |
+| `X`                | Indicator for the observation number.                                                                                                                                                                                                                                                              |
+| `yearb`            | The year the judge was born.                                                                                                                                                                                                                                                                       |
 
 \normalsize
 
-
 **Note:** if you are asked to provide an interpretation or an explanation, 1-3 sentences are sufficient. There is no need to write more than that. Short, succinct answer are preferred.
+
+*Note*
 
 \newpage
 
 ## Question 1 (4 points)
 
-Load the `dbj.csv` file. 
+Load the `dbj.csv` file.
 
-- What is the unit of observation in the data set?
-- How many judges are there in the data set, and how many variables does the data set have?
-- How many judges in the data set have children? To answer this, first create a new binary (or "dummy") variable that is equal to 1 if a judge has any children, and 0 otherwise.
-- Of the judges that have children, what percentage has female children? To calculate this number, first create a new binary (or "dummy") variable that is equal to 1 if a judge has female children, and 0 otherwise.
+-   What is the unit of observation in the data set?
+-   How many judges are there in the data set, and how many variables does the data set have?
+-   How many judges in the data set have children? To answer this, first create a new binary (or "dummy") variable that is equal to 1 if a judge has any children, and 0 otherwise.
+-   Of the judges that have children, what percentage has female children? To calculate this number, first create a new binary (or "dummy") variable that is equal to 1 if a judge has female children, and 0 otherwise.
+
 
 ```{r, message=F, warning=F, error=F}
 
@@ -53,14 +52,13 @@ Load the `dbj.csv` file.
 
 ## Question 2 (4 points)
 
-Our outcome in this exercise will be the proportion of pro-feminist decisions, `progressive.vote`. 
+Our outcome in this exercise will be the proportion of pro-feminist decisions, `progressive.vote`.
 
 First, calculate the mean, median and standard deviation of this variable (across all judges)
 
-Next, we want to assess differences between groups. Create a new factor variable that takes on separate values for each of the four groups (Republican men/women, Democratic men/women) defined by gender and partisanship. The variable should be a "factor" or "character" type variable in R - you can use string labels such as `Dem_Male`, `Dem_Female`, etc. It should **not** be a numeric variable. 
+Next, we want to assess differences between groups. Create a new factor variable that takes on separate values for each of the four groups (Republican men/women, Democratic men/women) defined by gender and partisanship. The variable should be a "factor" or "character" type variable in R - you can use string labels such as `Dem_Male`, `Dem_Female`, etc. It should **not** be a numeric variable.
 
 Having created this variable, now create a **boxplot** that summarizes the propensity to decide in a pro-feminist way by group, in one plot. Briefly discuss the results -- what does the boxplot show, and what does this tell us about differences between groups? Are partisan differences larger than gender differences, or the other way around? A brief answer is sufficient here.
-
 
 ```{r, message=F, warning=F, error=F}
 
@@ -69,13 +67,14 @@ Having created this variable, now create a **boxplot** that summarizes the prope
 
 ## Question 3 (2 points)
 
-From before, we have a new binary variable which takes a value of `1` if a judge has *at least* one child (that is, any children at all), and `0` otherwise. 
+From before, we have a new binary variable which takes a value of `1` if a judge has *at least* one child (that is, any children at all), and `0` otherwise.
 
-Use this variable to answer the following questions. 
+$2^3$
 
-- Are Republicans and Democrats equally likely to be parents (that is, have at least one child)? 
-- Do judges with children vote differently on feminist issues than judges without?  If so, how are they different? 
+Use this variable to answer the following questions.
 
+-   Are Republicans and Democrats equally likely to be parents (that is, have at least one child)?
+-   Do judges with children vote differently on feminist issues than judges without? If so, how are they different?
 
 ```{r, message=F, warning=F, error=F}
 
@@ -87,20 +86,17 @@ Use this variable to answer the following questions.
 
 Please evaluate the following statements. For each statement, indicate whether you believe the statement makes sense or not. If it does not, please provide a short motivation.
 
-1. The judge's religion can be described as an ordinal variable. 
+1.  The judge's religion can be described as an ordinal variable.
 
-2. A colleague argues that the judge's religion may be an important predictor of judges' decisions -- more religious judges may decide differently than less religious judges. Therefore, your colleague recommends splitting the `religion` variable (see definition above) into two groups: the set of judges for which `religion` is greater than 10, and the set of judges for which it is 10 or lower. Then, your colleague recommends comparing the mean proportion of pro-feminist decisions in each of the two groups. 
+2.  A colleague argues that the judge's religion may be an important predictor of judges' decisions -- more religious judges may decide differently than less religious judges. Therefore, your colleague recommends splitting the `religion` variable (see definition above) into two groups: the set of judges for which `religion` is greater than 10, and the set of judges for which it is 10 or lower. Then, your colleague recommends comparing the mean proportion of pro-feminist decisions in each of the two groups.
 
-3. A colleague comments that the data set is ambiguous, since there is no variable that measures whether a judge was appointed by a Democratic president. 
-
-
+3.  A colleague comments that the data set is ambiguous, since there is no variable that measures whether a judge was appointed by a Democratic president.
 
 # Additional question (required for students in the methods subfield)
 
 ## Question 5 (3 points)
 
-What is the difference in the proportion of pro-feminist decisions between judges who have at least one daughter and those who do not have any?  Compute this difference in two ways; (1) using any judge who has children, (2) separately for judges that one, two, or three children. For (2), you should end with three estimates: one for the judges with one child, one for the judges with two children, and one for the judges with three children (HINT: you will subset the data quite a few times to achieve this).
-
+What is the difference in the proportion of pro-feminist decisions between judges who have at least one daughter and those who do not have any? Compute this difference in two ways; (1) using any judge who has children, (2) separately for judges that one, two, or three children. For (2), you should end with three estimates: one for the judges with one child, one for the judges with two children, and one for the judges with three children (HINT: you will subset the data quite a few times to achieve this).
 
 ```{r}
 

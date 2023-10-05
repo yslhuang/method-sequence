@@ -2,7 +2,9 @@
 title: "211-DiscussionI"
 author: "Yu-Shiuan (Lily) Huang"
 date: "2023-10-03"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -35,7 +37,7 @@ library(Matrix)
 
 The `tidyverse` is a powerful collection  of  R  packages  that are actually  data tools for transforming and visualizing data. All packages of the `tidyverse` share an underlying philosophy and common APls.
 
-![](https://cdn.analyticsvidhya.com/wp-content/uploads/2019/05/ggplot_hive.jpg){width=60%}
+![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/ggplot_hive.jpeg){width=60%}
 
 The core packages within the `tidyverse` are: 
 

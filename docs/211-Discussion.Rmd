@@ -5,14 +5,17 @@ date: "Fall 2023"
 output:
   html_document: default
   pdf_document: default
-fontsize: 14pt
+    self_contained: no
+fontsize: 16pt
 editor_options:
   markdown:
     wrap: 80
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, 
+                      tidy.opts=list(width.cutoff=60),
+                      tidy = TRUE)
 options(width = 80)
 ```
 
@@ -67,7 +70,7 @@ making it easy to explain complex statistical analyses or data
 visualizations.
 
 Here is a thorough introduction of [how to use R
-Markdown](https://rmarkdown.rstudio.com/lesson-1.html).
+Markdown](https://rmarkdown.rstudio.com/lesson-1.html). For more information on how to adjust the style of your R Markdown, here is a [Cookbook](https://bookdown.org/yihui/rmarkdown-cookbook/).
 
 For the following topic on exploring a new dataset using R, all the materials will be shown in R Markdown format. You are also more than welcome to upload your problem set: 
 
@@ -79,7 +82,6 @@ For the following topic on exploring a new dataset using R, all the materials wi
 
 - A R Markdown template for Problem Set I can be downloaded from Canvas-Files.
 
-\newline
 
 #### 3. Exploring a New Dataset using R (Part I) 
 Note: All these R codes are prepared by Prof. Ryan Hubert.
@@ -106,7 +108,7 @@ library(Matrix)
 
 The `tidyverse` is a powerful collection  of  R  packages  that are actually  data tools for transforming and visualizing data. All packages of the `tidyverse` share an underlying philosophy and common APls.
 
-![](https://cdn.analyticsvidhya.com/wp-content/uploads/2019/05/ggplot_hive.jpg){width=60%}
+![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/ggplot_hive.jpeg){width=60%}
 
 The core packages within the `tidyverse` are: 
 
@@ -127,7 +129,8 @@ For today, we are using `USDC-DATASET-JOP.csv`. You can download this csv file f
 
 ```{r, warning=FALSE, message=FALSE}
 # Import data
-df <- read_csv("/Users/yu-shiuanhuang/Desktop/method-sequence/data/USDC-DATASET-JOP.csv") # Here we assign the dataset as an object called “df”
+df <- read_csv("/Users/yu-shiuanhuang/Desktop/method-sequence/data/USDC-DATASET-JOP.csv") 
+# Here we assign the dataset as an object called “df”
 
 ## Note: you create new objects by assigning them with the `<-` phrase. You can also use an equal sign `=`.
 ```
@@ -332,7 +335,7 @@ df$YEAR[1] + df$YEAR[2]
 ```
 
 So, we should change it to a factor variable so that we don't make this mistake.
-```{r, message=FALSE, warning=FALSE}
+```{r, error=TRUE}
 df$YEAR <- as.factor(df$YEAR)
 df$YEAR[1] + df$YEAR[2] 
 ```
@@ -388,7 +391,8 @@ df2
 What is the rank of this matrix (the fake dataset we created)?
 
 ```{r, message=FALSE, warning=FALSE}
-rankMatrix(as.matrix(df2)) ## The input must be a numeric matrix, which means we have to covert df2 from a dataframe to a matrix
+rankMatrix(as.matrix(df2)) 
+## The input must be a numeric matrix, which means we have to covert df2 from a dataframe to a matrix
 ```
 
 There are 3 variables in df2, but there are only 2 linearly independent variables since the generation of var2 is based on var1.
