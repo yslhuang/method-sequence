@@ -25,15 +25,30 @@ Once you have installed the package, you don’t have to install it every time y
 ```{r, warning=FALSE, message=FALSE}
 # Install packages
 # install.packages("tidyverse") # manipulate data 
-# install.packages("fastDummies") # create dummies
 # install.packages("Matrix") # calculate rank
 ## these are the packages we will use for today 
 
 # load packages
 library(tidyverse)
-library(fastDummies)
 library(Matrix) 
 ```
+
+The `tidyverse` is a powerful collection  of  R  packages  that are actually  data tools for transforming and visualizing data. All packages of the `tidyverse` share an underlying philosophy and common APls.
+
+![](https://cdn.analyticsvidhya.com/wp-content/uploads/2019/05/ggplot_hive.jpg){width=60%}
+
+The core packages within the `tidyverse` are: 
+
+- `ggplot2`, which implements the grammar of graphics. You can use it to visualize your data.
+- `dplyr` is a grammar of data. You can use it to solve the most common data manipulation challenges.
+- `tidyr` helps you to create tidy data or data where each variable is in a column, each observation is a row end each value is a column, each observation is a row end each value is a cell. 
+- `readr` is a fast and friendly way to read rectangular
+- `purrr` enhances R's functional programming (FP) toolkit by providing a complete and consistent set of tools for working with functions and vectors.
+- `tibble` is a modern re-imaginging of the data
+- `stringr` provides a cohesive set of functions designed to make working with strings as easy as possible
+- `forcats` provide a suite of useful tools that solve common problems with factors.  
+
+Highly recommend this [data wrangling cheat sheet](https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf) with `dplyr` and `tidyr` in R!
 
 ##### b. Import data
 
