@@ -466,6 +466,7 @@ Load the `dbj.csv` file.
     mean(dbj_with_children$has_female_children)
     ```
 
+
 ##### Question 2 (4 points)
 
 Our outcome in this exercise will be the proportion of pro-feminist decisions, `progressive.vote`.
@@ -539,6 +540,7 @@ Use this variable to answer the following questions.
              col.names = c("Republican", 
                            "Average Likelihood of Having Kids"))
     ```
+
 
 -   Do judges with children vote differently on feminist issues than judges without? If so, how are they different?
 
@@ -655,10 +657,13 @@ In the following, we will compute summary statistics for the univariate distribu
     ```{r}
     ## How to calculate it in the long/manual way?
     
-    sum(df$def_count)/nrow(df)
+    
+    
+    
+    ## Try out!
     ```
 
-    Recall the sample mean equation from the lecturer slide:
+    Recall the sample mean equation from the lecture slide:
 
     $$\bar{x} = \frac{1}{N}\sum_{i=1}^{N}x_{i}=\frac{x_{1}+x_{2}+...+x_{N}}{N}$$
 
@@ -673,13 +678,13 @@ In the following, we will compute summary statistics for the univariate distribu
     ## How to calculate it in the long/manual way?
     ## First, sort the distribution from smallest to largest values
 
-    sorted.def_count <- sort(df$def_count) 
-    ## in sort function, the default is ascending
+
 
     ## Next, identify the "middle" value, which is (N+1)/2  
-    ## Where is the middle value?
-    (nrow(df) + 1)/2
-    sorted.def_count[(nrow(df) + 1)/2]
+
+
+
+    ## Try out!
     ```
 
     Since the distribution of `def_count` has an odd number, we have one median. If instead we had an even number, notice that R will automatically take **the average of the two middle values**. Technically, as Gailmard (2014) points out, any number weakly between the two middle values is a median.
@@ -704,11 +709,14 @@ In the following, we will compute summary statistics for the univariate distribu
     ```{r}
     ## How to calculate them in the long/manual way?
     ## Sample variance
-    sum((df$def_count - mean(df$def_count))^2)/(nrow(df)-1)
+
+
 
     ## Sample standard deviation
-    sqrt(sum((df$def_count - mean(df$def_count))^2)/(nrow(df)-1))
-    
+
+
+
+    ## Try out!
     ```
 
     Recall the sample variance equation from the lecturer slide:
@@ -722,27 +730,64 @@ Please manually create a function named `des_stat` by using `function()`:
 ```{r}
 ## Create your own function
 
-des_stat <- function(x) {
-  
-  x <- x[!is.na(x)]   ## Remove missing values from x
-  
-  s.mean <- sum(x)/length(x) ## Sample mean
-  
-  s.median <- sort(x)[(length(x) + 1)/2] ## Sample median
-  
-  s.variance <- sum((x - s.mean)^2)/(length(x)-1) ## Sample variance
-  
-  s.sd <- sqrt(s.variance)
-  
-  ## design the function to return these values
-  stats <- data.frame(mean = s.mean,
-                      median = s.median, 
-                      variance = s.variance, 
-                      sd = s.sd)
-  stats
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Try out!
+```
+
+How to create a function in R?
+
+While applying built-in functions facilitates many common tasks, often we need to create our own function to automate the performance of a particular task. To declare a user-defined function in R, we use the keyword `function`. The syntax is as follows:
+
+```{r, message=F, warning=F, error=F}
+function_name <- function(parameters){
+  function_body 
+}
+```
+
+Above, the main components of an R function are: **function name**, **function parameters**, and **function_body**. Let's take a look at each of them separately.
+
+- **function name**: This is the name of the function object that will be stored in the R environment after the function definition and used for calling that function. It should be concise but clear and meaningful so that the user who reads our code can easily understand what exactly this function does.
+
+- **function parameters**: Sometimes, they are called formal **arguments**. Function parameters are the variables in the function definition placed inside the parentheses and separated with a comma that will be set to actual values (called arguments) each time we call the function. 
+
+- **function_body**: The function body is a set of commands inside the curly braces that are run in a predefined order every time we call the function. In other words, in the function body, we place what exactly we need the function to do. 
+
+
+For example:
+
+```{r, message=F, warning=F, error=F}
+circumference <- function(r){
+  2*pi*r
 }
 
-des_stat(df$def_count)
+circumference(2)
+```
+    
+Above, we created a function to calculate the circumference of a circle with a known radius using the formula $C=2\pi r$, so the function has the only parameter `r`. After defining the function, we called it with the radius equal to 2 (hence, with the argument 2). The function body we set will do the calculation for us (i.e., $2*\pi*2$).
+
+Here is an example when you have more than 1 parameter (argument) in your function:
+
+```{r, message=F, warning=F, error=F}
+sum_two_nums <- function(x, y){
+    x + y
+}
+sum_two_nums(1, 2)
+sum_two_nums(pi, 5)
 ```
 
 4.  Calculate the interquartile range (IQR)
@@ -796,21 +841,22 @@ des_stat(df$def_count)
     How many outliers are there in the distribution of `def_count`?
 
     ```{r, message=F, warning=F, error=F}
-## First, what is the lowest and highest threshold for outliers?
-iqr.d <- IQR(df$def_count)
-min.threshold <- quantile(df$def_count, 0.25) - (1.5 * iqr.d)
-min.threshold ## -2.5
-max.threshold <- quantile(df$def_count, 0.75) + (1.5 * iqr.d)
-max.threshold ## 9.5
+    ## First, what is the lowest and highest threshold for outliers?
+    iqr.d <- IQR(df$def_count)
+    min.threshold <- quantile(df$def_count, 0.25) - (1.5 * iqr.d)
+    min.threshold ## -2.5
+    max.threshold <- quantile(df$def_count, 0.75) + (1.5 * iqr.d)
+    max.threshold ## 9.5
     ```
 
     Any data point that is smaller than -2.5 or larger than 9.5 is an outlier.
 
     ```{r}
-## Please count how many outliers are there in the distribution of def_count?
-
-df %>% filter(def_acount < min.threshold | def_count > max.threshold) %>% count()
-
+    ## Please count how many outliers are there in the distribution of def_count?
+    
+    
+    
+    ## Try out!
     ```
 
 
@@ -925,7 +971,7 @@ Let's fix it by using density on the y axis. Density is relative frequency per u
 ```{r, message=F, warning=F, error=F, fig.align='center', fig.width=6, fig.height=4}
 ggplot(df) + 
   geom_histogram(aes(y = ..density.., x = def_count), breaks = my.bins2,
-                 color = "black", fill = "gray85") + 
+                 color = "black", fill = "gray85") +
   scale_x_continuous(breaks = my.labs) + 
   scale_y_continuous(breaks = seq(0,0.3,0.05), limits = c(0,0.3)) +
   labs(x = "Number of Defendants In Each Case", y = "Density") + 

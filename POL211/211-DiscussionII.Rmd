@@ -177,14 +177,12 @@ Please manually create a function named `des_stat` by using `function()`:
     ## How to calculate IQR in the long/manual way (similar to the median)?
 
     ## First, sort the distribution from smallest to largest values
-
+    sorted.def_count <- sort(df$def_count)
 
 
     ## Next, identify the value at the 25th percentile: 0.25 * N (round this up to nearest integer using ceiling function)
-
-
-
-    ## Try out!
+    sorted.def_count[ceiling(0.25*nrow(df))]
+    sorted.def_count[ceiling(0.75*nrow(df))]
     ```
 
 5.  Find outliers
