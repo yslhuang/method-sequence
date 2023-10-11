@@ -1344,6 +1344,32 @@ few times to achieve this).</p>
 <p><strong>Answer: The difference in the proportion of pro-feminist
 decisions between judges who have at least one daughter and those who do
 not have any is about 11%.</strong></p>
+<table style="width:100%;">
+<colgroup>
+<col width="28%" />
+<col width="35%" />
+<col width="35%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong><code>has_female_children == 1</code></strong></th>
+<th><strong><code>has_female_children == 0</code></strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong><code>has_children == 1</code></strong></td>
+<td><code>mean(progressive.vote)</code></td>
+<td><code>mean(progressive.vote)</code></td>
+</tr>
+<tr class="even">
+<td><strong><code>has_children == 0</code></strong></td>
+<td><code>mean(progressive.vote)</code></td>
+<td><code>mean(progressive.vote)</code></td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code>dbj %&gt;%
     filter(has_children == 1) %&gt;%
     group_by(has_female_children) %&gt;%
@@ -1361,6 +1387,37 @@ children, and three children, the difference in the proportion of
 pro-feminist decisions between those who have at least one daughter and
 those who do not have any is about 24%, 8%, and 19%,
 respectively.</strong></p>
+<table>
+<colgroup>
+<col width="23%" />
+<col width="38%" />
+<col width="38%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong><code>has_female_children == 1</code></strong></th>
+<th><strong><code>has_female_children == 0</code></strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong><code>child == 1</code></strong></td>
+<td><code>mean(progressive.vote)</code></td>
+<td><code>mean(progressive.vote)</code></td>
+</tr>
+<tr class="even">
+<td><strong><code>child == 2</code></strong></td>
+<td><code>mean(progressive.vote)</code></td>
+<td><code>mean(progressive.vote)</code></td>
+</tr>
+<tr class="odd">
+<td><strong><code>child == 3</code></strong></td>
+<td><code>mean(progressive.vote)</code></td>
+<td><code>mean(progressive.vote)</code></td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code>diff_list &lt;- dbj %&gt;% 
   filter(child %in% c(1,2,3)) %&gt;%  ## Subset to people w/ 1,2,3 children
   group_by(has_female_children, child) %&gt;%  

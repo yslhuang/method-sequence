@@ -13,6 +13,7 @@ knitr::opts_chunk$set(echo = TRUE,
                       tidy = TRUE)
 options(width = 80)
 ```
+
 ##  {.tabset}
 
 ### Discussion I
@@ -424,7 +425,6 @@ Load the `dbj.csv` file.
 
     **Answer: There are 224 judges and 12 variables in the data set.**
 
-
     ```{r, message=F, warning=F, error=F}
     ## Number of judges
     nrow(dbj) ## this is just the number of observations
@@ -466,7 +466,6 @@ Load the `dbj.csv` file.
     mean(dbj_with_children$has_female_children)
     ```
 
-
 ##### Question 2 (4 points)
 
 Our outcome in this exercise will be the proportion of pro-feminist decisions, `progressive.vote`.
@@ -487,7 +486,6 @@ Next, we want to assess differences between groups. Create a new factor variable
 Having created this variable, now create a **boxplot** that summarizes the propensity to decide in a pro-feminist way by group, in one plot. Briefly discuss the results -- what does the boxplot show, and what does this tell us about differences between groups? Are partisan differences larger than gender differences, or the other way around? A brief answer is sufficient here.
 
 **Answer: The plot shows that progressive decisions are more prevalent among Democratic judges than among Republican judges. Gender differences are less pronounced than partisan differences, since within parties, male and female judges have similar average proportions of pro-feminist decisions.**
-
 
 ```{r, message=F, warning=F, error=F, fig.align='center', fig.width=6, fig.height=4}
 ## Create new variable
@@ -540,7 +538,6 @@ Use this variable to answer the following questions.
              col.names = c("Republican", 
                            "Average Likelihood of Having Kids"))
     ```
-
 
 -   Do judges with children vote differently on feminist issues than judges without? If so, how are they different?
 
@@ -602,6 +599,10 @@ What is the difference in the proportion of pro-feminist decisions between judge
 
     **Answer: The difference in the proportion of pro-feminist decisions between judges who have at least one daughter and those who do not have any is about 11%.**
 
+    |                         | **`has_female_children == 1`** | **`has_female_children == 0`** |
+    |---------------------|--------------------------|--------------------------|
+    | **`has_children == 1`** | `mean(progressive.vote)`       | `mean(progressive.vote)`       |
+    | **`has_children == 0`** | `mean(progressive.vote)`       | `mean(progressive.vote)`       |
 
     ```{r, message=F, warning=F, error=F}
     dbj %>% 
@@ -616,6 +617,11 @@ What is the difference in the proportion of pro-feminist decisions between judge
 
     **Answer: Among judges who have at least one child, two children, and three children, the difference in the proportion of pro-feminist decisions between those who have at least one daughter and those who do not have any is about 24%, 8%, and 19%, respectively.**
 
+    |                  | **`has_female_children == 1`** | **`has_female_children == 0`** |
+    |-----------------|---------------------------|---------------------------|
+    | **`child == 1`** | `mean(progressive.vote)`       | `mean(progressive.vote)`       |
+    | **`child == 2`** | `mean(progressive.vote)`       | `mean(progressive.vote)`       |
+    | **`child == 3`** | `mean(progressive.vote)`       | `mean(progressive.vote)`       |
 
     ```{r, message=F, warning=F, error=F}
     diff_list <- dbj %>% 
@@ -656,10 +662,10 @@ In the following, we will compute summary statistics for the univariate distribu
 
     ```{r}
     ## How to calculate it in the long/manual way?
-    
-    
-    
-    
+
+
+
+
     ## Try out!
     ```
 
@@ -761,12 +767,11 @@ function_name <- function(parameters){
 
 Above, the main components of an R function are: **function name**, **function parameters**, and **function_body**. Let's take a look at each of them separately.
 
-- **function name**: This is the name of the function object that will be stored in the R environment after the function definition and used for calling that function. It should be concise but clear and meaningful so that the user who reads our code can easily understand what exactly this function does.
+-   **function name**: This is the name of the function object that will be stored in the R environment after the function definition and used for calling that function. It should be concise but clear and meaningful so that the user who reads our code can easily understand what exactly this function does.
 
-- **function parameters**: Sometimes, they are called formal **arguments**. Function parameters are the variables in the function definition placed inside the parentheses and separated with a comma that will be set to actual values (called arguments) each time we call the function. 
+-   **function parameters**: Sometimes, they are called formal **arguments**. Function parameters are the variables in the function definition placed inside the parentheses and separated with a comma that will be set to actual values (called arguments) each time we call the function.
 
-- **function_body**: The function body is a set of commands inside the curly braces that are run in a predefined order every time we call the function. In other words, in the function body, we place what exactly we need the function to do. 
-
+-   **function_body**: The function body is a set of commands inside the curly braces that are run in a predefined order every time we call the function. In other words, in the function body, we place what exactly we need the function to do.
 
 For example:
 
@@ -777,7 +782,7 @@ circumference <- function(r){
 
 circumference(2)
 ```
-    
+
 Above, we created a function to calculate the circumference of a circle with a known radius using the formula $C=2\pi r$, so the function has the only parameter `r`. After defining the function, we called it with the radius equal to 2 (hence, with the argument 2). The function body we set will do the calculation for us (i.e., $2*\pi*2$).
 
 Here is an example when you have more than 1 parameter (argument) in your function:
@@ -853,12 +858,11 @@ sum_two_nums(pi, 5)
 
     ```{r}
     ## Please count how many outliers are there in the distribution of def_count?
-    
-    
-    
+
+
+
     ## Try out!
     ```
-
 
 ##### b. Plot distribution (histograms)
 
