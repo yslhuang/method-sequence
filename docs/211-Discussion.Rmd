@@ -580,7 +580,7 @@ Please evaluate the following statements. For each statement, indicate whether y
 
 1.  The judge's religion can be described as an ordinal variable.
 
-    **Answer: It does not appear as if there are large differences in pro-feminist voting when comparing judges with and without children. Among judges without children, 46% voted in favor of pro-feminist issues, slightly higher than the 43% of judges with children who voted for pro-feminist issues.**
+    **Answer: Incorrect: higher values do not indicator higher ranks, since the variable does not measure a concept that is ordered.**
 
 2.  A colleague argues that the judge's religion may be an important predictor of judges' decisions -- more religious judges may decide differently than less religious judges. Therefore, your colleague recommends splitting the `religion` variable (see definition above) into two groups: the set of judges for which `religion` is greater than 10, and the set of judges for which it is 10 or lower. Then, your colleague recommends comparing the mean proportion of pro-feminist decisions in each of the two groups.
 
