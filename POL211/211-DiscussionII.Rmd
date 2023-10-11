@@ -192,23 +192,23 @@ Please manually create a function named `des_stat` by using `function()`:
     How many outliers are there in the distribution of `def_count`?
 
     ```{r, message=F, warning=F, error=F}
-## First, what is the lowest and highest threshold for outliers?
-iqr.d <- IQR(df$def_count)
-min.threshold <- quantile(df$def_count, 0.25) - (1.5 * iqr.d)
-min.threshold ## -2.5
-max.threshold <- quantile(df$def_count, 0.75) + (1.5 * iqr.d)
-max.threshold ## 9.5
+    ## First, what is the lowest and highest threshold for outliers?
+    iqr.d <- IQR(df$def_count)
+    min.threshold <- quantile(df$def_count, 0.25) - (1.5 * iqr.d)
+    min.threshold ## -2.5
+    max.threshold <- quantile(df$def_count, 0.75) + (1.5 * iqr.d)
+    max.threshold ## 9.5
     ```
 
     Any data point that is smaller than -2.5 or larger than 9.5 is an outlier.
 
     ```{r}
-## Please count how many outliers are there in the distribution of def_count?
-
-
-
-
-## Try out!
+    ## Please count how many outliers are there in the distribution of def_count?
+    
+    
+    
+    
+    ## Try out!
     ```
 
 
