@@ -662,11 +662,8 @@ In the following, we will compute summary statistics for the univariate distribu
 
     ```{r}
     ## How to calculate it in the long/manual way?
-
-
-
-
     ## Try out!
+    sum(df$def_count)/nrow(df)
     ```
 
     Recall the sample mean equation from the lecture slide:
@@ -682,15 +679,13 @@ In the following, we will compute summary statistics for the univariate distribu
 
     ```{r}
     ## How to calculate it in the long/manual way?
+    ## Try out!
     ## First, sort the distribution from smallest to largest values
-
-
+    sorted.def_count <- sort(df$def_count)
+    
 
     ## Next, identify the "middle" value, which is (N+1)/2  
-
-
-
-    ## Try out!
+    sorted.def_count[(nrow(df)+1)/2]
     ```
 
     Since the distribution of `def_count` has an odd number, we have one median. If instead we had an even number, notice that R will automatically take **the average of the two middle values**. Technically, as Gailmard (2014) points out, any number weakly between the two middle values is a median.
@@ -714,15 +709,14 @@ In the following, we will compute summary statistics for the univariate distribu
 
     ```{r}
     ## How to calculate them in the long/manual way?
+    ## Try out!
     ## Sample variance
-
+    sum((df$def_count-mean(df$def_count))^2)/(nrow(df)-1)
 
 
     ## Sample standard deviation
+    sqrt(sum((df$def_count-mean(df$def_count))^2)/(nrow(df)-1))
 
-
-
-    ## Try out!
     ```
 
     Recall the sample variance equation from the lecturer slide:
@@ -735,24 +729,24 @@ Please manually create a function named `des_stat` by using `function()`:
 
 ```{r}
 ## Create your own function
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## Try out!
+
+des_stat <- function(x){
+  x <- x[!is.na(x)] ## remove missing values from x
+  s.mean <- sum(x)/length(x) ## sample mean
+  s.median <- sort(x)[(length(x)+1)/2] ## sample median
+  s.variance <- sum((x-mean(x))^2)/(length(x)-1) ## sample variance
+  s.sd <- sqrt(s.variance)
+  
+  ## design the function to return these values
+  stats <- data.frame(mean = s.mean,
+                      median = s.median, 
+                      variance = s.variance, 
+                      sd = s.sd)
+  stats
+}
+
+des_stat(df$def_count)
 ```
 
 How to create a function in R?
@@ -794,6 +788,7 @@ sum_two_nums <- function(x, y){
 sum_two_nums(1, 2)
 sum_two_nums(pi, 5)
 ```
+
 
 4.  Calculate the interquartile range (IQR)
 
@@ -858,10 +853,10 @@ sum_two_nums(pi, 5)
 
     ```{r}
     ## Please count how many outliers are there in the distribution of def_count?
-
-
-
     ## Try out!
+    df %>% filter(def_acount < min.threshold | def_count > max.threshold) %>% count()
+
+    
     ```
 
 ##### b. Plot distribution (histograms)
