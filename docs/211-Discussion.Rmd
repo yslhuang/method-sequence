@@ -10,7 +10,7 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, 
                       tidy.opts=list(width.cutoff = 80),
-                      tidy = TRUE)
+                      tidy = FALSE)
 options(width = 80)
 ```
 
@@ -397,9 +397,9 @@ There are 3 variables in df2, but there are only 2 linearly independent variable
 
 ### Discussion II
 
-For today's discussion, we'll first briefly go over the solution keys to Problem Set I and then continue our materials for exploring a new dataset using R.
+For today's discussion, we'll first briefly go over the solution keys to Problem Set 1 and then continue our materials for exploring a new dataset using R.
 
-#### 1. Solution Keys to Problem Set I
+#### 1. Solution Keys to Problem Set 1
 
 ##### Question 1 (4 points)
 
@@ -977,3 +977,769 @@ ggplot(df) +
   theme_bw() + 
   theme(panel.grid.minor = element_blank())
 ```
+
+### Discussion III
+
+For today's discussion, we'll start by reviewing the solution keys for Problem Set 2. Afterward, we'll delve into the topic of exploring relationships in data. We will learn how to use R to visualize relationships between two variables, whether they are categorical or cardinal.
+
+#### 1. Solution Keys to Problem Set 2
+
+##### Question 1 (2 points)
+
+Creating descriptive statistics is a key part of any research project. We will work with data compiled by Raj Chetty and coauthors. The paper is here: https://www.nber.org/papers/w23618. Alternatively, you can also read a summary report here: https://opportunityinsights.org/wp-content/uploads/2018/03/coll_mrc_summary.pdf). The purpose of this data is measure the role of colleges in facilitating upward (economic) mobility.
+
+1. In the report, the authors define a measure called "Mobility Rate", which is defined as the product of "Access" and "Success Rate". Provide brief definitions of "Access" and "Success Rate". Then, provide a brief explanation why using either one of these two measures separately may not be sufficient to measure how much each college contributes to upward mobility.
+
+    **Answer:** 
+    
+    **Access is defined as the fraction of students at a given college who come from families in the bottom 20% of the income distribution. Success rate is defined as the fraction of students at a given college who reach the top 20% of the income distribution. Using either one of these measures separately may not be sufficient to measure how much each college contributes to upward mobility, since colleges with a high access rate may not necessarily have a high success rate, and vice versa.**
+
+2. Recall that studies can be classified as descriptive, causal or measurement. For each of these three categories, please state (i) whether the paper falls in that category and (ii) why or why not it can be grouped in that category. 
+
+    **Answer:**
+    
+    **Descriptive and measurement. The study does not answer the question of whether some characteristic of colleges causes some colleges to be more successful than others. The abstract actually states that "Although our descriptive analysis does not identify colleges' causal effects on students' outcomes, the publicly available statistics constructed here highlight colleges that deserve further study as potential engines of upward mobility."**
+    
+    
+##### Question 2 (4 points)
+
+The next questions focus on the variables `par_median` and `mr_kq5_pq1`, which are the median income of parents of students at a given college and its mobility rate, respectively.
+
+1.  Calculate the mean, median, standard deviation and interquartile range of `par_median`. Briefly interpret the difference between the mean and the median -- what does it tell you about the distribution of `par_median`?
+
+    **Answer:**
+    
+    **The mean, median, standard deviation, and IQR of `par_median` are as follows: 93145.96, 89100, 29085.32, and 29200, respectively. Notably, the mean of `par_median` is higher than the median, indicating that the distribution of `par_median` is right-skewed, and the possibility of outliers existing in the right tail should be considered.**
+
+    ```{r, message=F, error=F, warning=F}
+    ## load packages and import data
+    library(tidyverse)
+    
+    df <- read.csv("/Users/yu-shiuanhuang/Desktop/method-sequence/data/chetty_data.csv")
+    ```
+
+    ```{r, message=F, error=F, warning=F}
+    ## Mean
+    mean(df$par_median)
+    
+    ## Median
+    median(df$par_median)
+    
+    ## SD
+    sd(df$par_median)
+    
+    ## IQR
+    IQR(df$par_median)
+    ```
+
+2. Create two histograms of `par_median`, one with 10 bins, and one with 50 bins. Do you find one of them more informative?
+
+    **Answer:**
+    
+    **The histogram with 50 bins provides more detailed information and is more informative. Having too few bins, as in the histogram with 10 bins, can obscure important patterns in the data. The 50-bin histogram is particularly useful for pinpointing the distribution of outliers in `par_median`, offering a more precise depiction compared to the 10-bin histogram, which may not effectively reveal their locations.**
+
+
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=8, fig.height=4}
+    
+p1 <- ggplot(df, aes(par_median)) +
+      geom_histogram(bins = 10, color = "black", fill = "gray85") +
+      labs(x = "Median Income of Parents", subtitle = "bins = 10") +
+      theme_bw()
+    
+    p2 <- ggplot(df, aes(par_median)) +
+      geom_histogram(bins = 50, color = "black", fill = "gray85") +
+      labs(x = "Median Income of Parents", subtitle = "bins = 10") +
+      theme_bw()
+    
+    ggpubr::ggarrange(p1, p2, ncol = 2, nrow = 1)
+    
+```
+
+3. Next, create two histograms, with any number of bins, for public and private colleges separately. Note that you should do this in one plot. You can use the `facet_wrap` function.
+
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=8, fig.height=4}
+    
+    ggplot(df, aes(par_median)) +
+      geom_histogram(bins = 50, color = "black", fill = "gray85") +
+      labs(x = "Median Income of Parents") +
+      facet_wrap(~ public) +
+      theme_bw()
+    
+    ```
+
+4. Next, an education policymaker is interested in comparing mobility rates (see question 1.1) across states. The variable is called `mr_kq5_pq1`. In particular, the policymaker is interested in the median mobility rates, as well as mobility rates at the 80th percentile, for each state separately. Calculate these quantities by state. Next, you should create two plots. The first, should show the median mobility rate by state. The second should show the mobility rate at the 80th percentile by state. In each plot, you should only provide a single quantity for each state. 
+
+    - Ideally, these would be ranked by mobility rates, such that the order of the points in each plot is either ascending or descending. However, this is not strictly required for this problem set. You can use the `fct_reorder` function to reorder the states by the median mobility rate. 
+    
+    - For readability, it makes the most sense to put the state on the y-axis, and the mobility rate on the x-axis. 
+
+    ```{r, message=F, error=F, warning=F}
+    ## Calculate median and 80th percentile by state
+    df_mobility <- df %>% 
+      group_by(state) %>% 
+      summarise(median_mobility = median(mr_kq5_pq1),
+                p80_mobility = quantile(mr_kq5_pq1, probs = 0.8)) %>% 
+      ungroup()
+    
+    ```
+    
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=8, fig.height=6}
+    ## Plot 1 : median mobility by state
+    ## Arrange by median mobility
+    
+    df_mobility <- df_mobility %>%
+      mutate(state = factor(state),
+             state = fct_reorder(state, median_mobility))
+    
+    p1 <- ggplot(df_mobility, aes(median_mobility, state)) +
+      geom_point(alpha = 0.7) +
+      labs(x = "Median Mobility Rates", y = "State") +
+      theme_bw()
+    
+    ## Plot 2 : 80th percentile mobility by state
+    ## Arrange by 80th percentile mobility
+    
+    df_mobility <- df_mobility %>%
+      mutate(state = factor(state),
+             state = fct_reorder(state, p80_mobility))
+    
+    p2 <- ggplot(df_mobility, aes(p80_mobility, state)) +
+      geom_point(alpha = 0.7) +
+      labs(x = "80th percentile Mobility Rates", y = "State") +
+      theme_bw()
+    
+    ggpubr::ggarrange(p1, p2, ncol = 2, nrow = 1)
+    ```
+
+##### Question 3 (2 points)
+
+As in the previous problem set, evaluate the following statements, and provide explanations if you think the statements do not make sense. Short responses are sufficient. You do not need to calculate anything.
+
+1.  In the definition of the variance, we first square the average deviation from the mean, and then calculate the average of those deviations. A colleague proposes a different way of calculating variability in the data. Instead of squaring the deviations, your colleague recommends just taking the "normal" difference between each observation and the mean of the data, and then taking the average of that (the mathematical representation of this would be $\frac{1}{N}\sum_{i}^N (x_i-\bar{x})$, where $\bar{x}$ is the sample mean). Is this a good approach of summarizing how much the sample varies?
+
+    **Answers:**
+    
+    **This does not make sense, since this way of calculating the dispersion will include negative values, and might result in $\frac{1}{N}\sum_{i}^N (x_i-\bar{x})=0$.**
+
+
+2.  You analyze a variable, and find that the median is significantly larger than the mean. A colleague argues that this suggests outliers in the data. Specifically, your colleague suggests outliers in what is called the "right tail" of the distribution, i.e. values that are much larger than most other values that you observe.
+
+    **Answer**:
+    
+    **This result suggests outliers, but not in the way described here -- rather it suggests outliers that are much *smaller* than the other values of the empirical distribution. Therefore, this statement does not make sense.**
+
+
+3.  You are tasked with providing an estimate of the violent crime rate that the average person on the West Coast is exposed to. West Coast here refers to the states of California, Oregon and Washington. You use this state-level data from 2020 (see below). Your colleague suggests that an informative way of summarizing this data is to average over the three states, which results in an average exposure of 342.5 violent crimes per 100,000 inhabitants. Do you agree with this suggestion?
+
+    | State | Violent crimes / 100,000 people |
+    |-------|---------------------------------|
+    | CA    | 442.0                           |
+    | OR    | 291.9                           |
+    | WA    | 293.7                           |
+
+    **Answer:**
+    
+    **Note that the target quantity here is the violent crime rate that the *average person on the West Coast is exposed to*. California has significantly more inhabitants than Oregon and Washington combined. Using a weighted average, with the population as weights, makes more sense here. Therefore, the proposed approach does not make sense given the target quantity.**
+
+4.  Assume a variable, which takes on these values: (0,3,5,7,8,10,11). The median of the variable is 7. A colleague argues that the median will remain 7 even if we replace the first three values with any value smaller or equal than 7. The median will also remain 7 if we replace the last three values with any value greater or equal than 7.
+
+    **Answer:**
+    
+    **This is correct.**
+    
+##### Question 4 (4 points)
+
+An important concept in R are functions. A function in R is similar to a function takes one more arguments, and then returns the desired output.\footnote{You can learn more about functions at https://r4ds.hadley.nz/functions.html or in chapter 3 of this course: https://www.datacamp.com/courses/intermediate-r} The syntax for functions is as follows:
+
+```{r example, message=F, error=F, warning=F}
+
+my_square <- function(x) {
+  
+  ## Calculate the square of x, save as new object
+  x_sq <- x^2
+  
+  ## Return
+  ## The last line usually just returns the desired output
+  x_sq
+  
+}
+
+## Expected output: 4
+my_square(2)
+
+## Expected output: 16
+my_square(4)
+```
+
+The function takes the input `x` and then returns its square. This works for any `x` that is a number.
+
+Your task is to write a function `my_sd`. It takes a variable as its argument, and then returns the standard deviation of this variable. This involves calculating the mean of `x` (you can use the `mean` function for this), and then implementing the formula for the sample standard deviation that is given below:
+
+$$\sqrt{\frac{1}{N - 1}\sum_{i=1}^N (x_i - \overline{x})^2}$$
+
+In this example, you will implement this function and then use the function you created to calculate the standard deviation of `sat_avg_2013` from the `chetty_data.csv` data set we used above. Please note the following:
+
+-   `sat_avg_2013` contains missing values. For $N$, we only want the number of non-missing observations. The simplest way to deal with this is to remove all missing values in `sat_avg_2013` before the main calculations -- this can be done inside the function.
+-   Do not use the built-in `var` and `sd` functions in your function. You can use `sd` to check if your function returns the correct standard deviation.
+-   This can be achieved using a loop, but a loop is actually not necessary for this problem.
+
+```{r make-function, message=F, error=F, warning=F}
+df <- read.csv("/Users/yu-shiuanhuang/Desktop/method-sequence/data/chetty_data.csv")
+
+x <- df$sat_avg_2013
+
+my_sd <- function(x) {
+  
+  ## Remove missings from x
+  x <- x[!is.na(x)]
+  
+  ## Mean of x, observations
+  m_x <- mean(x)
+  n <- length(x)
+  
+  ## Get sum of squared differences
+  ss <- sum((x - mean(x))^2)
+  
+  ## Divide by n-1 (sample variance)
+  sample_variance <- ss/(n-1)
+  
+  ## Square root to get SD
+  standard_dev <- sqrt(sample_variance)
+  
+  ## return this
+  standard_dev
+}
+
+## Try if this works
+my_sd(df$sat_avg_2013)
+
+## Compare with sd function (with na.rm = T to remove missings
+sd(df$sat_avg_2013, na.rm = T)
+```
+
+##### Additional question (required for students in the methods subfield)
+
+**Note:** You may encounter R commands that you have not seen before. A good source for learning more about these commands is the book "R for Data Science" by Wickham et al, which you can access here https://r4ds.hadley.nz/
+
+##### Question 5
+
+1. Using a for loop, calculate the mean and standard deviation of the following variables in the Chetty data: `sat_avg_2013`, `par_median`, `par_top1pc`. The result should be a data frame with 3 columns: `variable`, `mean` and `sd`, and three rows, one for each variable.
+
+    ```{r, message=F, error=F, warning=F}
+    ## Create empty data frame
+    df_loop <- data.frame(
+      variable = character(),
+      mean = numeric(),
+      sd = numeric()
+    )
+    
+    ## Create vector of variables
+    vars <- c("sat_avg_2013", "par_median", "par_top1pc")
+    
+    ## Loop over vars
+    for (i in vars) {
+      
+      ## Calculate mean and sd
+      mean_i <- mean(df[[i]], na.rm = T)
+      sd_i <- sd(df[[i]], na.rm = T)
+      
+      ## Add to df_loop
+      df_loop <- df_loop %>% 
+        add_row(variable = i,
+                mean = round(mean_i, 4),
+                sd = round(sd_i, 4))
+    }
+    
+    knitr::kable(df_loop, "simple", align = "lll")
+    ```
+      
+
+2. In R, an alternative to for loops are the `apply` family of functions. Repeat subquestion 1 using the `apply` function of your choice (eg., `apply`, `sapply`, `lapply`). The output should be the same as for subquestion 1. 
+
+    Before we discuss the solution to this question, I'd like to share some notes about the `apply` family of functions in R.
+    
+    a. What are `apply` functions?
+    
+       `apply` functions are a family of functions in base R which allow you to repetitively perform an action on multiple chunks of data. An `apply` function is essentially a loop, but run faster than loops and often require less code. There are so many different `apply` functions because they are meant to operate on different types of data (e.g., `lapply`, `sapply`, `tapply`, and `mapply`.)
+       
+    b. The `apply` function
+    
+       First, let’s go over the basic `apply` function. The basic `apply` function looks like this: `apply(X, MARGIN, FUN)`.
+       
+       - X is an **array**, **matrix**, or **data.frame** (this is the data that you will be performing the function on).
+       - Margin specifies whether you want to apply the function across rows (1) or columns (2).
+       - FUN is the function you want to use.
+       
+       Example: 
+       
+       `my.matrx` is a matrix with 1-10 in column 1, 11-20 in column 2, and 21-30 in column 3. `my.matrx` will be used to show some of the basic uses for the `apply` function.
+       
+       ```{r, message=F, error=F, warning=F}
+       my.matrx <- matrix(c(1:10, 11:20, 21:30), nrow = 10, ncol = 3)
+       my.matrx
+       ```
+       
+       Now, let's use the `apply` function to find the row sums of `my.matrx`.
+
+
+       ```{r, message=F, error=F, warning=F}
+       apply(my.matrx, 1, sum) ## bc we are using rows, margin = 1
+       ```    
+
+       The `apply` function returned a vector containing the sums for each row.
+
+       What if I wanted to be able to find how many datapoints (n) are in each column of `my.matrx`? I can use the length function to do this. Because we are using columns, MARGIN = 2.
+
+       ```{r, message=F, error=F, warning=F}
+       apply(my.matrx, 2, length)
+       ```   
+
+       What if instead, I wanted to find n-1 for each column? There isn’t a function in R to do this automatically, so we can create my own function. If the function is simple, you can create it right inside the arguments for apply. In the arguments I created a function that returns `length` - 1.
+      
+       ```{r, message=F, error=F, warning=F}
+       apply(my.matrx, 2, function (x) length(x)-1)
+       ```  
+      
+       The previous examples showed several ways to use the `apply` function on a **matrix**. But what if I wanted to loop through a vector instead? Will the `apply` function work?
+
+       ```{r, message=F, error=F, warning=F}
+       vec <- c(1:10)
+       vec
+       ```      
+      
+       ```{r, message=T, error=T, warning=T}
+       apply(vec, 1, sum)
+       ```    
+       If you run the above line of code, it will return the error. As you can see, this didn’t work because `apply` was expecting the data to have at least two dimensions. If your data is a vector you need to use `lapply`, `sapply`, or `vapply` instead.
+      
+      
+    c. The `lpply` function
+    
+        `lapply`, `sapply`, and `vapply` are all functions that will loop a function through data in a **list** or **vector** and then return a list of the same length as the input. Today, we will only introduce the `lapply` function. For more information about the `sapply` and `vapply` functions, please see [here](https://ademos.people.uic.edu/Chapter4.html#302_example_2:_sapply).
+      
+        The `lapply` function looks like this: `lapply(X, FUN, ...)`.
+      
+        Example:
+      
+        Consider, for instance, the following list with two elements named A and B.
+      
+        ```{r, message=F, error=F, warning=F}
+        a <- list(A = c(8, 9, 7, 5),
+                  B = data.frame(x = 1:5, y = c(5, 1, 0, 2, 3)))
+        a
+        ```
+      
+        If you apply the function sum to the previous list you will obtain the sum of each of its elements (the sum of the elements of the vector and the sum of the elements of the data frame).
+
+        ```{r, message=F, error=F, warning=F}
+        lapply(a, sum)
+        ```     
+
+        If you have a vector, the lapply function will apply a function to all elements to the vector. As an example, consider the vector b and calculate the square root of each element:
+      
+        ```{r, message=F, error=F, warning=F}
+        lapply(vec, sqrt)
+        ```         
+
+    Now let's get back to the solution key to Question 5.2.
+    
+    ```{r, message=F, error=F, warning=F}
+    ## Create vector of variables
+    vars <- c("sat_avg_2013", "par_median", "par_top1pc")
+    
+    ## Loop over vars
+    list_loop <- lapply(vars, function(x) {
+      
+      ## Calculate mean and sd
+      mean_i <- mean(df[[x]], na.rm = T)
+      sd_i <- sd(df[[x]], na.rm = T)
+      
+      ## Add to df_loop
+      c(x, round(mean_i, 4), round(sd_i, 4))
+    })
+
+    ## Note that this creates a list
+    ## We can then convert this to a data frame
+    df_loop <- list_loop %>%
+      reduce(rbind) ## This "reduces" the list to a data fram
+    
+    ## Name each column
+    colnames(df_loop) <- c("variable", "mean", "sd")
+    
+    knitr::kable(df_loop, "simple", align = "lll")
+    ```
+
+The standard deviation measures dispersion of the data. However, we can also create another measure of the dispersion of the sample mean, called the **standard error of the mean**. It is defined as follows: $s_{\bar{x}} = \frac{s_x}{\sqrt{N}}$, where $s_x$ is the standard deviation of a variable $x$, and $N$ is the number of observations. 
+
+**Some additional notes:**
+- The standard error of the mean measures how much discrepancy is likely in a sample’s mean compared with the population mean.
+- The standard error of the mean will always be smaller than the standard deviation.
+
+3. Write a short function that calculates the SE of the mean, and takes a variable `x` as the argument. Then, calculate the mean and the SE of the mean for `par_median` separately for CA, NY, TX and FL. Finally, create a plot that has the name of each state on the x-axis. It should then show the mean of `par_median` as a point on the y-axis, and also show error bars that visualize the following interval: $[\bar{x}- 1.96s_{\bar{x}},\;\bar{x}+1.96 s_{\bar{x}}]$
+
+- I recommend doing this in `ggplot` using the functions `geom_point` and `geom_errorbar`
+      
+    ```{r, message=F, error=F, warning=F}
+    ## Function to calculate SE of the mean
+    my_se_mean <- function(x) {
+      
+      ## Remove missings from x
+      x <- x[!is.na(x)]
+      
+      ## SE of the mean 
+      sd(x) / sqrt(length(x))
+    }
+
+    ## Calculate mean and SE of mean by state 
+    df_plot <- df %>% 
+      filter(state %in% c("CA", "FL", "TX", "NY")) %>% 
+      group_by(state) %>% 
+      summarise(x_bar = mean(par_median), 
+                x_bar_se = my_se_mean(par_median)) %>% 
+      ungroup()
+    
+    ## Divide by 1000s for better readability
+    df_plot <- df_plot %>% 
+      mutate(across(all_of(c("x_bar", "x_bar_se")), ~./1000))
+      ## across() allows you to apply a function to multiple columns at once. It's used to specify the columns you want to modify.
+      ## '~' is a formula operator. '~./1000' is a simple formula where '.' is a pronoun referring to the column being transformed, and it's divided by 1000.
+    
+    
+    knitr::kable(df_plot, "simple", align = "lll")
+    ```
+
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=6, fig.height=4}
+    ## Plot this
+    ggplot(df_plot, aes(state, x_bar)) +
+      geom_errorbar(aes(ymin = x_bar - 1.96*x_bar_se,
+                        ymax = x_bar + 1.96*x_bar_se),
+                    width = 0) +
+      geom_point(alpha = 0.7) + 
+      geom_text(aes(label = round(x_bar, 2)), 
+                position = position_dodge(0.9),
+                hjust = 1.2) +
+      theme_bw() +
+      ylab("Avg. parental median income (1000 USD)") +
+      xlab("State")
+    ```
+
+#### 2. Relationships in Data
+
+When we want to describe the relationship between two sets of data, we can plot the data sets in a scatter plot and look at four characteristics:
+
+- Direction: Are the data points sloping upwards or downwards?
+- Form: Do the data points form a straight line or a curved line?
+- Strength: Are the data points tightly clustered or spread out?
+- Outliers: Are there data points far away from the main body of data?
+
+Today, our focus will be on the first three characteristics. We will delve into covariance, the correlation coefficient, and linear regression. These are three fundamental statistics that allow us to describe the relationships between the variables of interest.
+
+##### a. Visualizing Relationships -- Scatter Plot
+
+For today, we are using `Covid19.csv`. You can download this csv file from Canvas or from [here](https://drive.google.com/file/d/1CTjNdylGuBT5gMVgvNFla9YhuEhq_Yt7/view?usp=sharing).
+
+```{r, message=F, error=F, warning=F}
+## load packages and import data
+library(tidyverse)
+  
+cf <- read.csv("/Users/yu-shiuanhuang/Desktop/method-sequence/data/Covid19.csv")
+```
+
+Let's visualize the relationship between the politics of a county (`dem16vs`) and the share of people who say they always wear a mask (`mask_always`) in a scatter plot.
+
+-   `dem16vs`: Democratic vote share in 2016 presidential election.
+-   `mask_always`: The estimated share of people in a county who would say they always wear a mask in public when they expect to be within six feet of another person.
+
+```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+ggplot(cf, aes(x = dem16vs, y = mask_always)) + 
+  geom_point(color = "black", fill = "white", 
+             stroke = 1, shape = 1) + 
+             ## Use the stroke aesthetic to modify the width of the border
+             ## The shape of points can be adjusted by specifying the shape argument
+  xlab("Democratic Vote Share, 2016 Presidential") + 
+  ylab("% Reporting Always Wearing Mask") + 
+  ylim(0,1) + 
+  xlim(0,1) + 
+  labs(title = "NY Times Covid-19 Survey", 
+       subtitle = "All Counties") + 
+  theme_bw()
+```
+
+The plot above is hard to see since all the dots are on top of each other. So instead of plotting all the datapoints, let's draw a random sample of 500 of the rows of the dataset and plot them.
+
+```{r, message=F, error=F, warning=F}
+set.seed(110) ## this allows us to draw the *same* random sample every time.
+    
+samp <- sample(1:nrow(cf), 500) 
+## This means randomly taking a sample of 500 from the elements of the total rows of cf 
+glimpse(samp)
+```
+
+`samp` is the rows we randomly sample from all the rows in `cf`. For example, the first element in `samp` is 2008, which means we're going to draw the 2008th row out of the original dataset.
+
+Now let's replot the scatter plot again with only 500 datapoints we randomly drew from the whole dataset.
+
+```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+ggplot(cf[samp,], aes(x = dem16vs, y = mask_always)) + 
+  ## Specify the random sample within the bracket of cf and remember to put it on the row position!
+  geom_point(color = "black", fill = "white", 
+             stroke = 1, shape = 1) + 
+  xlab("Democratic Vote Share, 2016 Presidential") + 
+  ylab("% Reporting Always Wearing Mask") + 
+  ylim(0,1) + 
+  xlim(0,1) + 
+  labs(title = "NY Times Covid-19 Survey", 
+       subtitle = "500 Randomly Selected Counties") + 
+  theme_bw()
+```
+
+Be cautious about the axis scaling! Choosing how you scale the x and y axis doesn't change the distribution or correlation, but it can mislead people!
+
+```{r, message=F, error=F, warning=F, fig.align='center', fig.width=8, fig.height=4}
+p1 <- ggplot(cf[samp,], aes(x = dem16vs, y = mask_always)) + 
+  geom_point(color = "black", fill = "white", 
+             stroke = 1, shape = 1) + 
+  xlab("Democratic Vote Share, 2016 Presidential") + 
+  ylab("% Reporting Always Wearing Mask") + 
+  ylim(-10,10) + ## change the scale of y axis
+  xlim(0,1) + 
+  labs(title = "NY Times Covid-19 Survey", 
+       subtitle = "500 Randomly Selected Counties") + 
+  theme_bw()
+
+p2 <- ggplot(cf[samp,], aes(x = dem16vs, y = mask_always)) + 
+  geom_point(color = "black", fill = "white", 
+             stroke = 1, shape = 1) + 
+  xlab("Democratic Vote Share, 2016 Presidential") + 
+  ylab("% Reporting Always Wearing Mask") + 
+  xlim(-2,2) + ## change the scale of x-axis
+  ylim(0,1) + 
+  labs(title = "NY Times Covid-19 Survey", 
+       subtitle = "500 Randomly Selected Counties") + 
+  theme_bw()
+
+ggpubr::ggarrange(p1, p2, ncol = 2, nrow = 1)
+```
+
+##### b. Visualizing Relationships -- Crosstab/Contingency Table
+
+A crosstab or contingency table is also a way to observe the relationship between two variables.
+
+Let's look at the relationship between Covid-19 deaths and political breakdown of counties (whether the county voted for Trump or Clinton in 2016 presidential election). The goal is to replicate the same table as the one in the lecture slide (counties by vote choice and deaths/capita).
+
+First, let's create some new variables.
+
+1.  Looking at the variable on Covid-19 deaths, some of these counties are bigger, so will have more deaths. To account for this, we have to rescale the deaths data to be per capita.
+
+    ```{r, message=F, error=F, warning=F}
+    cf <- cf %>%
+      mutate(deaths.percap = c19deaths/population)
+
+    cf %>% 
+      select(county_name, c19deaths, population, deaths.percap) %>%
+      head()
+    ```
+
+2.  Generate a dummy variable indicating whether the county voted for Trump
+
+    ```{r, message=F, error=F, warning=F}
+    cf <- cf %>%
+      mutate(trump = ifelse(dem16vs < 0.5, "Voted Trump", "Voted Clinton"))
+
+    cf %>% 
+      select(county_name, dem16vs, trump) %>% 
+      head() ## check the new var to see if we create it correctly
+    ```
+
+3.  Generate a categorical variable indicating which deaths per capita quartile a county is in.
+
+    ```{r, message=F, error=F, warning=F}
+    n25 <- ceiling(nrow(cf) * 0.25) ## The first quartile is in the 778th row 
+    n50 <- ceiling(nrow(cf) * 0.50) ## The second quartile is in the 1555th row
+    n75 <- ceiling(nrow(cf) * 0.75) ## The third quartile is in the 2333rd row
+
+    cf <- cf %>%
+      arrange(deaths.percap) %>% ## Arrange the data based on the order of values in deaths.percap
+      mutate(case_id = row_number()) %>%
+      mutate(deaths.quartile = case_when(
+        case_id >= 1 & case_id <= n25 ~ "1st Quartile Deaths/Capita",
+        case_id > n25 & case_id <= n50 ~ "2nd Quartile Deaths/Capita",
+        case_id > n50 & case_id <= n75 ~ "3rd Quartile Deaths/Capita",
+        case_id > n75 ~ "4th Quartile Deaths/Capita",
+      ))
+    ```
+
+4.  Now, let's create the crosstab: count the number of counties under different quartile deaths/capita and which candidate they voted for (Trump or Clinton).
+
+    ```{r, message=F, error=F, warning=F}
+    crosstab <- cf %>%
+      count(deaths.quartile, trump) %>%
+      spread(trump, n) %>% ## After the count operation, this spreads the trump variable into separate columns, one for each unique value in the trump variable. It places the counts (n) for each trump value into their respective columns. 
+      mutate(Total = `Voted Clinton` + `Voted Trump`) ## Generate a column for the row total
+    
+    Total <- c("Total", unname(colSums(crosstab[, 2:4]))) ## Generate a row for the column total
+    
+    crosstab <- crosstab %>% rbind(Total)
+    
+    knitr::kable(crosstab, "simple", align = "llll")
+    ```
+
+    A crosstab does not make it easier to see the relationship. Usually, when the two variables you are interested in are cardinal ones (both `dem16vs` and `deaths.percap` are continuous variables), plotting a scatter plot is more straightforward to see the relationship. In general, crosstab/contingency table is more useful when the two variables you are interested in are both **categorical variables**.
+
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    ggplot(cf[samp,], aes(x = dem16vs, y = deaths.percap)) + 
+      geom_point(color = "black", fill = "white", 
+                 stroke = 1, shape = 1) +     
+      xlab("Democratic Vote Share, 2016 Presidential") + 
+      ylab("Deaths Per Capita") +
+      xlim(0,1) + 
+      labs(title = "NY Times Covid-19 Survey", 
+           subtitle = "500 Randomly Selected Counties") + 
+      theme_bw()
+    ```
+
+##### c. Covariance, Correlation Coefficient, Linear Regression
+
+In addition to visualizing data using scatter plots or contingency tables to grasp relationships, how can we employ statistical methods to describe these relationships more formally?
+
+1. Covariance
+
+    Covariance is a useful measure for describing the **direction** of the linear association between two quantitative variables.
+
+    $$Cov(x, y) = \frac{1}{N-1}\sum_{i=1}^{N}(x_i-\bar{x})(y_i-\bar{y})$$
+    As we can see from the equation, the covariance sums the term $(x_i-\bar{x})(y_i-\bar{y})$ for each data point, where $\bar{x}$ is the average $x$ value, and $\bar{y}$ is the average $y$ value. The term becomes more positive if both $x$ and $y$ are larger than the average values in the data set, and becomes more negative if smaller. As the covariance accounts for every data point in the set, a positive covariance must mean that most, if not all, data points are in sync with respect to $x$ and $y$ (small $y$ when $x$ is small or large $y$ when $x$ is large). Conversely, a negative covariance must mean that most, if not all, data points are out of sync with respect to $x$ and $y$ (small $y$ when $x$ is large or large $y$ when $x$ is small). 
+
+    Let's start by using a fake dataset to practice how to compute covariance.
+
+    ```{r, message=F, error=F, warning=F}
+    tf <- data.frame(x = c(3, 2, 1, 7, -1), 
+                     y = c(8, 10, 13, 2, 8))
+    
+    knitr::kable(tf, "simple", align = "cc")
+    ```
+
+    ```{r}
+    ## Covariance
+    
+    
+    
+    ## Try out!
+    ```
+
+    You can use the canned function `cov()` to double check your answer.
+
+    ```{r, message=F, error=F, warning=F}
+    ## Covariance
+    cov(tf$x, tf$y)
+    ```
+
+    Covariance is a useful measure at describing the direction of the linear association between two quantitative variables, but it has two weaknesses: a larger covariance does not always mean a stronger relationship, and we cannot compare the covariances across different sets of relationships. For example, if we find that the covariance between variables $x$ and $y$ is larger than the covariance between $x$ and $z$, we can only conclude that both $y$ and $z$ are positively associated with $x$. However, we cannot determine whether the relationship between $x$ and $y$ is stronger than the relationship between $x$ and $z based solely on their covariances.
+
+2. Correlation Coefficient
+
+    To account for the weakness, we normalize the covariance by the standard deviation of the $x$ values and $y$ values, to get the correlation coefficient. The correlation coefficient is a value between -1 and 1, and measures both the direction and the strength of the linear association. One important distinction to note is that correlation does not measure the slope of the relationship — a large correlation only speaks to the strength of the relationship. Some key points on correlation are:
+
+    - Correlation measures the direction and strength of the linear association between two quantitative variables.
+    - Positive and negative indicates direction, large and small indicates the strength.
+    - Correlation has symmetry: correlation of x and y is the same as correlation of y and x.
+    - Correlation is unitless and normalized.
+
+    $$r_{xy}=\frac{Cov(x, y)}{s_xs_y}$$
+
+    Please compute the correlation coefficient between $x$ and $y$ using the formula above with the fake dataset
+
+    ```{r}
+    ## Correlation
+
+
+
+
+    ## Try out!
+    ```
+
+    You can also used the canned function `cor()` to double check your answers.
+    ```{r, message=F, error=F, warning=F}
+    ## Correlation
+    cor(tf$x, tf$y)
+    ```
+
+3. Linear Regression
+
+    Correlation and covariance are quantitative measures of the strength and direction of the relationship between two variables, but they do not account for the slope of the relationship. In other words, we do not know **how a change in one variable could impact the other variable**. Regression is the technique that fills this void — it allows us to make the best guess at how one variable affects the other variables. The simplest linear regression, which is usually measured by ordinary least square (OLS) method, allows us to fit a "line of best fit" to the scatter plot, and use that line (or model) to describe the relationship between the two variables. The OLS approach aims to fit a line that minimizes squared residuals. The equation for that line is:
+
+    $$\hat{y} = a + bx$$ 
+    The equations of $a$ and $b$ are:
+
+    $$b = \frac{r_{xy}s_{y}}{s_{x}}=\frac{Cov(x, y)}{s^2_{x}}$$
+
+    $$a = \bar{y}-b\bar{x}$$
+    **Note**: A more detailed introduction regarding linear regression will be discussed in POL 212 and 213. 
+    
+    What are the intercept ($a$) and slope ($b$) between $x$ and $y$ in the fake dataset? Please compute in a manual way!
+
+    ```{r, message=F, error=F, warning=F}
+    ## Slope
+    
+    
+
+
+    ## Intercept
+
+
+
+
+    ## Try out!
+    ```
+
+    You can also use the canned function `lm` to check your answer.
+    ```{r, message=F, error=F, warning=F}
+    reg <- lm(y ~ x, data = tf)
+    stargazer::stargazer(reg, type = "text", digits = 4)
+    ```
+
+##### d. Practice
+
+Now that you know how to use covariance, correlation coefficients, and linear regression to describe relationships in data, let's apply what you've learned to the `Covid19.csv` dataset to compute the covariance, correlation coefficient, and regression line between `dem16vs` and `mask_always`.
+
+1. What is the covariance and correlation coefficient between `dem16vs` and `mask_always`? Please compute them in a manual way.
+
+    ```{r}
+    ## Covariance
+
+    
+
+
+    ## Correlation
+
+
+
+  
+    ## Try out!
+    ```
+
+2. What are the intercepts and slopes for the regression line between `dem16vs` and `mask_always`? Note that in this practice, we are calculating the regression line based on the 500 randomly selected counties!
+
+    ```{r}
+    ## Please find a and b! 
+
+    
+
+
+
+    ## Try out!
+    ```
+
+3. Now you have the regression line, please add the line on the scatter plot using `geom_abline()`!
+
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    ## Add the regression line! 
+
+
+
+
+
+
+
+
+    ## Try out!
+    ```
