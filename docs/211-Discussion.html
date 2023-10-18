@@ -2275,13 +2275,13 @@ can see, this didn’t work because <code>apply</code> was expecting the
 data to have at least two dimensions. If your data is a vector you need
 to use <code>lapply</code>, <code>sapply</code>, or <code>vapply</code>
 instead.</p></li>
-<li><p>The <code>lpply</code> function</p>
+<li><p>The <code>lapply</code> function</p>
 <p><code>lapply</code>, <code>sapply</code>, and <code>vapply</code> are
 all functions that will loop a function through data in a
 <strong>list</strong> or <strong>vector</strong> and then return a list
-of the same length as the input. Today, we will only introduce the
-<code>lapply</code> function. For more information about the
-<code>sapply</code> and <code>vapply</code> functions, please see <a href="https://ademos.people.uic.edu/Chapter4.html#302_example_2:_sapply">here</a>.</p>
+of the same length as the input or a vector. Today, we will only
+introduce the <code>lapply</code> function. For more information about
+the <code>sapply</code> and <code>vapply</code> functions, please see <a href="https://ademos.people.uic.edu/Chapter4.html#302_example_2:_sapply">here</a>.</p>
 <p>The <code>lapply</code> function looks like this:
 <code>lapply(X, FUN, ...)</code>.</p>
 <p>Example:</p>
@@ -2354,14 +2354,14 @@ list_loop &lt;- lapply(vars, function(x) {
   mean_i &lt;- mean(df[[x]], na.rm = T)
   sd_i &lt;- sd(df[[x]], na.rm = T)
 
-  ## Add to df_loop
+  ## Add to list_loop
   c(x, round(mean_i, 4), round(sd_i, 4))
 })
 
 ## Note that this creates a list
 ## We can then convert this to a data frame
 df_loop &lt;- list_loop %&gt;%
-  reduce(rbind) ## This &quot;reduces&quot; the list to a data fram
+  reduce(rbind) ## This &quot;reduces&quot; the list to a data frame
 
 ## Name each column
 colnames(df_loop) &lt;- c(&quot;variable&quot;, &quot;mean&quot;, &quot;sd&quot;)

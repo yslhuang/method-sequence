@@ -1313,9 +1313,9 @@ sd(df$sat_avg_2013, na.rm = T)
        If you run the above line of code, it will return the error. As you can see, this didn’t work because `apply` was expecting the data to have at least two dimensions. If your data is a vector you need to use `lapply`, `sapply`, or `vapply` instead.
       
       
-    c. The `lpply` function
+    c. The `lapply` function
     
-        `lapply`, `sapply`, and `vapply` are all functions that will loop a function through data in a **list** or **vector** and then return a list of the same length as the input. Today, we will only introduce the `lapply` function. For more information about the `sapply` and `vapply` functions, please see [here](https://ademos.people.uic.edu/Chapter4.html#302_example_2:_sapply).
+        `lapply`, `sapply`, and `vapply` are all functions that will loop a function through data in a **list** or **vector** and then return a list of the same length as the input or a vector. Today, we will only introduce the `lapply` function. For more information about the `sapply` and `vapply` functions, please see [here](https://ademos.people.uic.edu/Chapter4.html#302_example_2:_sapply).
       
         The `lapply` function looks like this: `lapply(X, FUN, ...)`.
       
@@ -1354,14 +1354,14 @@ sd(df$sat_avg_2013, na.rm = T)
       mean_i <- mean(df[[x]], na.rm = T)
       sd_i <- sd(df[[x]], na.rm = T)
       
-      ## Add to df_loop
+      ## Add to list_loop
       c(x, round(mean_i, 4), round(sd_i, 4))
     })
 
     ## Note that this creates a list
     ## We can then convert this to a data frame
     df_loop <- list_loop %>%
-      reduce(rbind) ## This "reduces" the list to a data fram
+      reduce(rbind) ## This "reduces" the list to a data frame
     
     ## Name each column
     colnames(df_loop) <- c("variable", "mean", "sd")
