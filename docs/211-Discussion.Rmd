@@ -1620,10 +1620,12 @@ In addition to visualizing data using scatter plots or contingency tables to gra
 
     ```{r}
     ## Covariance
+    tf$x.dev2 <- tf$x - mean(tf$x)
+    tf$y.dev2 <- tf$y - mean(tf$y)
     
-    
-    
-    ## Try out!
+    cov.fake <- (1/(nrow(tf)-1))*sum(tf$x.dev2*tf$y.dev2)
+    cov.fake   
+
     ```
 
     You can use the canned function `cov()` to double check your answer.
@@ -1650,11 +1652,8 @@ In addition to visualizing data using scatter plots or contingency tables to gra
 
     ```{r}
     ## Correlation
-
-
-
-
-    ## Try out!
+    cor.fake <- cov.fake/(sd(tf$x)*sd(tf$y))
+    cor.fake
     ```
 
     You can also used the canned function `cor()` to double check your answers.
@@ -1679,16 +1678,10 @@ In addition to visualizing data using scatter plots or contingency tables to gra
 
     ```{r, message=F, error=F, warning=F}
     ## Slope
+    b <- cov(tf$x, tf$y)/var(tf$x)
     
-    
-
-
     ## Intercept
-
-
-
-
-    ## Try out!
+    a <- mean(tf$y) - b * mean(tf$x)
     ```
 
     You can also use the canned function `lm` to check your answer.
@@ -1705,41 +1698,46 @@ Now that you know how to use covariance, correlation coefficients, and linear re
 
     ```{r}
     ## Covariance
-
+    dem16vs.dev <- cf$dem16vs[samp]  - mean(cf$dem16vs[samp])
+    mask_always.dev <- cf$mask_always[samp] - mean(cf$mask_always[samp])
     
-
+    cov.covid19 <- (1/(500 - 1))*sum(dem16vs.dev*mask_always.dev)
+    cov.covid19
+    
+    cov(cf$dem16vs[samp], cf$mask_always[samp])
 
     ## Correlation
-
-
-
-  
-    ## Try out!
+    cor.covid19 <- cov.covid19/(sd(cf$dem16vs[samp])*sd(cf$mask_always[samp] ))
+    cov.covid19
+    
+    cor(cf$dem16vs[samp], cf$mask_always[samp])
     ```
 
 2. What are the intercepts and slopes for the regression line between `dem16vs` and `mask_always`? Note that in this practice, we are calculating the regression line based on the 500 randomly selected counties!
 
     ```{r}
     ## Please find a and b! 
-
-    
-
-
-
-    ## Try out!
+    b <- cov(cf$dem16vs[samp], cf$mask_always[samp])/var(cf$dem16vs[samp])
+    a <- mean(cf$mask_always[samp]) - b * mean(cf$dem16vs[samp])
+    print(paste0("y = ", round(a, 2), " + ", round(b, 2), "x"))
     ```
 
 3. Now you have the regression line, please add the line on the scatter plot using `geom_abline()`!
 
     ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
     ## Add the regression line! 
-
-
-
-
-
-
-
-
-    ## Try out!
+    ggplot(cf[samp,], aes(x = dem16vs, y = mask_always)) + 
+    ## Specify the random sample within the bracket of cf and remember to put it on the row position!
+      geom_point(color = "black", fill = "white", 
+                 stroke = 1, shape = 1) + 
+      geom_abline(slope = b, intercept = a, size = 2, color = "darkorange") +
+      annotate(geom = "text", x = 0.85, y = 0.95, 
+               label = "y = 0.35 + 0.51x", color = "darkorange") +
+      xlab("Democratic Vote Share, 2016 Presidential") + 
+      ylab("% Reporting Always Wearing Mask") + 
+      ylim(0,1) + 
+      xlim(0,1) + 
+      labs(title = "NY Times Covid-19 Survey", 
+           subtitle = "500 Randomly Selected Counties") + 
+      theme_bw()
     ```
