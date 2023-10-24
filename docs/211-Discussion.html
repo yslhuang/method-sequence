@@ -3190,8 +3190,8 @@ command, or you can use the <code>geom_smooth(method = &#39;lm&#39;)</code>
 command. Given what you just plotted, do you think the linear regression
 is a good fit? Please explain why or why not.</p>
 <p><strong>Answer:</strong></p>
-<p>** Plot suggests nonlinearity – linear regression not a good
-fit!**</p>
+<p><strong>Plot suggests nonlinearity – linear regression not a good
+fit!</strong></p>
 <pre class="r"><code>ggplot(df_west, aes(x = sticker_price_2013, y = mr_kq5_pq1)) +
     geom_point(alpha = 0.7) +
     geom_smooth(method = &quot;lm&quot;) +

@@ -1915,7 +1915,7 @@ Plot the same scatter plot as in subquestion 1, but now add the linear regressio
 
 **Answer:**
 
-** Plot suggests nonlinearity -- linear regression not a good fit!**
+**Plot suggests nonlinearity -- linear regression not a good fit!**
 
 ```{r, message=F, warning=F, error=F, fig.align='center', fig.width=5, fig.height=4} 
 ggplot(df_west, aes(x = sticker_price_2013, y = mr_kq5_pq1)) +
