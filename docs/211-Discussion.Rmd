@@ -1744,6 +1744,9 @@ Now that you know how to use covariance, correlation coefficients, and linear re
     
 ### Discussion IV
 
+In today's discussion, we'll start by reviewing the solutions to Problem Set 3. Afterward, we'll dive into the first part of "Learning from Data." During this session, we'll revisit the fundamental concept of the data generating process and underscore the significance of understanding probability theory as a foundational step in data analysis. Furthermore, we'll practice computing joint, marginal, and conditional distributions, and develop skills for summarizing central tendency and dispersion within these distributions.
+
+
 #### 1. Solution Keys to Problem Set 3
 
 ##### Question 1 (3 points)
