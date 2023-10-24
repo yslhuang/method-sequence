@@ -1741,3 +1741,859 @@ Now that you know how to use covariance, correlation coefficients, and linear re
            subtitle = "500 Randomly Selected Counties") + 
       theme_bw()
     ```
+    
+### Discussion IV
+
+#### 1. Solution Keys to Problem Set 3
+
+##### Question 1 (3 points)
+
+Each subquestion in this question assumes new "data", i.e. the quantities listed in (1) are irrelevant for (2), and so on.
+
+##### Question 1.1
+
+Below, you will find a table with values for variables $X$ and $Y$. The mean of $X$ is 1, and the mean of $Y$ is 3. 
+
+<center>
+
+| $x_i$ | $y_i$ |
+|:-----:|:-----:|
+|   0   |   4   |
+|   0   |   3   |
+|   3   |   2   |
+
+</center>
+
+
+Without using R, calculate the sample covariance between $X$ and $Y$. Note that the sample covariance uses $n-1$ in the denominator. Briefly state what the covariance tells us about the relationship between $X$ and $Y$.
+
+**Answer:** 
+
+**$Cov(X,Y) = \frac{1}{2} \sum_{i=1}^3 (x_i - \bar{x})(y_i - \bar{y}) = \frac{1}{2} \left[ (0-1)(4-3) + (0-1)(3-3) + (3-1)(2-3) \right] = -1.5$**
+
+**The covariance suggests a negative relationship between $X$ and $Y$.**
+
+##### Question 1.2
+
+Next, assume you have two other variables $X$ and $Y$. A colleague tells you that the covariance between $X$ and $Y$ is 2, the variance of $X$ is 9, and the variance of $Y$ is 16. Your colleage argues that the covariance of 2 implies a strong relationship between $X$ and $Y$. Please state if you do or do not agree with your colleague, and explain why. If you do not agree, calculate an alternative measure of the relationship between $X$ and $Y$, which may be more informative.
+
+**Answer:** 
+
+**Incorrect. The covariance is sensitive to the scale of the variables. Instead, we can calculate the scale-invariant correlation coefficient, which is defined as $r_{XY} = \frac{Cov(X,Y)}{\sqrt{Var(X)} \sqrt{Var(Y)}}$. In this case, $r_{XY} = \frac{2}{3\times4} = \frac{2}{12} = \frac{1}{6}$.**
+
+##### Question 1.3
+ 
+Assume you run a least squares regression the regresses one variable $Y$ on another variable $X$ and this results in predicted values $\hat{y}_i$, while the observed values are denoted by $y_i$. Which of the following statements is true / not true? Please include a brief explanation for each statement.
+
+a. Running a least squares regression minimizes the sum of the differences between the observed and predicted values, i.e. it minimizes $\sum_{i=1}^n (y_i - \hat{y}_i)$.
+
+    **Answer:** 
+    
+    **False. The least squares regression minimizes the sum of squared residuals, i.e. $\sum_{i=1}^n (y_i - \hat{y}_i)^2$.**
+
+
+b. The intercept $\alpha$ tells us about the value of the dependent variable $Y$ when the independent variable $X$ is at its mean (i.e. when $x_i = \bar{x}$).
+
+    **Answer:** 
+    
+    **False. The intercept $\alpha$ is the value of $Y$ when $x_i=0$.**
+
+
+##### Question 2 (3 points)
+
+This question is similar to the previous one, but uses R. 
+
+You are given two variables $X$ and $Y$ in the code below. In addition, there is some code that calculates the sample mean of each variable. Please also calculate the following quantities in R: 
+
+- The sample standard deviation of $X$ and $Y$
+- The covariance between $X$ and $Y$
+- The correlation between $X$ and $Y$
+
+**Note:** Do not use the built in functions to do this, i.e. you should not use `var`, `sd`, `cov`, `cor` or similar functions. Rather, the goal is to calculate these quantities "by hand", i.e. using the formulas from the lecture. You can of course use functions such as `sum` and `sqrt`. After you are done, you can use `cor` to check if your code produces the same answer as the built-in function.
+
+Also, please remember that the sample standard deviation and sample covariance use $n-1$ in the denominator, but the sample mean uses $n$.
+
+```{r, message=F, warning=F, error=F}
+x <- c(2, 5, 3, 6, 7, 8, 3, 6, 7, 9)
+y <- c(9, 6, 8, 4, 7, 5, 4, 3, 3, 2)
+
+# Get number of observations
+n <- length(x)
+
+# Calculate the mean of each variable
+# "Sum" just takes all elements of X and then adds them up
+mean_x <- sum(x) / n
+mean_y <- sum(y) / n
+
+# Your code:
+
+# ...
+
+```
+
+**Answer:**
+
+```{r, message=F, warning=F, error=F}
+# Variance of X,Y
+var_x <- sum((x - mean_x)^2) / (n - 1)
+var_y <- sum((y - mean_y)^2) / (n - 1)
+
+# SD of X,Y
+sd_x <- sqrt(var_x)
+sd_y <- sqrt(var_y)
+
+# Covariance between X,Y
+cov_xy <- sum((x - mean_x) * (y - mean_y)) / (n - 1)
+
+# Correlation between X,Y
+cor_xy <- cov_xy / (sd_x * sd_y)
+cor_xy
+
+
+# We can check if the results are correct by using the built-in functions
+cov(x, y)
+cor(x, y)
+```
+
+##### Question 3 (4 points)
+
+We will use the Chetty data from the last problem set again.\footnote{The paper is [here](https://www.nber.org/papers/w23618).}  A policymaker is interested in the relationship between mobility rates and price of attendance for public universities in California, Oregon and Washington.
+
+First, you will need to transform the data, which means (i) subsetting the data set to California, Oregon and Washington and (ii) subsetting the data set to public universities within these states. Next, transform the variable `sticker_price_2013` into a variable that measures the price of attendance in 2013 in thousands of dollars. Then, transform the variable `mr_kq5_pq1` into a variable that measures the mobility rate in percentage points, rather than on a 0--1 scale.
+
+##### Question 3.1
+
+Create a scatter plot of the relationship between mobility rates (`mr_kq5_pq1`) and price of attendance (`sticker_price_2013`). For a definition of mobility rates, see here: https://opportunityinsights.org/wp-content/uploads/2018/03/coll\_mrc\_summary.pdf
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse, quietly = TRUE)
+
+# Read the data
+df <- read.csv("/Users/yu-shiuanhuang/Desktop/method-sequence/data/chetty_data.csv")
+```
+
+**Answer:**
+
+```{r, message=F, warning=F, error=F, fig.align='center', fig.width=5, fig.height=4}
+# Subset to the three states 
+df_west <- df %>%
+    filter(state %in% c("CA", "WA", "OR")) %>%
+    filter(public == "Public") %>%
+    mutate(sticker_price_2013 = sticker_price_2013/1000,
+           mr_kq5_pq1 = mr_kq5_pq1*100)
+    
+# Scatter plot
+ggplot(df_west, aes(x = sticker_price_2013, y = mr_kq5_pq1)) +
+    geom_point(alpha = 0.7) +
+    labs(x = "Price of attendance (in thousands of dollars)",
+         y = "Mobility rate (in percentage points)") +
+    theme_bw()
+```
+
+##### Question 3.2
+
+Run a linear regression using the `lm` command, where the outcome is mobility rates and the predictor is price of attendance. You should use the same data set as before, i.e. public universities in WA, CA and OR. Interpret the intercept and slope of the regression. You do not have to interpret standard errors or p-values.
+
+**Answer:**
+
+```{r, message=F, warning=F, error=F}
+mod <- lm(mr_kq5_pq1 ~ sticker_price_2013, data = df_west)
+
+stargazer::stargazer(mod, type = "text", digits = 4)
+```
+
+**Answer:** 
+
+**The intercept is the mobility rate for a public college with a price of attendance of 0 (i.e. this number is not very useful). The slope is the change in mobility rate, in percentage points, associated with a 1,000 dollar increase in price of attendance.**
+
+##### Question 3.3
+
+Plot the same scatter plot as in subquestion 1, but now add the linear regression line that you just calculated. In `ggplot`, you can do this either manually using the `geom_abline` command, or you can use the `geom_smooth(method = 'lm')` command. Given what you just plotted, do you think the linear regression is a good fit? Please explain why or why not.  
+
+**Answer:**
+
+** Plot suggests nonlinearity -- linear regression not a good fit!**
+
+```{r, message=F, warning=F, error=F, fig.align='center', fig.width=5, fig.height=4} 
+ggplot(df_west, aes(x = sticker_price_2013, y = mr_kq5_pq1)) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(method = "lm") +
+    labs(x = "Price of attendance (in thousands of dollars)",
+         y = "Mobility rate (in percentage points)") +
+    theme_bw()
+```
+
+##### Question 3.4
+
+We can also assess this relationship *non-parametrically*. In the previous question, we used a regression model to model the values of $Y$ given $X$. We can also just calculate the conditional mean of $Y$ given some values of $X$. To implement this, proceed as follows: calculate the average mobility rate separately for 4 groups of the data, defined by their cost of attendance: 
+
+1. Between 5,000 and 8,000 dollars
+2. Between 8,000 and 10,000 dollars 
+3. Between 10,000 and 12,000 dollars 
+4. Above 12,000 dollars 
+
+The quantities you just calculated are called *conditional means*.
+Then, create a plot that has these groups on the x-axis, and the average of each group on the y-axis (e.g. a bar chart).
+
+You will likely find that it is not always possible to calculate the conditional mean of $Y$, particularly when there are no observed outcomes $Y$ for certain values of $X$. Comparing the regression method to the conditional mean method, what is one advantage of the regression method in cases where there is no available data on $Y$ for certain values of $X$?
+
+**Answer:**
+
+```{r, message=F, warning=F, error=F, fig.align='center', fig.width=5, fig.height=4}
+# Create a new variable that indicates the group
+df_west <- df_west %>%
+    mutate(group = case_when(
+      sticker_price_2013 >= 5 & sticker_price_2013 < 8 ~ "Group 1: 5-8",
+      sticker_price_2013 >= 8 & sticker_price_2013 < 10 ~ "Group 2: 8-10",
+      sticker_price_2013 >= 10 & sticker_price_2013 < 12 ~ "Group 3: 10-12",
+      sticker_price_2013 >= 12 ~ "Group 4: 12-14"))
+
+# Calculate conditional means
+df_plot <- df_west %>%
+    group_by(group) %>%
+    summarize(mean_mr = mean(mr_kq5_pq1, na.rm = TRUE))
+
+# Plot as bar chart
+df_plot %>%
+    ggplot(aes(x = group, y = mean_mr)) +
+    geom_bar(stat = "identity", alpha = 0.7) +
+    labs(x = "Price of attendance (in thousands of dollars)",
+         y = "Avg. mobility rate (in percentage points)") +
+    theme_bw()
+```
+
+**Note that the third group has no data for $Y$, which leads to a missing value. The advantage of the regression method is that we can still predict values of $Y$ for this group, even though we have no data for this group -- the regression equation will give us predictions of $Y$ for any value of $X$.**
+
+##### Question 4 (2 points)
+
+##### Question 4.1
+
+Please interpret the following regression coefficients:
+
+- Gentzkow et al (2011) study the relationship between *number of local newspapers* in a county and *voter turnout* in presidential elections, for all elections between 1868–1928. Turnout ($Y$) ranges from 0--1, with 1 indicating 100\% turnout. The newspaper variable ($X$) is simply the number of newspapers. Based on results in table 2 of the paper, the estimated regression coefficient $\beta$ that stems from the regression of changes in turnout on the number of newspapers is 0.0034. Please interpret this coefficient.\footnote{The actual specification is more complicated, this description is a simplification.}
+
+    **Answer:** 
+
+    **One additional local newspapers is associated with a 0.34 percentage point increase in turnout.**
+
+- Enos (2014) conducts a field experiment to assess the relationship between exposure to Spanish-speaking confederates and attitudes toward immigration policy. He randomly assigns certain train platforms to receive a treatment for 2 weeks, where pairs of Spanish-speaking confederates visit the platforms every day during the morning commute to simulate demographic change. He then surveys commuters before and after the treatment about their attitudes toward immigration policy. One of the dependent variables is support for decreasing the number of immigrants from Mexico, measured on a 0-1 scale where 1 indicates support for decreasing immigration. In the full sample, the estimated regression coefficient $\beta$ stemming from the regression of support for decreasing immigration on exposure to the Spanish-speaking confederates (the treatment) is 0.09. Note that this is an experiment, so there is a treatment group that sees the Spanish-speaking confederates ($x_i = 1$) and a control group that does not get exposed to the confederates ($x_i=0$). Please interpret the coefficient $\beta$.
+
+    **Answer:** 
+
+    **Exposure to Spanish-speaking confederates (compared to the control group) is associated with a 0.09-point increase in support for decreasing the number of immigrants from Mexico, on a scale from 0--1.**
+    
+##### Question 4.2
+
+Let's return to the Chetty data. We will look at the dataset for the whole country and for public as well as private colleges. The dataset has a variable called `mobility_above_average`, which is defined as follows:
+
+$$mobility\_above\_average = \begin{cases} 1 & mobility\_rate_i > \overline{mobility\_rate} \\ 0 & mobility\_rate_i \leq \overline{mobility\_rate} \end{cases}$$
+
+This variable indicates whether the mobility rate for a given college is above or below the average mobility rate across all colleges. It can only take two values -- 1 (greater than the average) or 0 (equal to or below the average).
+
+We now run the following regression:
+
+```{r}
+mod <- lm(mobility_above_average ~ public, data = df)
+coef(mod)
+```
+
+Interpret the coefficients. 
+
+**Answer:** 
+
+**The intercept is the share of private colleges with above-average mobility rates. The coefficient $\beta$ is the difference in the share of public colleges with above-average mobility rates, compared to private colleges. It is positive, so public colleges are more likely to have above-average mobility rates.**
+
+##### Question 5 (required for students in the methods subfield, 3 points)
+
+##### Question 5.1
+
+In lecture, we said the mean $\bar{x} = \frac{1}{n} \sum_{i=1}^n x_i$ is the best "guess" of $x_i$ in terms of minimizing the mean squared error.
+In statistics, it is common to define some measure of how "good" a guess or an estimate is, and then to show that there is some specific estimate that is "best" in terms of this measure. Recall that the mean squared error is defined as $$MSE = \frac{1}{n} \sum_{i=1}^n (x_i - \hat{x})^2$$ where $\hat{x}$ is our guess of $x_i$. \footnote{Note that $\hat{x}$ is usually some function of the data, i.e. $\hat{x} = f(x_1, x_2, ..., x_n)$. Quantities like the mean, median or mode are all functions of the data.}
+
+- Show that the mean $\bar{x}$ is the best guess in terms of minimizing the mean squared error given above. 
+- To show this, you will use calculus. Recall that we can use derivatives to find mimima / maxima of a function. Commonly, we proceed as follows: (1) we take the derivate of a function with respect to the variable we want to optimize over, (2) we set the derivative equal to zero, and (3) we solve for the variable we want to optimize over. In this case, we want to optimize over $\hat{x}$, so we will take the derivative of the mean squared error with respect to $\hat{x}$, set it equal to zero, and solve for $\hat{x}$. The goal is then to show that $\hat{x} = \bar{x}$ is the solution to this problem.
+
+- **Note 1:** Usually, we would also have to assess whether we found a minimum or maximum by looking at the second derivative. However, you can just assume that you found a minimum here -- looking at the second derivative is not necessary.
+
+- **Note 2:** You can use the fact that $\sum_{i=1}^n a = n a$, since $a$ is just a constant.
+
+
+**Answer:**
+
+**The MSE is defined as follows:**
+
+**$$MSE = \frac{1}{n} \sum_{i=1}^n (x_i - \hat{x})^2$$**
+
+**Note that we can also write this as follows:\footnote{We can also use the chain rule instead, which means we do not need this step.}**
+
+**$$MSE = \frac{1}{n} \sum_{i=1}^n (x_i^2 - 2x_i \hat{x}+ \hat{x}^2)$$**
+
+**Next, we take the derivate of this wrt $\hat{x}$:**
+
+**$$\frac{\partial MSE}{\partial \hat{x}} = \frac{1}{n} \sum_{i=1}^n (-2x_i + 2\hat{x})$$**
+
+**Since we take the derivative wrt $\hat{x}$, we can treat all other terms as constants, which is why the $x^2_i$ term disappears. Next, we set this equal to zero and solve for $\hat{x}$:**
+
+**$$\frac{1}{n} \sum_{i=1}^n (-2x_i + 2\hat{x}) = 0$$**
+
+**$$\frac{1}{n} \sum_{i=1}^n -2x_i + \frac{1}{n} \sum_{i=1}^n 2\hat{x} = 0$$**
+
+**The second sum is just the sum of constants, i.e. $\sum_{i=1}^n 2\hat{x} = 2n\hat{x}$.**
+
+**$$\frac{1}{n} \sum_{i=1}^n -2x_i + \frac{1}{n}2n\hat{x} = 
+\frac{-2}{n} \sum_{i=1}^n x_i + 2\hat{x} = 0$$**
+
+**Note that the first term is negative, so we can just move it to the other side of the equation and divide by 2.**
+
+**$$2\hat{x} = \frac{2}{n} \sum_{i=1}^n x_i$$**
+
+**$$\hat{x} = \frac{1}{n} \sum_{i=1}^n x_i$$**
+
+**Note that the right-hand side is just the definition of the mean, i.e. we have shown that $\hat{x} = \bar{x}$. As stated above, we would now have to look at the second derivative to see if we found a minimum or maximum. However, you can just assume that we found a minimum here.**
+
+##### Question 5.2
+
+In linear regressions, goodness of fit is usually measured using the $R^2$ statistic. This statistic is defined as follows:
+
+$$R^2 = 1 - \frac{SSR}{SST}$$
+
+where the sum of squared residuals $SSR = \sum_{i=1}^n (y_i - 
+\hat{y}_i)^2$ and the total sum of squares $SST = \sum_{i=1}^n (y_i - \bar{y})^2$. Here, $\hat{y}_i$ are the predicted values of $y_i$ from the regression, and $y_i$ are the observed values of $Y$. 
+
+In R, write a function that calculates $R^2$ for a given regression, based on the definition given above. The function should have two arguments: (1) the observed values $y_i$ and (2) an `lm` object that contains the regression results of a regression of $Y$ on $X$. The function should return the $R^2$ statistic.
+
+```{r}
+x <- c(2, 5, 3, 6, 7, 8, 3, 6, 7, 9)
+y <- c(9, 6, 8, 4, 7, 5, 4, 3, 3, 2)
+
+mod <- lm(y ~ x)
+
+get_rsq  <- function(y, lm_object) {
+  
+  # Your code here
+  
+}
+```
+
+**Answer:**
+
+```{r, message=F, warning=F, error=F}
+get_rsq  <- function(y, lm_object) {
+  
+  # Get predicted values
+  y_hat <- predict(lm_object)
+  
+  # Get SSR
+  SSR <- sum((y - y_hat)^2)
+  
+  # Get SST
+  SST <- sum((y - mean(y))^2)
+  
+  # Get R^2
+  R_sq <- 1 - SSR / SST
+  
+  # Return R^2
+  return(R_sq)
+  
+}
+
+get_rsq(y, mod)
+```
+
+##### Question 5.3
+
+If $R^2$ is closer to 1, this is usually considered a better fit. 
+
+1. First, provide an intuitive explanation why $R^2$ is a measure of goodness of fit. For this, it is helpful to consider cases where SSR is small relative to SST, and cases where SSR is large relative to SST. 
+
+    **Answer:** 
+    
+    **SST measures the overall deviation of $Y$ from its sample mean. SSR measures the deviation of the predicted values $\hat{y}_i$ from the actual values. If SSR is small relative to SST, then the difference between the predicted and observed values is small, so our model does well. This will then lead to larger values of $R^2$. If SSR is large relative to SST, then the difference between the predicted and observed values is large, so our model does not do well. This will then lead to smaller values of $R^2$.**
+
+2. Second, please state whether $R^2$ tells us something about the direction of the relationship between $X$ and $Y$.
+
+    **Answer:** 
+
+    **Note that the definition of $R^2$ does not contain $X$. Therefore, $R^2$ does not tell us anything about the direction of the relationship between $X$ and $Y$. It merely tells us whether $X$ is a good predictor of $Y$.**
+
+3. Third, assume we are interested in explaining whether citizens vote for Democrats or Republicans. Many different variables are correlated with voting behavior, such as age, income, gender, race, etc. For many of these variables, we can find a "statistically significant"\footnote{We will cover what this means in more detail later, but I am sure you heard this term before.} relationship with voting behavior. However, the $R^2$ of regressing voting behavior on these variables is usually quite low (e.g. $<0.2$), which indicates that a given $X$ only explains a small part of the variation in $Y$. However, researchers in social science generally do not consider this a problem. Please explain why not.
+
+    **Answer:** 
+
+    **Taken from Gailmard, page 51: "the object of our analysis [...] is typically not to give a complete account of the behavior of $Y$ in a specific sample but rather to identify a set of factors that systematically affect $Y$ and to give reasons behind these effects."**
+
+##### Question 6 (extra credit, 1 point)
+
+A famous question on StackExchange is as follows (with some edits for clarity):
+
+> "Suppose we have data set $(y_i, x_i)$ with $n$ [observations]. We want to perform a linear regression, but first we sort the $x_i$ values and the $y_i$ values independently of each other, forming data set $(y_j, x_j)$ Is there any meaningful interpretation of the regression on the new data set? Does this have a name? 
+
+> I imagine this is a silly question so I apologize, I'm not formally trained in statistics. [...] [M]y manager says he gets "better regressions most of the time" when he does this (here "better" means more predictive). I have a feeling he is deceiving himself."
+
+What would you respond to this? What could one likely reason be why the manager gets more predictive regressions with this method?
+
+**Answer:** 
+
+**This makes no sense at all, and completely destroys the actual relationship between $X$ and $Y$. By sorting both variables independently, the manager creates a meaningless data set where both $X$ and $Y$ become artificially correlated because they are both increasing in value as we go down the list of observations.**
+
+#### 2. Learning from Data I
+
+**Note**: Most of the materials for today's discussion can be referred to [STAT 414: Introduction to Probability Theory.](https://online.stat.psu.edu/stat414/).
+
+a.  Data Generating Process (DGP)
+
+    The contemporary world is full of data and, especially, it is becoming easier and easier to transform it into data. Data analysis is about making good use of data for certain purposes, such as to predict or to make inferences about the world. For these tasks, a first step is to have a sound understanding on how the data was generated, i.e., which processes lead to its creation. The analytical strategy for data analysis will be highly dependent on which processes have generated the data under scrutiny.
+
+    Overall, in the following method sequence classes, we will only consider the type of **probability based (stochastic)** data generation processes. In the probability based DGP, data is generated by a probabilistic process, i.e., each element of the population is selected with a (known) probability to form part of the sample data. One possible way to achieve this is by using a random mechanism when generating the data.
+
+<center>
+
+![Source: [Lumen learning](https://courses.lumenlearning.com/wm-concepts-statistics/chapter/wim-linking-probability-to-statistical-inference/)](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/producing_data_inferences.png){width="80%"}
+
+</center>
+
+Example:
+
+-   Research Question: What percentage of U.S. adults support the death penalty?
+
+-   Steps in Statistical Investigation:
+
+    1.  Produce Data: Determine what to measure, then collect the data. The poll selected 1,082 U.S. adults at random. Each adult answered this question: "Do you favor or oppose the death penalty for a person convicted of murder?"
+
+    2.  Explore the Data: Analyze and summarize the data.In the sample, 65% favored the death penalty.
+
+    3.  Draw a Conclusion: Use the data, probability, and statistical inference to draw a conclusion about the population.
+
+    However, there is a cost that has to be taken into account: by drawing a sample we have not observed all of the individuals in the population. It is necessary, then, to account for the uncertainty implied in the sampling process that generated the data. In addition to the **sampling uncertainty**, there are other sources of uncertainty that would lead us to assume our data is generated by a stochastic DGP: **theoretical and fundamental uncertatinty**.
+
+    Let's consider a scenario where we are not only interested in understanding the percentage of adults who support the death penalty in the U.S. but also whether there is a difference in support based on political affiliation, particularly Republicans. In this case, we have a theoretical framework that focuses on the relationship between a person's political alignment and their stance on the death penalty. However, it's possible that other factors, such as how individuals value a person's life, could also influence their views on the death penalty. Unfortunately, we didn't include these additional factors in our theory, which could potentially impact our data collection. Consequently, the results derived from our sample data might be subject to theoretical uncertainty. Additionally, there is the possibility of fundamental uncertainty within our sample data. This could arise when respondents pay minimal attention to the survey questions and opt for random responses regarding their opinions on the death penalty. Such factors are beyond the control of researchers and can introduce further uncertainty into our findings.
+
+    In summary, statistical inferences always involve an element of uncertainty. As a researcher, our aim is to account for this uncertainty by incorporating probability statements as an integral part of our conclusions in our findings.
+
+b.  Probability Distribution
+
+    How to model stochastic data generating process? Any time we want to answer a research question that involves using a sample to draw a conclusion about some larger population, we need to answer the question "how likely is it that we get a sample proportion of people supporting for the death penalty at 65%?" or "what is the probability of...?". To answer such a question, we need to use probability to quantify the uncertainty of the outcomes of interest.
+
+    Just a reminder, when we employ a probability distribution to model a stochastic DGP, we are essentially playing as the God saying that the data for the variable of interest is generated by this probability distribution. However, in real-life, what we can directly observe is the empirical distribution (or frequency distribution) derived from our available sample data. We make an assumption that this empirical distribution from the sample data reflects the underlying theoretical probability distribution.
+
+    1.  Discrete Random Variables
+
+    -   What is a Random Variable $X$?
+
+        Given a random experiment with sample space $S$, a random variable $X$ is a set function that assigns one and only one real number to each element $s$ that belongs in the sample space $S$. The set of all possible values of the random variable $X$, denoted $x$, is called the support, or space, of $X$. For example:
+
+        A rat is selected at random from a cage of male ($M$) and female rats ($F$). Once selected, the gender of the selected rat is noted. The sample space is thus: $$S = \left \{ M, F \right \}$$
+
+        Let's further define the random variable $X$ as follows:
+
+        -   Let $X = 0$ if the rat is male.
+        -   Let $X = 1$ if the rat is female.
+
+        Note that the random variable $X$ assigns one and only one real number (0 and 1) to each element of the sample space ($M$ and $F$). The support, or space, of $X$ is $\left \{ 0, 1 \right \}$.
+
+        Also note that we don't necessarily need to use the number 0 and 1 as the support. For example, we could have alternatively (and perhaps arbitrarily) used the numbers 5 and 15, respectively. In that case, our random variable would be defined as $X = 5$ of the rate is male, and $X = 15$ of the rate is female.
+
+    -   What is the Probability Mass Function (PMF) of a discrete random variable?
+
+        The probability that a discrete random variable $X$ takes on a particular value $x$, that is, $P(X = x)$, is frequently denoted $f(x)$. The function $f(x)$ is typically called the **probability mass function (PMF)**.
+
+        The probability mass function, $P(X = x) = f(x)$, of a discrete random variable $X$ is a function that satisfies the following properties:
+
+        -   $P(X = x) = f(x) > 0$ if $x \in$ the support $S$
+
+            For every element in the support $S$, all of the probabilities must be positive. Note that if $x$ does not belong in the support $S$, then $f(x) = 0$.
+
+        -   $\sum_{x \in S}^{}f(x)=1$
+
+            If you add up the probabilities for all of the possible $x$ values in the support $S$, then the sum must equal 1.
+
+        -   $P(X \in A) = \sum_{x \in A}^{}f(x)$
+
+            To determine the probability associated with the event $A$, you just sum up the probabilities of the $x$ values in $A$.
+
+        **Exercise 1**:
+
+        I toss a fair four-sided dice, and let $X$ be defined as the outcome on the die I observe, $\left \{ 1, 2, 3, 4 \right \}$. What is the sample space of $X$, the possible outcomes of $X$, as well as its probability mass function $f(x)$?
+
+        We can also plot PMF in R.
+
+        ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=6, fig.height=4}
+        x <- 1:4
+        n <- length(x)
+        fx <- rep(1/4, n)
+        ```
+
+        ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+        plot(x = x, y = fx, pch = 19, 
+            xaxt="n",
+            ylim = c(0, 0.5),
+            xlab = "x",
+            ylab = "f(x)",
+            main = "Probability Mass Function")
+        axis(1, at = seq(min(x), max(x), by = 1))
+        ```
+
+    -   What is the Cumulative Distribution Function (CDF) of a discrete random variable?
+
+        The cumulative distribution function (CDF) of the discrete random variable $X$ has the following definition:
+
+        $$F(x) = P(X \leq x) = \sum_{a \leq x}^{}f(a)$$
+
+        in which $F(x)$ is a non-decreasing *step* function.
+
+        We can also plot CDF in R. Let's plot the CDF of the Exercise 1.
+
+        ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=6, fig.height=4}
+        x <- 1:4
+        n <- length(x)
+        fx <- rep(1/4, n)
+        Fx <- cumsum(fx)
+        ```
+
+        ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+        ## Let's make an empty plot
+        plot(x = NA, y = NA, pch = NA, 
+            xaxt="n",
+            xlim = c(min(x), max(x)),
+            ylim = c(0, 1),
+            xlab = "x",
+            ylab = "F(x)",
+            main = "Cumulative Distribution Function")
+        axis(1, at = seq(min(x), max(x), by = 1))
+            
+        ## Add closed circles, open circles, and finally the horizontal lines
+        points(x = x, y = Fx, pch = 19) ## closed circles
+        points(x = x[-1], y = Fx[-n], pch = 1) ## open circles
+        for(i in 1:(n-1)) {
+          points(x = x[i+0:1], 
+                 y = Fx[c(i,i)], 
+                 type = "l")
+         }
+        ```
+
+        **Exercise 2**:
+
+        Suppose $X$ is a discrete random variable. Let the PMF of $X$ be equal to:
+
+        $$f(x) = \frac{5-x}{10}, x = 1, 2, 3, 4. $$
+
+        The CDF of $X$ is $F(x) = P(X \leq x) = \sum_{a \leq x}^{}f(a)$.
+
+        **2.1** What is the cumulative probability when $X \leq 2$?
+
+        **2.2** Is $P(X \leq 2)$ equal to $P(X = 2)$?
+
+    2.  Continuous Random Variables
+
+        A continuous random variable takes on an uncountably infinite number of possible values. For a discrete random variable $X$ that takes on a finite or countably infinite number of possible values, we determined $P(X=x)$ for all of the possible values of $X$, and called it the probability mass function (PMF).
+
+        For continuous random variables, the probability that $X$ takes on any particular value $x$ is 0. That is, finding $P(X=x)$ for a continuous random variable $X$ is not going to work. Instead, we'll need to find the probability that $X$ falls in some interval $(a, b)$, that is, we'll need to find $P(a<X<b)$. We'll do that using a **probability density function (PDF)**.
+
+    -   What is the Probability Density Function (PDF) of a continuous random variable?
+
+        The probability density function of a continous random variable $X$ with support $S$ is an integrable function $f(x)$ satisfying the following:
+
+        1.  $f(x)$ is positive everywhere in the support $S$, that is, $f(x)>0$, for all $x$ in $S$.
+
+        2.  The area under the curve f(x) in the support $S$ is 1, that is:
+
+            $$\int_{S}^{}f(x)dx=1$$
+
+        3.  If $f(x)$ is the PDF of $x$, then the probability that $X$ belongs to $A$, where $A$ is some interval, is given by the integral of $f(x)$ over that interval, that is:
+
+            $$P(X \in A) = \int_{A}^{}f(x)dx$$
+
+        As you can see, the definition for the PDF of a continuous random variable differs from the definition for the PMF of a discrete random variable by simply changing the summations that appeared in the discrete case to integrals in the continuous case.
+
+        **Exercise 3**:
+
+        Let $X$ be a continuous random variable whose PDF is:
+
+        $f(x) = 3x^2$, $0<x<1$
+
+        First, note again that $f(x) \neq P(X=x)$. For example, $f(0.9)=3(0.9)^{2}=2.43$, which is clearly not a probability! In the continuous case, $f(x)$ is instead the height of the curve at $X=x$, so that the total area under the curve is 1. In the continuous case, it is areas under the curves that define the probabilities.
+
+        Now let's first start by verifying that $f(x)$ is a valid probability density function.
+
+        -   $f(x) > 0$ at any value of $x$.
+
+        -   $\int_{0}^{1}3x^2dx=x^3 |_{x=0}^{x=1}=1^3-0^3=1$
+
+        **3.1** What is the probability that $X$ falls between $\frac{1}{2}$ and 1? That is, what is $P(\frac{1}{2}<X<1)$?
+
+        **3.2** Please use integration to show that $P(X=\frac{1}{2})=0$.
+
+        **Exercise 4**:
+
+        Let $X$ be a continuous random variable whose probability density function is:
+
+        $$f(x) = \frac{x^3}{4}$$
+
+        for any interval $0<x<c$. What is the value of the constant $c$ that makes $f(x)$ a valid probability density function?
+
+    -   What is the Cumulative Distribution Function (CDF) of a continuous random variable?
+
+        You might recall that the cumulative distribution function is defined for discrete random variables as:
+
+        $$F(x) = P(X \leq x) = \sum_{a \leq x}^{}f(a)$$
+
+        Again, $F(x)$ accumulates all of the probability less than or equal to $x$.The cumulative distribution function for continuous random variables is just a straightforward extension of that of the discrete case. All we need to do is replace the summation with an integral.
+
+        The cumulative distribution function of a continuous random variable $X$ is defined as:
+
+        $$F(x) = P(X \leq x) = \int_{a \leq x}^{}f(a)da$$
+
+        Recall that for discrete random variables, $F(x)$ is in general a non-decreasing *step* function. For continuous random variables, $F(x)$ is a non-decreasing *continuous* function.
+
+        **Exercise 5**:
+
+        Let's return to the example in which $X$ has the following probability density function:
+
+        $f(x) = 3x^2$, $0<x<1$
+
+        What is the cumulative distribution function $F(x)$?
+
+c.  Multivariate Probability Distributions
+
+    Now we know the probability distribution of both discrete and continuous random variables, respectively. Let's extend the concept of a probability distribution of one random variable $X$ to a joint probability distribution of two discrete random variables $X$ and $Y$. For example, suppose $X$ denotes the number of significant others a randomly selected person has, and $Y$ denotes the number of arguments the person has each week. We might want to know if there is a relationship between $X$ and $Y$. Or, we might want to know the probability that $X$ takes on a particular value $x$ and $Y$ takes on a particular value $y$. That is, we might want to know $P(X=x, Y=y)$.
+
+    Suppose we toss a pair of fair, four-sided dice, in which one the dice is red and the other is black. We'll let:
+
+    -   $X$ = the outcome on the red die = $\left \{ 1, 2, 3, 4 \right \}$
+    -   $Y$ = the outcome on the black die = $\left \{ 1, 2, 3, 4 \right \}$
+
+    What is the support of $f(x, y)$? What is the probability that $X$ takes on a particular value $x$, and $Y$ takes on a particular value $y$? That is, what is $P(X=x, Y=y)$? Please calculate the probability for each cell in the table below. Note that columns represent the outcomes of the black die, whereas rows represent the outcomes of the red die.
+
+    | $f(x,y)$ | $Y=1$ | $Y=2$ | $Y=3$ | $Y=4$ | $f_X(x)$ |
+    |----------|-------|-------|-------|-------|----------|
+    | $X=1$    |       |       |       |       |          |
+    | $X=2$    |       |       |       |       |          |
+    | $X=3$    |       |       |       |       |          |
+    | $X=4$    |       |       |       |       |          |
+    | $f_Y(y)$ |       |       |       |       |          |
+
+    Now that we've found our first joint probability mass function, let's formally define it now.
+
+    Let $X$ and $Y$ be two discrete random variables, and let $S$ denote the two-dimensional support of $X$ and $Y$. Then, the function $f(x, y) = P(X=x, Y=y)$ is a joint probability mass function if it satisfies the following three conditions:
+
+    1.  $0 \leq f(x, y) \leq 1$
+
+        Each probability must be a valid probability number between 0 and 1 (inclusive).
+
+    2.  $\sum_{}^{}\sum_{(x, y) \in S}^{}f(x, y)=1$
+
+        The sum of the probabilities over the entire support $S$ must equal 1.
+
+    3.  $P[(X, Y)\in A]=\sum_{}^{}\sum_{(x, y)\in A}^{}f(x, y)$ where $A$ is a subset of $S$
+
+        In order to determine the probability of an event $A$, you simply sum up the probabilities of the $(x, y)$ values in $A$.
+
+d.  Marginal Distribution
+
+    Now, if you take a look back at the representation of our joint p.m.f. in tabular form, you can see that the last column contains the probability mass function of $X$ alone, and the last row contains the probability mass function of $Y$ alone. Those two functions, $f(x)$ and $f(y)$, which in this setting are typically referred to as **marginal probability mass functions**, are obtained by simply summing the probabilities over the support of the other variable. That is, to find the probability mass function of $X$, we sum, for each $x$, the probabilities when \$y=1, 2, 3, \$ and $4$. That is, for each $x$, we sum $f(x, 1)$, $f(x, 2)$, $f(x, 3)$, and $f(x, 4)$. Now that we've seen the two marginal probability mass functions in our example, let's give a formal definition of a marginal probability mass function.
+
+    Let $X$ be a discrete random variable with support $S_1$, and let $Y$ be a discrete random variable with support $S_2$, Let $X$ and $Y$ have the joint probability mass function $f(x, y)$ with support $S$. Then, the probability mass function of $X$ alone, which is called the marginal probability mass function of $X$, is defined by:
+
+    $$f_X(x)=\sum{y}{}f(x, y)=P(X=x)$$ $$x \in S_1$$
+
+    where, for each $x$ in the support $S_1$, the summation is taken over all possible values of $y$. Similarly, the probability mass function of $Y$ alone, which is called the marginal probability mass function of $Y$, is defined by:
+
+    $$f_Y(y)=\sum{x}{}f(x, y)=P(Y=y)$$ $$x \in S_2$$
+
+    where, for each $y$ in the support $S_2$, the summation is taken over all possible values of $x$.
+
+    If you again take a look back at the representation of our joint p.m.f. in tabular form, you might notice that the following holds true:
+
+    $$P(X=x, Y=y) = \frac{1}{16} = P(X=x) \cdot P(Y=y) = \frac{1}{4} \cdot \frac{1}{4} = \frac{1}{16}$$
+
+    for all $x \in S_1$, $y \in S_2$. When this happens, we say that $X$ and $Y$ are independent. A formal definition of the independence of two random variables $X$ and $Y$ follows.
+
+    The random variables $X$ and $Y$ are independent if and only if:
+
+    $$P(X=x, Y=y) = P(X=x) \times P(Y=y)$$
+
+    for all $x \in S_1$, $y \in S_2$. Otherwise, $X$ and $Y$ are said to be dependent.
+
+    **Exercise 6**:
+
+    Please find the marginal distributions of $X$ and $Y$, respectively.
+
+    |$f(x, y)$ | $X=0$  | $X=1$  | $X=2$ | $f_Y(y)$ |
+    |----------|--------|--------|-------|----------|
+    | $Y=1$    | $0.1$  | $0.2$  | $0.3$ |          |
+    | $Y=2$    | $0.05$ | $0.15$ | $0.2$ |          |
+    | $f_X(x)$ |        |        |       |          |
+
+    Is $X$ and $Y$ independent from each other or not?
+
+e.  Conditional Distribution
+
+    Marginal distributions tell us the distribution of a particular variable ignoring the other variable(s). In contrast, the conditional distribution of $X$ given $Y$ gives you a distribution over $X$ when holding $Y$ fixed at specific values. Formally:
+
+    $$f_{X|Y}(x|y)=\frac{f(x, y)}{f_Y(y)}$$
+
+    The conditional distribution of $Y$ given $X$ is defined by:
+
+    $$f_{Y|X}(y|x)=\frac{f(x, y)}{f_X(x)}$$
+
+    Recall the example we had for joint distribution.
+
+    | $f(x,y)$ | $Y=1$          | $Y=2$          | $Y=3$          | $Y=4$          | $f_X(x)$       |
+    |------------|------------|------------|------------|------------|------------|
+    | $X=1$    | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{4}{16}$ | $\frac{4}{16}$ |
+    | $X=2$    | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{4}{16}$ |
+    | $X=3$    | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{4}{16}$ |
+    | $X=4$    | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{4}{16}$ |
+    | $f_Y(y)$ | $\frac{4}{16}$ | $\frac{4}{16}$ | $\frac{4}{16}$ | $\frac{4}{16}$ | $1$            |
+
+    What is the conditional distribution of $Y$ given $X=2$?
+
+    When $Y=1$: $f_{Y|X}(y|x=2)=\frac{f(x, y)}{f_X(x=2)}=\frac{\frac{1}{16}}{\frac{4}{16}}=\frac{1}{4}$
+
+    When $Y=2$: $f_{Y|X}(y|x=2)=\frac{f(x, y)}{f_X(x=2)}=\frac{\frac{1}{16}}{\frac{4}{16}}=\frac{1}{4}$
+
+    When $Y=3$: $f_{Y|X}(y|x=2)=\frac{f(x, y)}{f_X(x=2)}=\frac{\frac{1}{16}}{\frac{4}{16}}=\frac{1}{4}$
+
+    When $Y=4$: $f_{Y|X}(y|x=2)=\frac{f(x, y)}{f_X(x=2)}=\frac{\frac{1}{16}}{\frac{4}{16}}=\frac{1}{4}$
+
+    So,
+
+    $f_{Y|X}(y|x=2)= \frac{1}{4} if y = 1, 2, 3, 4$
+
+    We will get the same answers for the conditional probability of $Y$ given $X=1$, $X=3$, or $X=4$.
+
+    From this example of finding the conditional probability of $Y$ given $X=2$, we again find that $X$ and $Y$ are independent from each other, as the distribution over $Y$ does not change as $Y$ changes. That is,
+
+    $$f(x, y) = f_X(x)\cdot f_Y(y) \Rightarrow f_{X|Y}{x|y} = f_X(x) and f_{Y|X}{y|x} = f_Y(y)$$
+
+    **Exercise 7**:
+
+    Find the conditional distribution of $X$ given $Y=2$.
+
+    |$f(x, y)$ | $X=0$  | $X=1$  | $X=2$ | $f_Y(y)$ |
+    |----------|--------|--------|-------|----------|
+    | $Y=1$    | $0.1$  | $0.2$  | $0.3$ | $0.6$    |
+    | $Y=2$    | $0.05$ | $0.15$ | $0.2$ | $0.4$    |
+    | $f_X(x)$ | $0.15$ | $0.35$ | $0.5$ | $1$      |
+
+f.  Central Tendency of Probability Distributions
+
+    The expected value, or mathematical expectation, of a discrete random variable $X$ is:
+
+    $$E(X)=\sum_{x\in X}{}xf(x)$$
+
+    where $x$ is the possible outcomes of the discrete random variable $X$, and $f(x)$ is the probability mass function of $X$.
+
+    For example, what is the average toss of a fair six-sided die?
+
+    If the random variable $X$ is the top face of a tossed, fair, six-sided die, then the PMF of $X$ is:
+
+    $$f(x) = \frac{1}{6}$$
+
+    for $x = 1, 2, 3, 4, 5,$ and $6$. Therefore, the average toss, that is the expected value of $X$, is:
+
+    $$E(X) = 1(\frac{1}{6}) + 2(\frac{1}{6}) + 3(\frac{1}{6}) + 4(\frac{1}{6}) + 5(\frac{1}{6}) + 6(\frac{1}{6}) = 3.5$$
+
+    Hmm... if we toss a fair, six-sided die once, should we expect the toss to be 3.5? No, of course not! All the expected value tells us is what we would expect the average of a large number of tosses to be **in the long run**. If we toss a fair, six-sided die a thousand times, say, and calculate the average of the tosses, will the average of the 1000 tosses be exactly 3.5? No, probably not! But, we can certainly expect it to be close to 3.5. It is important to keep in mind that the expected value of is a theoretical average, not an actual, realized one! Let's run a simulation to observe this more directly.
+
+    ```{r, message=F, warning=F, error=F}
+    x <- 1:6
+
+    s1 <- sample(x, replace = TRUE, size = 100)
+    mean(s1)
+    ```
+
+    ```{r, message=F, warning=F, error=F}
+    s2 <- sample(x, replace = TRUE, size = 1000)
+    mean(s2)
+    ```
+
+    ```{r, message=F, warning=F, error=F}
+    s3 <- sample(x, replace = TRUE, size = 10000)
+    mean(s3)
+    ```
+
+    Expectations have some nice properties:
+
+    1.  The expected value of a constant $a$ is that constant: $E(a) = a$.
+
+    2.  The expected value of a constant $b$ times a random variable $X$ is that constant times the expected value of $X$: $E(bX) = bE(X)$.
+
+    3.  Given two random variables, $X$ and $Y$, $E(X+Y) = E(X) + E(Y)$.
+
+    4.  $E(X)$ always falls between the minimum and maximum values that $X$ can take: $min X \leq E(X) \leq max X$.
+
+    **Exercise 8**:
+
+    Suppose the PMF of the discrete random variable $X$ is:
+
+    | $x$    | $0$   | $1$   | $2$   | $3$   |
+    |--------|-------|-------|-------|-------|
+    | $f(x)$ | $0.2$ | $0.1$ | $0.4$ | $0.3$ |
+    
+    8.1 What is the expected value of $X$, that is, $E(X)$? 
+    
+    8.2 Suppose that there is another discrete random variable $Y$, and the expected value of $Y$ is $3.2$, that is, $E(Y) = 3.2$. What is the expected value of $2X+3Y$, that is, $E(2X+3Y)$?
+    
+    **Exercise 9**:
+    
+    9.1 Find the expected values of the random variables from their marginal distributions.
+    
+    9.2 Find the expected value of $X$ given $Y=2$. 
+    
+  
+    |$f(x, y)$ | $X=0$  | $X=1$  | $X=2$ | $f_Y(y)$ |
+    |----------|--------|--------|-------|----------|
+    | $Y=1$    | $0.1$  | $0.2$  | $0.3$ | $0.6$    |
+    | $Y=2$    | $0.05$ | $0.15$ | $0.2$ | $0.4$    |
+    | $f_X(x)$ | $0.15$ | $0.35$ | $0.5$ | $1$      |
+    
+    All these nice properties can also be applied to a continuous random variable. The expected value of a continuous random variable is:
+    
+    $$\int_{x\in X}{}xf(x)dx$$
+    
+    Let's use an example to practice. Let the random variable $X$ denote the time a person waits for an elevator to arrive. Suppose the longest one would need to wait for the elevator is 2 minutes, so that the possible values of $X$ (in minutes) are given by the interval $[0,2]$. A possible PDF for $X$ is given by:
+    
+    $$f(x) = \begin{cases} x, & \text{for } 0 < x \leq 1\\ 2-x, & \text{for } 1 < x \leq 2 \\ 0, & \text{otherwise }  \end{cases} $$ 
+      What is the expected value of $X$?
+      
+      $$E(X) = \int_{0}^{1}x\cdot xdx + \int_{1}^{2}x\cdot(2-x)dx = \int_{0}^{1}x^2dx + \int_{1}^{2}(2x-x^2)dx = \frac{1}{3} + \frac{2}{3} = 1$$
+      
+      Thus, we expect a person will wait 1 minute for the elevator on average.
+      
+
+g.  Dispersion of Probability Distributions
+
+    The variance of a random variable $X$ is:
+    
+    $$ Var(X) = E((X-E(X))^2) = E(X^2) - E(X)^2$$
+    
+    The formulat can be applied to both discrete and continuous random variables.
+    
+    
+    The variance of a random variable also has nice properties:
+    
+    1. The variance of a constant $a$ is $0$: $Var(a) = 0$.
+    
+    2. $Var(X)$ is always weakly positive: $Var(X) \geq 0$.
+    
+    3. The variance of a constant $b$ times a random variable $X$ is that constant squared times the variance of $X$: $Var(bX) = b^2 Var(X)$.
+    
+    4. If $X$ and $Y$ are stochastically independent, then $Var(X+Y) = Var(X) + Var(Y)$.
+    
+    
+    **Exercise 10**:
+    
+    10.1 What is the variance of $X$?
+    10.2 What is Var(2X)?
+    
+    | $x$    | $0$   | $1$   | $2$   | $3$   |
+    |--------|-------|-------|-------|-------|
+    | $f(x)$ | $0.2$ | $0.1$ | $0.4$ | $0.3$ |
+    
+    
+    **Exercise 11**:
+    
+    Recall the elevator question, please compute the variance of $X$.
+    
+    $$f(x) = \begin{cases} x, & \text{for } 0 < x \leq 1\\ 2-x, & \text{for } 1 < x \leq 2 \\ 0, & \text{otherwise }  \end{cases} $$
