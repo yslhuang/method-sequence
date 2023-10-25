@@ -2588,7 +2588,8 @@ g.  Dispersion of Probability Distributions
     **Exercise 10**:
     
     10.1 What is the variance of $X$?
-    10.2 What is Var(2X)?
+    
+    10.2 What is $Var(2X)$?
     
     | $x$    | $0$   | $1$   | $2$   | $3$   |
     |--------|-------|-------|-------|-------|
