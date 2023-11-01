@@ -14,13 +14,13 @@ knitr::opts_chunk$set(echo = TRUE,
 options(width = 80)
 ```
 
-##  {.tabset}
+#  {.tabset}
 
-### Discussion I
+## Discussion I
 
 For today's discussion, we'll first introduce **LaTeX** and **R Markdown**, which are two very useful typesetting systems for you to generate neat documents for your problem sets and research projects. The second part of discussion will review some basic R skills when exploring a new dataset.
 
-#### 1. LaTeX
+### 1. LaTeX
 
 LaTeX is a high-quality typesetting system; it includes features designed for the production of technical and scientific documentation. LaTeX is the de facto standard for the communication and publication of scientific documents.
 
@@ -35,7 +35,7 @@ If you prefer not to download the LaTeX compiler and editor to your laptop, you 
 
 Here is an [Overleaf template](https://www.overleaf.com/read/cddmfsytsxrz) for POL 211 Problem Set I. Please feel free to copy it to your future work!
 
-#### 2. R Markdown
+### 2. R Markdown
 
 Another way to submit both your answers and R code with only one pdf document is by using **R Markdown**.
 
@@ -55,11 +55,11 @@ For the following topic on exploring a new dataset using R, all the materials wi
 
 -   A R Markdown template for Problem Set I can be downloaded from Canvas-Files.
 
-#### 3. Exploring a New Dataset using R (Part I)
+### 3. Exploring a New Dataset using R (Part I)
 
 Note: All these R codes are prepared by Prof. Ryan Hubert.
 
-##### a. Load R packages
+#### a. Load R packages
 
 There are many useful packages in R that can be installed freely. If it is the first time you are going to use a package, here are the steps:
 
@@ -96,7 +96,7 @@ The core packages within the `tidyverse` are:
 
 Highly recommend this [data wrangling cheat sheet](https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf) with `dplyr` and `tidyr` in R!
 
-##### b. Import data
+#### b. Import data
 
 For today, we are using `USDC-DATASET-JOP.csv`. You can download this csv file from Canvas or from [here](https://dataverse.harvard.edu/file.xhtml?fileId=4306747&version=1.0.).
 
@@ -126,7 +126,7 @@ If you import the data successfully, you should be able to see df popping up in 
 
 Sometimes the dataset we are interested in may be stored in a different form, such as `dta`, `spss`, `xlsx`, `rds`, `rdata`, etc. You can find the corresponded codes from [here](https://www.datafiles.samhsa.gov/get-help/format-specific-issues/how-do-i-read-data-r).
 
-##### c. Basic information about the dataset
+#### c. Basic information about the dataset
 
 What is the size of the dataset?
 
@@ -165,7 +165,7 @@ One convenient thing is that you can see the type of each variable.[Here](https:
 
 If you want to look at the whole dataset, use `View(df)` command and it will open in a new tab in R.
 
-##### d. Exploring the variables
+#### d. Exploring the variables
 
 Most people prefer to look at variables using their names.
 
@@ -225,7 +225,7 @@ df$OUTCOME <- as.factor(df$OUTCOME)
 summary(df$OUTCOME)
 ```
 
-##### e. Exploring the observations
+#### e. Exploring the observations
 
 Each row (observation) in this dataset is a court case. We can also use R to look at an arbitrary one.
 
@@ -276,7 +276,7 @@ The reason why we need to add quotation mark when setting the condition in the `
 df %>% filter(jrepublican == 1)
 ```
 
-##### f. Some measurement issues
+#### f. Some measurement issues
 
 What kinds of variable do we have?
 
@@ -369,7 +369,7 @@ ncol(df)
 
 You can find that the number of columns increased to 88 from 54 after creating 34 dummies.
 
-##### g. The rank of a matrix
+#### g. The rank of a matrix
 
 The rank of a dataset is the number of "linearly independent" variables.
 
@@ -395,13 +395,13 @@ rankMatrix(as.matrix(df2))
 
 There are 3 variables in df2, but there are only 2 linearly independent variables since the generation of var2 is based on var1.
 
-### Discussion II
+## Discussion II
 
 For today's discussion, we'll first briefly go over the solution keys to Problem Set 1 and then continue our materials for exploring a new dataset using R.
 
-#### 1. Solution Keys to Problem Set 1
+### 1. Solution Keys to Problem Set 1
 
-##### Question 1 (4 points)
+#### Question 1 (4 points)
 
 Load the `dbj.csv` file.
 
@@ -466,7 +466,7 @@ Load the `dbj.csv` file.
     mean(dbj_with_children$has_female_children)
     ```
 
-##### Question 2 (4 points)
+#### Question 2 (4 points)
 
 Our outcome in this exercise will be the proportion of pro-feminist decisions, `progressive.vote`.
 
@@ -518,7 +518,7 @@ ggplot(data = dbj, aes(x = group, y = progressive.vote)) +
   theme_bw() 
 ```
 
-##### Question 3 (2 points)
+#### Question 3 (2 points)
 
 From before, we have a new binary variable which takes a value of `1` if a judge has *at least* one child (that is, any children at all), and `0` otherwise.
 
@@ -573,7 +573,7 @@ Use this variable to answer the following questions.
       theme_bw()
     ```
 
-##### Question 4 (2 points)
+#### Question 4 (2 points)
 
 Please evaluate the following statements. For each statement, indicate whether you believe the statement makes sense or not. If it does not, please provide a short motivation.
 
@@ -589,9 +589,9 @@ Please evaluate the following statements. For each statement, indicate whether y
 
     **Answer: This does not make sense. Since judges can only be appointed by Republican or Democratic presidents, having a single binary variable (`republican`) is sufficient.**
 
-##### Additional question (required for students in the methods subfield)
+#### Additional question (required for students in the methods subfield)
 
-##### Question 5 (3 points)
+#### Question 5 (3 points)
 
 What is the difference in the proportion of pro-feminist decisions between judges who have at least one daughter and those who do not have any? Compute this difference in two ways; (1) using any judge who has children, (2) separately for judges that have one, two, or three children. For (2), you should end with three estimates: one for the judges with one child, one for the judges with two children, and one for the judges with three children (HINT: you will subset the data quite a few times to achieve this).
 
@@ -637,7 +637,7 @@ What is the difference in the proportion of pro-feminist decisions between judge
              col.names = c("Has no. Children", "Difference"))
     ```
 
-#### 2. Exploring a New Dataset using R (Part II)
+### 2. Exploring a New Dataset using R (Part II)
 
 For today, we are using `USDC-DATASET-JOP.csv`. You can download this csv file from Canvas or from [here](https://dataverse.harvard.edu/file.xhtml?fileId=4306747&version=1.0.)
 
@@ -649,7 +649,7 @@ library(tidyverse)
 df <- read_csv("/Users/yu-shiuanhuang/Desktop/method-sequence/data/USDC-DATASET-JOP.csv") 
 ```
 
-##### a. Summary Statistics
+#### a. Summary Statistics
 
 In the following, we will compute summary statistics for the univariate distribution of the variable that quantifies the number of defendants named in each court case (it's named `def_count`).
 
@@ -859,7 +859,7 @@ sum_two_nums(pi, 5)
     
     ```
 
-##### b. Plot distribution (histograms)
+#### b. Plot distribution (histograms)
 
 To better observe the distribution of a variable, plot histograms! Histograms visualize quantitative data or numerical data (cardinal variables).
 
@@ -978,13 +978,13 @@ ggplot(df) +
   theme(panel.grid.minor = element_blank())
 ```
 
-### Discussion III
+## Discussion III
 
 For today's discussion, we'll begin by reviewing the solution keys for Problem Set 2. Afterward, we'll delve into the topic of exploring relationships in data. We will learn how to use R to visualize relationships between two variables, whether they are categorical or numerical. Additionally, we will explore statistics that help us formally describe these relationships.
 
-#### 1. Solution Keys to Problem Set 2
+### 1. Solution Keys to Problem Set 2
 
-##### Question 1 (2 points)
+#### Question 1 (2 points)
 
 Creating descriptive statistics is a key part of any research project. We will work with data compiled by Raj Chetty and coauthors. The paper is here: https://www.nber.org/papers/w23618. Alternatively, you can also read a summary report here: https://opportunityinsights.org/wp-content/uploads/2018/03/coll_mrc_summary.pdf). The purpose of this data is measure the role of colleges in facilitating upward (economic) mobility.
 
@@ -1001,7 +1001,7 @@ Creating descriptive statistics is a key part of any research project. We will w
     **Descriptive and measurement. The study does not answer the question of whether some characteristic of colleges causes some colleges to be more successful than others. The abstract actually states that "Although our descriptive analysis does not identify colleges' causal effects on students' outcomes, the publicly available statistics constructed here highlight colleges that deserve further study as potential engines of upward mobility."**
     
     
-##### Question 2 (4 points)
+#### Question 2 (4 points)
 
 The next questions focus on the variables `par_median` and `mr_kq5_pq1`, which are the median income of parents of students at a given college and its mobility rate, respectively.
 
@@ -1111,7 +1111,7 @@ p1 <- ggplot(df, aes(par_median)) +
     ggpubr::ggarrange(p1, p2, ncol = 2, nrow = 1)
     ```
 
-##### Question 3 (2 points)
+#### Question 3 (2 points)
 
 As in the previous problem set, evaluate the following statements, and provide explanations if you think the statements do not make sense. Short responses are sufficient. You do not need to calculate anything.
 
@@ -1147,7 +1147,7 @@ As in the previous problem set, evaluate the following statements, and provide e
     
     **This is correct.**
     
-##### Question 4 (4 points)
+#### Question 4 (4 points)
 
 An important concept in R are functions. A function in R is similar to a function takes one more arguments, and then returns the desired output.\footnote{You can learn more about functions at https://r4ds.hadley.nz/functions.html or in chapter 3 of this course: https://www.datacamp.com/courses/intermediate-r} The syntax for functions is as follows:
 
@@ -1217,11 +1217,11 @@ my_sd(df$sat_avg_2013)
 sd(df$sat_avg_2013, na.rm = T)
 ```
 
-##### Additional question (required for students in the methods subfield)
+#### Additional question (required for students in the methods subfield)
 
 **Note:** You may encounter R commands that you have not seen before. A good source for learning more about these commands is the book "R for Data Science" by Wickham et al, which you can access here https://r4ds.hadley.nz/
 
-##### Question 5
+#### Question 5
 
 1. Using a for loop, calculate the mean and standard deviation of the following variables in the Chetty data: `sat_avg_2013`, `par_median`, `par_top1pc`. The result should be a data frame with 3 columns: `variable`, `mean` and `sd`, and three rows, one for each variable.
 
@@ -1423,7 +1423,7 @@ The standard deviation measures dispersion of the data. However, we can also cre
       xlab("State")
     ```
 
-#### 2. Relationships in Data
+### 2. Relationships in Data
 
 When we want to describe the relationship between two sets of data, we can plot the data sets in a scatter plot and look at four characteristics:
 
@@ -1434,7 +1434,7 @@ When we want to describe the relationship between two sets of data, we can plot 
 
 Today, our focus will be on the first three characteristics. We will delve into covariance, the correlation coefficient, and linear regression. These are three fundamental statistics that allow us to describe the relationships between the variables of interest.
 
-##### a. Visualizing Relationships -- Scatter Plot
+#### a. Visualizing Relationships -- Scatter Plot
 
 For today, we are using `Covid19.csv`. You can download this csv file from Canvas or from [here](https://drive.google.com/file/d/1CTjNdylGuBT5gMVgvNFla9YhuEhq_Yt7/view?usp=sharing).
 
@@ -1521,7 +1521,7 @@ p2 <- ggplot(cf[samp,], aes(x = dem16vs, y = mask_always)) +
 ggpubr::ggarrange(p1, p2, ncol = 2, nrow = 1)
 ```
 
-##### b. Visualizing Relationships -- Crosstab/Contingency Table
+#### b. Visualizing Relationships -- Crosstab/Contingency Table
 
 A crosstab or contingency table is also a way to observe the relationship between two variables.
 
@@ -1598,7 +1598,7 @@ First, let's create some new variables.
       theme_bw()
     ```
 
-##### c. Covariance, Correlation Coefficient, Linear Regression
+#### c. Covariance, Correlation Coefficient, Linear Regression
 
 In addition to visualizing data using scatter plots or contingency tables to grasp relationships, how can we employ statistical measures to describe these relationships more formally?
 
@@ -1690,7 +1690,7 @@ In addition to visualizing data using scatter plots or contingency tables to gra
     stargazer::stargazer(reg, type = "text", digits = 4)
     ```
 
-##### d. Practice
+#### d. Practice
 
 Now that you know how to use covariance, correlation coefficients, and linear regression to describe relationships in data, let's apply what you've learned to the `Covid19.csv` dataset to compute the covariance, correlation coefficient, and regression line between `dem16vs` and `mask_always`.
 
@@ -1742,18 +1742,18 @@ Now that you know how to use covariance, correlation coefficients, and linear re
       theme_bw()
     ```
     
-### Discussion IV
+## Discussion IV
 
 In today's discussion, we'll start by reviewing the solutions to Problem Set 3. Afterward, we'll dive into the first part of "Learning from Data." During this session, we'll revisit the fundamental concept of the data generating process and underscore the significance of understanding probability theory as a foundational step in data analysis. Furthermore, we'll practice computing joint, marginal, and conditional distributions, and develop skills for summarizing central tendency and dispersion within these distributions.
 
 
-#### 1. Solution Keys to Problem Set 3
+### 1. Solution Keys to Problem Set 3
 
-##### Question 1 (3 points)
+#### Question 1 (3 points)
 
 Each subquestion in this question assumes new "data", i.e. the quantities listed in (1) are irrelevant for (2), and so on.
 
-##### Question 1.1
+#### Question 1.1
 
 Below, you will find a table with values for variables $X$ and $Y$. The mean of $X$ is 1, and the mean of $Y$ is 3. 
 
@@ -1776,7 +1776,7 @@ Without using R, calculate the sample covariance between $X$ and $Y$. Note that 
 
 **The covariance suggests a negative relationship between $X$ and $Y$.**
 
-##### Question 1.2
+#### Question 1.2
 
 Next, assume you have two other variables $X$ and $Y$. A colleague tells you that the covariance between $X$ and $Y$ is 2, the variance of $X$ is 9, and the variance of $Y$ is 16. Your colleage argues that the covariance of 2 implies a strong relationship between $X$ and $Y$. Please state if you do or do not agree with your colleague, and explain why. If you do not agree, calculate an alternative measure of the relationship between $X$ and $Y$, which may be more informative.
 
@@ -1784,7 +1784,7 @@ Next, assume you have two other variables $X$ and $Y$. A colleague tells you tha
 
 **Incorrect. The covariance is sensitive to the scale of the variables. Instead, we can calculate the scale-invariant correlation coefficient, which is defined as $r_{XY} = \frac{Cov(X,Y)}{\sqrt{Var(X)} \sqrt{Var(Y)}}$. In this case, $r_{XY} = \frac{2}{3\times4} = \frac{2}{12} = \frac{1}{6}$.**
 
-##### Question 1.3
+#### Question 1.3
  
 Assume you run a least squares regression the regresses one variable $Y$ on another variable $X$ and this results in predicted values $\hat{y}_i$, while the observed values are denoted by $y_i$. Which of the following statements is true / not true? Please include a brief explanation for each statement.
 
@@ -1802,7 +1802,7 @@ b. The intercept $\alpha$ tells us about the value of the dependent variable $Y$
     **False. The intercept $\alpha$ is the value of $Y$ when $x_i=0$.**
 
 
-##### Question 2 (3 points)
+#### Question 2 (3 points)
 
 This question is similar to the previous one, but uses R. 
 
@@ -1858,13 +1858,13 @@ cov(x, y)
 cor(x, y)
 ```
 
-##### Question 3 (4 points)
+#### Question 3 (4 points)
 
 We will use the Chetty data from the last problem set again.\footnote{The paper is [here](https://www.nber.org/papers/w23618).}  A policymaker is interested in the relationship between mobility rates and price of attendance for public universities in California, Oregon and Washington.
 
 First, you will need to transform the data, which means (i) subsetting the data set to California, Oregon and Washington and (ii) subsetting the data set to public universities within these states. Next, transform the variable `sticker_price_2013` into a variable that measures the price of attendance in 2013 in thousands of dollars. Then, transform the variable `mr_kq5_pq1` into a variable that measures the mobility rate in percentage points, rather than on a 0--1 scale.
 
-##### Question 3.1
+#### Question 3.1
 
 Create a scatter plot of the relationship between mobility rates (`mr_kq5_pq1`) and price of attendance (`sticker_price_2013`). For a definition of mobility rates, see here: https://opportunityinsights.org/wp-content/uploads/2018/03/coll\_mrc\_summary.pdf
 
@@ -1893,7 +1893,7 @@ ggplot(df_west, aes(x = sticker_price_2013, y = mr_kq5_pq1)) +
     theme_bw()
 ```
 
-##### Question 3.2
+#### Question 3.2
 
 Run a linear regression using the `lm` command, where the outcome is mobility rates and the predictor is price of attendance. You should use the same data set as before, i.e. public universities in WA, CA and OR. Interpret the intercept and slope of the regression. You do not have to interpret standard errors or p-values.
 
@@ -1909,7 +1909,7 @@ stargazer::stargazer(mod, type = "text", digits = 4)
 
 **The intercept is the mobility rate for a public college with a price of attendance of 0 (i.e. this number is not very useful). The slope is the change in mobility rate, in percentage points, associated with a 1,000 dollar increase in price of attendance.**
 
-##### Question 3.3
+#### Question 3.3
 
 Plot the same scatter plot as in subquestion 1, but now add the linear regression line that you just calculated. In `ggplot`, you can do this either manually using the `geom_abline` command, or you can use the `geom_smooth(method = 'lm')` command. Given what you just plotted, do you think the linear regression is a good fit? Please explain why or why not.  
 
@@ -1926,7 +1926,7 @@ ggplot(df_west, aes(x = sticker_price_2013, y = mr_kq5_pq1)) +
     theme_bw()
 ```
 
-##### Question 3.4
+#### Question 3.4
 
 We can also assess this relationship *non-parametrically*. In the previous question, we used a regression model to model the values of $Y$ given $X$. We can also just calculate the conditional mean of $Y$ given some values of $X$. To implement this, proceed as follows: calculate the average mobility rate separately for 4 groups of the data, defined by their cost of attendance: 
 
@@ -1967,9 +1967,9 @@ df_plot %>%
 
 **Note that the third group has no data for $Y$, which leads to a missing value. The advantage of the regression method is that we can still predict values of $Y$ for this group, even though we have no data for this group -- the regression equation will give us predictions of $Y$ for any value of $X$.**
 
-##### Question 4 (2 points)
+#### Question 4 (2 points)
 
-##### Question 4.1
+#### Question 4.1
 
 Please interpret the following regression coefficients:
 
@@ -1985,7 +1985,7 @@ Please interpret the following regression coefficients:
 
     **Exposure to Spanish-speaking confederates (compared to the control group) is associated with a 0.09-point increase in support for decreasing the number of immigrants from Mexico, on a scale from 0--1.**
     
-##### Question 4.2
+#### Question 4.2
 
 Let's return to the Chetty data. We will look at the dataset for the whole country and for public as well as private colleges. The dataset has a variable called `mobility_above_average`, which is defined as follows:
 
@@ -2006,9 +2006,9 @@ Interpret the coefficients.
 
 **The intercept is the share of private colleges with above-average mobility rates. The coefficient $\beta$ is the difference in the share of public colleges with above-average mobility rates, compared to private colleges. It is positive, so public colleges are more likely to have above-average mobility rates.**
 
-##### Question 5 (required for students in the methods subfield, 3 points)
+#### Question 5 (required for students in the methods subfield, 3 points)
 
-##### Question 5.1
+#### Question 5.1
 
 In lecture, we said the mean $\bar{x} = \frac{1}{n} \sum_{i=1}^n x_i$ is the best "guess" of $x_i$ in terms of minimizing the mean squared error.
 In statistics, it is common to define some measure of how "good" a guess or an estimate is, and then to show that there is some specific estimate that is "best" in terms of this measure. Recall that the mean squared error is defined as $$MSE = \frac{1}{n} \sum_{i=1}^n (x_i - \hat{x})^2$$ where $\hat{x}$ is our guess of $x_i$. \footnote{Note that $\hat{x}$ is usually some function of the data, i.e. $\hat{x} = f(x_1, x_2, ..., x_n)$. Quantities like the mean, median or mode are all functions of the data.}
@@ -2054,7 +2054,7 @@ In statistics, it is common to define some measure of how "good" a guess or an e
 
 **Note that the right-hand side is just the definition of the mean, i.e. we have shown that $\hat{x} = \bar{x}$. As stated above, we would now have to look at the second derivative to see if we found a minimum or maximum. However, you can just assume that we found a minimum here.**
 
-##### Question 5.2
+#### Question 5.2
 
 In linear regressions, goodness of fit is usually measured using the $R^2$ statistic. This statistic is defined as follows:
 
@@ -2103,7 +2103,7 @@ get_rsq  <- function(y, lm_object) {
 get_rsq(y, mod)
 ```
 
-##### Question 5.3
+#### Question 5.3
 
 If $R^2$ is closer to 1, this is usually considered a better fit. 
 
@@ -2125,7 +2125,7 @@ If $R^2$ is closer to 1, this is usually considered a better fit.
 
     **Taken from Gailmard, page 51: "the object of our analysis [...] is typically not to give a complete account of the behavior of $Y$ in a specific sample but rather to identify a set of factors that systematically affect $Y$ and to give reasons behind these effects."**
 
-##### Question 6 (extra credit, 1 point)
+#### Question 6 (extra credit, 1 point)
 
 A famous question on StackExchange is as follows (with some edits for clarity):
 
@@ -2139,15 +2139,15 @@ What would you respond to this? What could one likely reason be why the manager 
 
 **This makes no sense at all, and completely destroys the actual relationship between $X$ and $Y$. By sorting both variables independently, the manager creates a meaningless data set where both $X$ and $Y$ become artificially correlated because they are both increasing in value as we go down the list of observations.**
 
-#### 2. Learning from Data I
+### 2. Learning from Data I
 
 **Note**: Most of the materials for today's discussion can be referred to [STAT 414: Introduction to Probability Theory.](https://online.stat.psu.edu/stat414/).
 
-a.  Data Generating Process (DGP)
+#### a.  Data Generating Process (DGP)
 
-    The contemporary world is full of data and, especially, it is becoming easier and easier to transform it into data. Data analysis is about making good use of data for certain purposes, such as to predict or to make inferences about the world. For these tasks, a first step is to have a sound understanding on how the data was generated, i.e., which processes lead to its creation. The analytical strategy for data analysis will be highly dependent on which processes have generated the data under scrutiny.
+The contemporary world is full of data and, especially, it is becoming easier and easier to transform it into data. Data analysis is about making good use of data for certain purposes, such as to predict or to make inferences about the world. For these tasks, a first step is to have a sound understanding on how the data was generated, i.e., which processes lead to its creation. The analytical strategy for data analysis will be highly dependent on which processes have generated the data under scrutiny.
 
-    Overall, in the following method sequence classes, we will only consider the type of **probability based (stochastic)** data generation processes. In the probability based DGP, data is generated by a probabilistic process, i.e., each element of the population is selected with a (known) probability to form part of the sample data. One possible way to achieve this is by using a random mechanism when generating the data.
+Overall, in the following method sequence classes, we will only consider the type of **probability based (stochastic)** data generation processes. In the probability based DGP, data is generated by a probabilistic process, i.e., each element of the population is selected with a (known) probability to form part of the sample data. One possible way to achieve this is by using a random mechanism when generating the data.
 
 <center>
 
@@ -2167,19 +2167,19 @@ Example:
 
     3.  Draw a Conclusion: Use the data, probability, and statistical inference to draw a conclusion about the population.
 
-    However, there is a cost that has to be taken into account: by drawing a sample we have not observed all of the individuals in the population. It is necessary, then, to account for the uncertainty implied in the sampling process that generated the data. In addition to the **sampling uncertainty**, there are other sources of uncertainty that would lead us to assume our data is generated by a stochastic DGP: **theoretical and fundamental uncertatinty**.
+However, there is a cost that has to be taken into account: by drawing a sample we have not observed all of the individuals in the population. It is necessary, then, to account for the uncertainty implied in the sampling process that generated the data. In addition to the **sampling uncertainty**, there are other sources of uncertainty that would lead us to assume our data is generated by a stochastic DGP: **theoretical and fundamental uncertatinty**.
 
-    Let's consider a scenario where we are not only interested in understanding the percentage of adults who support the death penalty in the U.S. but also whether there is a difference in support based on political affiliation, particularly Republicans. In this case, we have a theoretical framework that focuses on the relationship between a person's political alignment and their stance on the death penalty. However, it's possible that other factors, such as how individuals value a person's life, could also influence their views on the death penalty. Unfortunately, we didn't include these additional factors in our theory, which could potentially impact our data collection. Consequently, the results derived from our sample data might be subject to theoretical uncertainty. Additionally, there is the possibility of fundamental uncertainty within our sample data. This could arise when respondents pay minimal attention to the survey questions and opt for random responses regarding their opinions on the death penalty. Such factors are beyond the control of researchers and can introduce further uncertainty into our findings.
+Let's consider a scenario where we are not only interested in understanding the percentage of adults who support the death penalty in the U.S. but also whether there is a difference in support based on political affiliation, particularly Republicans. In this case, we have a theoretical framework that focuses on the relationship between a person's political alignment and their stance on the death penalty. However, it's possible that other factors, such as how individuals value a person's life, could also influence their views on the death penalty. Unfortunately, we didn't include these additional factors in our theory, which could potentially impact our data collection. Consequently, the results derived from our sample data might be subject to theoretical uncertainty. Additionally, there is the possibility of fundamental uncertainty within our sample data. This could arise when respondents pay minimal attention to the survey questions and opt for random responses regarding their opinions on the death penalty. Such factors are beyond the control of researchers and can introduce further uncertainty into our findings.
 
-    In summary, statistical inferences always involve an element of uncertainty. As a researcher, our aim is to account for this uncertainty by incorporating probability statements as an integral part of our conclusions in our findings.
+In summary, statistical inferences always involve an element of uncertainty. As a researcher, our aim is to account for this uncertainty by incorporating probability statements as an integral part of our conclusions in our findings.
 
-b.  Probability Distribution
+#### b.  Probability Distribution
 
-    How to model stochastic data generating process? Any time we want to answer a research question that involves using a sample to draw a conclusion about some larger population, we need to answer the question "how likely is it that we get a sample proportion of people supporting for the death penalty at 65%?" or "what is the probability of...?". To answer such a question, we need to use probability to quantify the uncertainty of the outcomes of interest.
+How to model stochastic data generating process? Any time we want to answer a research question that involves using a sample to draw a conclusion about some larger population, we need to answer the question "how likely is it that we get a sample proportion of people supporting for the death penalty at 65%?" or "what is the probability of...?". To answer such a question, we need to use probability to quantify the uncertainty of the outcomes of interest.
 
-    Just a reminder, when we employ a probability distribution to model a stochastic DGP, we are essentially playing as the God saying that the data for the variable of interest is generated by this probability distribution. However, in real-life, what we can directly observe is the empirical distribution (or frequency distribution) derived from our available sample data. We make an assumption that this empirical distribution from the sample data reflects the underlying theoretical probability distribution.
+Just a reminder, when we employ a probability distribution to model a stochastic DGP, we are essentially playing as the God saying that the data for the variable of interest is generated by this probability distribution. However, in real-life, what we can directly observe is the empirical distribution (or frequency distribution) derived from our available sample data. We make an assumption that this empirical distribution from the sample data reflects the underlying theoretical probability distribution.
 
-    1.  Discrete Random Variables
+1.  Discrete Random Variables
 
     -   What is a Random Variable $X$?
 
@@ -2286,7 +2286,7 @@ b.  Probability Distribution
 
         **2.2** Is $P(X \leq 2)$ equal to $P(X = 2)$?
 
-    2.  Continuous Random Variables
+2.  Continuous Random Variables
 
         A continuous random variable takes on an uncountably infinite number of possible values. For a discrete random variable $X$ that takes on a finite or countably infinite number of possible values, we determined $P(X=x)$ for all of the possible values of $X$, and called it the probability mass function (PMF).
 
@@ -2356,248 +2356,1069 @@ b.  Probability Distribution
 
         What is the cumulative distribution function $F(x)$?
 
-c.  Multivariate Probability Distributions
+#### c.  Multivariate Probability Distributions
 
-    Now we know the probability distribution of both discrete and continuous random variables, respectively. Let's extend the concept of a probability distribution of one random variable $X$ to a joint probability distribution of two discrete random variables $X$ and $Y$. For example, suppose $X$ denotes the number of significant others a randomly selected person has, and $Y$ denotes the number of arguments the person has each week. We might want to know if there is a relationship between $X$ and $Y$. Or, we might want to know the probability that $X$ takes on a particular value $x$ and $Y$ takes on a particular value $y$. That is, we might want to know $P(X=x, Y=y)$.
+Now we know the probability distribution of both discrete and continuous random variables, respectively. Let's extend the concept of a probability distribution of one random variable $X$ to a joint probability distribution of two discrete random variables $X$ and $Y$. For example, suppose $X$ denotes the number of significant others a randomly selected person has, and $Y$ denotes the number of arguments the person has each week. We might want to know if there is a relationship between $X$ and $Y$. Or, we might want to know the probability that $X$ takes on a particular value $x$ and $Y$ takes on a particular value $y$. That is, we might want to know $P(X=x, Y=y)$.
 
-    Suppose we toss a pair of fair, four-sided dice, in which one the dice is red and the other is black. We'll let:
+Suppose we toss a pair of fair, four-sided dice, in which one the dice is red and the other is black. We'll let:
 
-    -   $X$ = the outcome on the red die = $\left \{ 1, 2, 3, 4 \right \}$
-    -   $Y$ = the outcome on the black die = $\left \{ 1, 2, 3, 4 \right \}$
+-   $X$ = the outcome on the red die = $\left \{ 1, 2, 3, 4 \right \}$
+-   $Y$ = the outcome on the black die = $\left \{ 1, 2, 3, 4 \right \}$
 
-    What is the support of $f(x, y)$? What is the probability that $X$ takes on a particular value $x$, and $Y$ takes on a particular value $y$? That is, what is $P(X=x, Y=y)$? Please calculate the probability for each cell in the table below. Note that columns represent the outcomes of the black die, whereas rows represent the outcomes of the red die.
+What is the support of $f(x, y)$? What is the probability that $X$ takes on a particular value $x$, and $Y$ takes on a particular value $y$? That is, what is $P(X=x, Y=y)$? Please calculate the probability for each cell in the table below. Note that columns represent the outcomes of the black die, whereas rows represent the outcomes of the red die.
 
-    | $f(x,y)$ | $Y=1$ | $Y=2$ | $Y=3$ | $Y=4$ | $f_X(x)$ |
-    |----------|-------|-------|-------|-------|----------|
-    | $X=1$    |       |       |       |       |          |
-    | $X=2$    |       |       |       |       |          |
-    | $X=3$    |       |       |       |       |          |
-    | $X=4$    |       |       |       |       |          |
-    | $f_Y(y)$ |       |       |       |       |          |
+| $f(x,y)$ | $Y=1$ | $Y=2$ | $Y=3$ | $Y=4$ | $f_X(x)$ |
+|----------|-------|-------|-------|-------|----------|
+| $X=1$    |       |       |       |       |          |
+| $X=2$    |       |       |       |       |          |
+| $X=3$    |       |       |       |       |          |
+| $X=4$    |       |       |       |       |          |
+| $f_Y(y)$ |       |       |       |       |          |
 
-    Now that we've found our first joint probability mass function, let's formally define it now.
+Now that we've found our first joint probability mass function, let's formally define it now.
 
-    Let $X$ and $Y$ be two discrete random variables, and let $S$ denote the two-dimensional support of $X$ and $Y$. Then, the function $f(x, y) = P(X=x, Y=y)$ is a joint probability mass function if it satisfies the following three conditions:
+Let $X$ and $Y$ be two discrete random variables, and let $S$ denote the two-dimensional support of $X$ and $Y$. Then, the function $f(x, y) = P(X=x, Y=y)$ is a joint probability mass function if it satisfies the following three conditions:
 
-    1.  $0 \leq f(x, y) \leq 1$
+1.  $0 \leq f(x, y) \leq 1$
 
-        Each probability must be a valid probability number between 0 and 1 (inclusive).
+    Each probability must be a valid probability number between 0 and 1 (inclusive).
 
-    2.  $\sum_{}^{}\sum_{(x, y) \in S}^{}f(x, y)=1$
+2.  $\sum_{}^{}\sum_{(x, y) \in S}^{}f(x, y)=1$
 
-        The sum of the probabilities over the entire support $S$ must equal 1.
+    The sum of the probabilities over the entire support $S$ must equal 1.
 
-    3.  $P[(X, Y)\in A]=\sum_{}^{}\sum_{(x, y)\in A}^{}f(x, y)$ where $A$ is a subset of $S$
+3.  $P[(X, Y)\in A]=\sum_{}^{}\sum_{(x, y)\in A}^{}f(x, y)$ where $A$ is a subset of $S$
 
-        In order to determine the probability of an event $A$, you simply sum up the probabilities of the $(x, y)$ values in $A$.
+    In order to determine the probability of an event $A$, you simply sum up the probabilities of the $(x, y)$ values in $A$.
 
-d.  Marginal Distribution
+#### d.  Marginal Distribution
 
-    Now, if you take a look back at the representation of our joint p.m.f. in tabular form, you can see that the last column contains the probability mass function of $X$ alone, and the last row contains the probability mass function of $Y$ alone. Those two functions, $f(x)$ and $f(y)$, which in this setting are typically referred to as **marginal probability mass functions**, are obtained by simply summing the probabilities over the support of the other variable. That is, to find the probability mass function of $X$, we sum, for each $x$, the probabilities when \$y=1, 2, 3, \$ and $4$. That is, for each $x$, we sum $f(x, 1)$, $f(x, 2)$, $f(x, 3)$, and $f(x, 4)$. Now that we've seen the two marginal probability mass functions in our example, let's give a formal definition of a marginal probability mass function.
+Now, if you take a look back at the representation of our joint p.m.f. in tabular form, you can see that the last column contains the probability mass function of $X$ alone, and the last row contains the probability mass function of $Y$ alone. Those two functions, $f(x)$ and $f(y)$, which in this setting are typically referred to as **marginal probability mass functions**, are obtained by simply summing the probabilities over the support of the other variable. That is, to find the probability mass function of $X$, we sum, for each $x$, the probabilities when \$y=1, 2, 3, \$ and $4$. That is, for each $x$, we sum $f(x, 1)$, $f(x, 2)$, $f(x, 3)$, and $f(x, 4)$. Now that we've seen the two marginal probability mass functions in our example, let's give a formal definition of a marginal probability mass function.
 
-    Let $X$ be a discrete random variable with support $S_1$, and let $Y$ be a discrete random variable with support $S_2$, Let $X$ and $Y$ have the joint probability mass function $f(x, y)$ with support $S$. Then, the probability mass function of $X$ alone, which is called the marginal probability mass function of $X$, is defined by:
+Let $X$ be a discrete random variable with support $S_1$, and let $Y$ be a discrete random variable with support $S_2$, Let $X$ and $Y$ have the joint probability mass function $f(x, y)$ with support $S$. Then, the probability mass function of $X$ alone, which is called the marginal probability mass function of $X$, is defined by:
 
-    $$f_X(x)=\sum{y}{}f(x, y)=P(X=x)$$ $$x \in S_1$$
+$$f_X(x)=\sum{y}{}f(x, y)=P(X=x)$$ $$x \in S_1$$
 
-    where, for each $x$ in the support $S_1$, the summation is taken over all possible values of $y$. Similarly, the probability mass function of $Y$ alone, which is called the marginal probability mass function of $Y$, is defined by:
+where, for each $x$ in the support $S_1$, the summation is taken over all possible values of $y$. Similarly, the probability mass function of $Y$ alone, which is called the marginal probability mass function of $Y$, is defined by:
 
-    $$f_Y(y)=\sum{x}{}f(x, y)=P(Y=y)$$ $$x \in S_2$$
+$$f_Y(y)=\sum{x}{}f(x, y)=P(Y=y)$$ $$x \in S_2$$
 
-    where, for each $y$ in the support $S_2$, the summation is taken over all possible values of $x$.
+where, for each $y$ in the support $S_2$, the summation is taken over all possible values of $x$.
 
-    If you again take a look back at the representation of our joint p.m.f. in tabular form, you might notice that the following holds true:
+If you again take a look back at the representation of our joint p.m.f. in tabular form, you might notice that the following holds true:
 
-    $$P(X=x, Y=y) = \frac{1}{16} = P(X=x) \cdot P(Y=y) = \frac{1}{4} \cdot \frac{1}{4} = \frac{1}{16}$$
+$$P(X=x, Y=y) = \frac{1}{16} = P(X=x) \cdot P(Y=y) = \frac{1}{4} \cdot \frac{1}{4} = \frac{1}{16}$$
 
-    for all $x \in S_1$, $y \in S_2$. When this happens, we say that $X$ and $Y$ are independent. A formal definition of the independence of two random variables $X$ and $Y$ follows.
+for all $x \in S_1$, $y \in S_2$. When this happens, we say that $X$ and $Y$ are independent. A formal definition of the independence of two random variables $X$ and $Y$ follows.
 
-    The random variables $X$ and $Y$ are independent if and only if:
+The random variables $X$ and $Y$ are independent if and only if:
 
-    $$P(X=x, Y=y) = P(X=x) \times P(Y=y)$$
+$$P(X=x, Y=y) = P(X=x) \times P(Y=y)$$
 
-    for all $x \in S_1$, $y \in S_2$. Otherwise, $X$ and $Y$ are said to be dependent.
+for all $x \in S_1$, $y \in S_2$. Otherwise, $X$ and $Y$ are said to be dependent.
 
-    **Exercise 6**:
+**Exercise 6**:
 
-    Please find the marginal distributions of $X$ and $Y$, respectively.
+Please find the marginal distributions of $X$ and $Y$, respectively.
 
-    |$f(x, y)$ | $X=0$  | $X=1$  | $X=2$ | $f_Y(y)$ |
-    |----------|--------|--------|-------|----------|
-    | $Y=1$    | $0.1$  | $0.2$  | $0.3$ |          |
-    | $Y=2$    | $0.05$ | $0.15$ | $0.2$ |          |
-    | $f_X(x)$ |        |        |       |          |
+|$f(x, y)$ | $X=0$  | $X=1$  | $X=2$ | $f_Y(y)$ |
+|----------|--------|--------|-------|----------|
+| $Y=1$    | $0.1$  | $0.2$  | $0.3$ |          |
+| $Y=2$    | $0.05$ | $0.15$ | $0.2$ |          |
+| $f_X(x)$ |        |        |       |          |
 
-    Is $X$ and $Y$ independent from each other or not?
+Is $X$ and $Y$ independent from each other or not?
 
-e.  Conditional Distribution
+#### e.  Conditional Distribution
 
-    Marginal distributions tell us the distribution of a particular variable ignoring the other variable(s). In contrast, the conditional distribution of $X$ given $Y$ gives you a distribution over $X$ when holding $Y$ fixed at specific values. Formally:
+Marginal distributions tell us the distribution of a particular variable ignoring the other variable(s). In contrast, the conditional distribution of $X$ given $Y$ gives you a distribution over $X$ when holding $Y$ fixed at specific values. Formally:
 
-    $$f_{X|Y}(x|y)=\frac{f(x, y)}{f_Y(y)}$$
+$$f_{X|Y}(x|y)=\frac{f(x, y)}{f_Y(y)}$$
 
-    The conditional distribution of $Y$ given $X$ is defined by:
+The conditional distribution of $Y$ given $X$ is defined by:
 
-    $$f_{Y|X}(y|x)=\frac{f(x, y)}{f_X(x)}$$
+$$f_{Y|X}(y|x)=\frac{f(x, y)}{f_X(x)}$$
 
-    Recall the example we had for joint distribution.
+Recall the example we had for joint distribution.
 
-    | $f(x,y)$ | $Y=1$          | $Y=2$          | $Y=3$          | $Y=4$          | $f_X(x)$       |
-    |------------|------------|------------|------------|------------|------------|
-    | $X=1$    | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{4}{16}$ | $\frac{4}{16}$ |
-    | $X=2$    | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{4}{16}$ |
-    | $X=3$    | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{4}{16}$ |
-    | $X=4$    | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{4}{16}$ |
-    | $f_Y(y)$ | $\frac{4}{16}$ | $\frac{4}{16}$ | $\frac{4}{16}$ | $\frac{4}{16}$ | $1$            |
+| $f(x,y)$ | $Y=1$          | $Y=2$          | $Y=3$          | $Y=4$          | $f_X(x)$       |
+|------------|------------|------------|------------|------------|------------|
+| $X=1$    | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{4}{16}$ | $\frac{4}{16}$ |
+| $X=2$    | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{4}{16}$ |
+| $X=3$    | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{4}{16}$ |
+| $X=4$    | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{4}{16}$ |
+| $f_Y(y)$ | $\frac{4}{16}$ | $\frac{4}{16}$ | $\frac{4}{16}$ | $\frac{4}{16}$ | $1$            |
 
-    What is the conditional distribution of $Y$ given $X=2$?
+What is the conditional distribution of $Y$ given $X=2$?
 
-    When $Y=1$: $f_{Y|X}(y|x=2)=\frac{f(x, y)}{f_X(x=2)}=\frac{\frac{1}{16}}{\frac{4}{16}}=\frac{1}{4}$
+When $Y=1$: $f_{Y|X}(y|x=2)=\frac{f(x, y)}{f_X(x=2)}=\frac{\frac{1}{16}}{\frac{4}{16}}=\frac{1}{4}$
 
-    When $Y=2$: $f_{Y|X}(y|x=2)=\frac{f(x, y)}{f_X(x=2)}=\frac{\frac{1}{16}}{\frac{4}{16}}=\frac{1}{4}$
+When $Y=2$: $f_{Y|X}(y|x=2)=\frac{f(x, y)}{f_X(x=2)}=\frac{\frac{1}{16}}{\frac{4}{16}}=\frac{1}{4}$
 
-    When $Y=3$: $f_{Y|X}(y|x=2)=\frac{f(x, y)}{f_X(x=2)}=\frac{\frac{1}{16}}{\frac{4}{16}}=\frac{1}{4}$
+When $Y=3$: $f_{Y|X}(y|x=2)=\frac{f(x, y)}{f_X(x=2)}=\frac{\frac{1}{16}}{\frac{4}{16}}=\frac{1}{4}$
 
-    When $Y=4$: $f_{Y|X}(y|x=2)=\frac{f(x, y)}{f_X(x=2)}=\frac{\frac{1}{16}}{\frac{4}{16}}=\frac{1}{4}$
+When $Y=4$: $f_{Y|X}(y|x=2)=\frac{f(x, y)}{f_X(x=2)}=\frac{\frac{1}{16}}{\frac{4}{16}}=\frac{1}{4}$
 
-    So,
+So,
 
-    $f_{Y|X}(y|x=2)= \frac{1}{4} if y = 1, 2, 3, 4$
+$f_{Y|X}(y|x=2)= \frac{1}{4} if y = 1, 2, 3, 4$
 
-    We will get the same answers for the conditional probability of $Y$ given $X=1$, $X=3$, or $X=4$.
+We will get the same answers for the conditional probability of $Y$ given $X=1$, $X=3$, or $X=4$.
 
-    From this example of finding the conditional probability of $Y$ given $X=2$, we again find that $X$ and $Y$ are independent from each other, as the distribution over $Y$ does not change as $Y$ changes. That is,
+From this example of finding the conditional probability of $Y$ given $X=2$, we again find that $X$ and $Y$ are independent from each other, as the distribution over $Y$ does not change as $Y$ changes. That is,
 
-    $$f(x, y) = f_X(x)\cdot f_Y(y) \Rightarrow f_{X|Y}{x|y} = f_X(x) and f_{Y|X}{y|x} = f_Y(y)$$
+$$f(x, y) = f_X(x)\cdot f_Y(y) \Rightarrow f_{X|Y}{x|y} = f_X(x) and f_{Y|X}{y|x} = f_Y(y)$$
 
-    **Exercise 7**:
+**Exercise 7**:
 
-    Find the conditional distribution of $X$ given $Y=2$.
+Find the conditional distribution of $X$ given $Y=2$.
 
-    |$f(x, y)$ | $X=0$  | $X=1$  | $X=2$ | $f_Y(y)$ |
-    |----------|--------|--------|-------|----------|
-    | $Y=1$    | $0.1$  | $0.2$  | $0.3$ | $0.6$    |
-    | $Y=2$    | $0.05$ | $0.15$ | $0.2$ | $0.4$    |
-    | $f_X(x)$ | $0.15$ | $0.35$ | $0.5$ | $1$      |
+|$f(x, y)$ | $X=0$  | $X=1$  | $X=2$ | $f_Y(y)$ |
+|----------|--------|--------|-------|----------|
+| $Y=1$    | $0.1$  | $0.2$  | $0.3$ | $0.6$    |
+| $Y=2$    | $0.05$ | $0.15$ | $0.2$ | $0.4$    |
+| $f_X(x)$ | $0.15$ | $0.35$ | $0.5$ | $1$      |
 
-f.  Central Tendency of Probability Distributions
+#### f.  Central Tendency of Probability Distributions
 
-    The expected value, or mathematical expectation, of a discrete random variable $X$ is:
+The expected value, or mathematical expectation, of a discrete random variable $X$ is:
 
-    $$E(X)=\sum_{x\in X}{}xf(x)$$
+$$E(X)=\sum_{x\in X}{}xf(x)$$
 
-    where $x$ is the possible outcomes of the discrete random variable $X$, and $f(x)$ is the probability mass function of $X$.
+where $x$ is the possible outcomes of the discrete random variable $X$, and $f(x)$ is the probability mass function of $X$.
 
-    For example, what is the average toss of a fair six-sided die?
+For example, what is the average toss of a fair six-sided die?
 
-    If the random variable $X$ is the top face of a tossed, fair, six-sided die, then the PMF of $X$ is:
+If the random variable $X$ is the top face of a tossed, fair, six-sided die, then the PMF of $X$ is:
 
-    $$f(x) = \frac{1}{6}$$
+$$f(x) = \frac{1}{6}$$
 
-    for $x = 1, 2, 3, 4, 5,$ and $6$. Therefore, the average toss, that is the expected value of $X$, is:
+for $x = 1, 2, 3, 4, 5,$ and $6$. Therefore, the average toss, that is the expected value of $X$, is:
 
-    $$E(X) = 1(\frac{1}{6}) + 2(\frac{1}{6}) + 3(\frac{1}{6}) + 4(\frac{1}{6}) + 5(\frac{1}{6}) + 6(\frac{1}{6}) = 3.5$$
+$$E(X) = 1(\frac{1}{6}) + 2(\frac{1}{6}) + 3(\frac{1}{6}) + 4(\frac{1}{6}) + 5(\frac{1}{6}) + 6(\frac{1}{6}) = 3.5$$
 
-    Hmm... if we toss a fair, six-sided die once, should we expect the toss to be 3.5? No, of course not! All the expected value tells us is what we would expect the average of a large number of tosses to be **in the long run**. If we toss a fair, six-sided die a thousand times, say, and calculate the average of the tosses, will the average of the 1000 tosses be exactly 3.5? No, probably not! But, we can certainly expect it to be close to 3.5. It is important to keep in mind that the expected value of is a theoretical average, not an actual, realized one! Let's run a simulation to observe this more directly.
+Hmm... if we toss a fair, six-sided die once, should we expect the toss to be 3.5? No, of course not! All the expected value tells us is what we would expect the average of a large number of tosses to be **in the long run**. If we toss a fair, six-sided die a thousand times, say, and calculate the average of the tosses, will the average of the 1000 tosses be exactly 3.5? No, probably not! But, we can certainly expect it to be close to 3.5. It is important to keep in mind that the expected value of is a theoretical average, not an actual, realized one! Let's run a simulation to observe this more directly.
 
-    ```{r, message=F, warning=F, error=F}
-    x <- 1:6
+```{r, message=F, warning=F, error=F}
+x <- 1:6
 
-    s1 <- sample(x, replace = TRUE, size = 100)
-    mean(s1)
-    ```
+s1 <- sample(x, replace = TRUE, size = 100)
+mean(s1)
+```
 
-    ```{r, message=F, warning=F, error=F}
-    s2 <- sample(x, replace = TRUE, size = 1000)
-    mean(s2)
-    ```
+```{r, message=F, warning=F, error=F}
+s2 <- sample(x, replace = TRUE, size = 1000)
+mean(s2)
+```
 
-    ```{r, message=F, warning=F, error=F}
-    s3 <- sample(x, replace = TRUE, size = 10000)
-    mean(s3)
-    ```
+```{r, message=F, warning=F, error=F}
+s3 <- sample(x, replace = TRUE, size = 10000)
+mean(s3)
+```
 
-    Expectations have some nice properties:
+Expectations have some nice properties:
 
-    1.  The expected value of a constant $a$ is that constant: $E(a) = a$.
+1.  The expected value of a constant $a$ is that constant: $E(a) = a$.
 
-    2.  The expected value of a constant $b$ times a random variable $X$ is that constant times the expected value of $X$: $E(bX) = bE(X)$.
+2.  The expected value of a constant $b$ times a random variable $X$ is that constant times the expected value of $X$: $E(bX) = bE(X)$.
 
-    3.  Given two random variables, $X$ and $Y$, $E(X+Y) = E(X) + E(Y)$.
+3.  Given two random variables, $X$ and $Y$, $E(X+Y) = E(X) + E(Y)$.
 
-    4.  $E(X)$ always falls between the minimum and maximum values that $X$ can take: $min X \leq E(X) \leq max X$.
+4.  $E(X)$ always falls between the minimum and maximum values that $X$ can take: $min X \leq E(X) \leq max X$.
 
-    **Exercise 8**:
+**Exercise 8**:
 
-    Suppose the PMF of the discrete random variable $X$ is:
+Suppose the PMF of the discrete random variable $X$ is:
 
-    | $x$    | $0$   | $1$   | $2$   | $3$   |
-    |--------|-------|-------|-------|-------|
-    | $f(x)$ | $0.2$ | $0.1$ | $0.4$ | $0.3$ |
+| $x$    | $0$   | $1$   | $2$   | $3$   |
+|--------|-------|-------|-------|-------|
+| $f(x)$ | $0.2$ | $0.1$ | $0.4$ | $0.3$ |
     
-    8.1 What is the expected value of $X$, that is, $E(X)$? 
+8.1 What is the expected value of $X$, that is, $E(X)$? 
     
-    8.2 Suppose that there is another discrete random variable $Y$, and the expected value of $Y$ is $3.2$, that is, $E(Y) = 3.2$. What is the expected value of $2X+3Y$, that is, $E(2X+3Y)$?
+8.2 Suppose that there is another discrete random variable $Y$, and the expected value of $Y$ is $3.2$, that is, $E(Y) = 3.2$. What is the expected value of $2X+3Y$, that is, $E(2X+3Y)$?
     
-    **Exercise 9**:
+**Exercise 9**:
     
-    9.1 Find the expected values of the random variables from their marginal distributions.
+9.1 Find the expected values of the random variables from their marginal distributions.
     
-    9.2 Find the expected value of $X$ given $Y=2$. 
+9.2 Find the expected value of $X$ given $Y=2$. 
     
   
-    |$f(x, y)$ | $X=0$  | $X=1$  | $X=2$ | $f_Y(y)$ |
-    |----------|--------|--------|-------|----------|
-    | $Y=1$    | $0.1$  | $0.2$  | $0.3$ | $0.6$    |
-    | $Y=2$    | $0.05$ | $0.15$ | $0.2$ | $0.4$    |
-    | $f_X(x)$ | $0.15$ | $0.35$ | $0.5$ | $1$      |
+|$f(x, y)$ | $X=0$  | $X=1$  | $X=2$ | $f_Y(y)$ |
+|----------|--------|--------|-------|----------|
+| $Y=1$    | $0.1$  | $0.2$  | $0.3$ | $0.6$    |
+| $Y=2$    | $0.05$ | $0.15$ | $0.2$ | $0.4$    |
+| $f_X(x)$ | $0.15$ | $0.35$ | $0.5$ | $1$      |
     
-    All these nice properties can also be applied to a continuous random variable. The expected value of a continuous random variable is:
+All these nice properties can also be applied to a continuous random variable. The expected value of a continuous random variable is:
     
-    $$\int_{x\in X}{}xf(x)dx$$
+$$\int_{x\in X}{}xf(x)dx$$
     
-    Let's use an example to practice. Let the random variable $X$ denote the time a person waits for an elevator to arrive. Suppose the longest one would need to wait for the elevator is 2 minutes, so that the possible values of $X$ (in minutes) are given by the interval $[0,2]$. A possible PDF for $X$ is given by:
+Let's use an example to practice. Let the random variable $X$ denote the time a person waits for an elevator to arrive. Suppose the longest one would need to wait for the elevator is 2 minutes, so that the possible values of $X$ (in minutes) are given by the interval $[0,2]$. A possible PDF for $X$ is given by:
     
-    $$f(x) = \begin{cases} x, & \text{for } 0 < x \leq 1\\ 2-x, & \text{for } 1 < x \leq 2 \\ 0, & \text{otherwise }  \end{cases} $$ 
+$$f(x) = \begin{cases} x, & \text{for } 0 < x \leq 1\\ 2-x, & \text{for } 1 < x \leq 2 \\ 0, & \text{otherwise }  \end{cases} $$ 
       What is the expected value of $X$?
       
-      $$E(X) = \int_{0}^{1}x\cdot xdx + \int_{1}^{2}x\cdot(2-x)dx = \int_{0}^{1}x^2dx + \int_{1}^{2}(2x-x^2)dx = \frac{1}{3} + \frac{2}{3} = 1$$
+$$E(X) = \int_{0}^{1}x\cdot xdx + \int_{1}^{2}x\cdot(2-x)dx = \int_{0}^{1}x^2dx + \int_{1}^{2}(2x-x^2)dx = \frac{1}{3} + \frac{2}{3} = 1$$
       
-      Thus, we expect a person will wait 1 minute for the elevator on average.
+Thus, we expect a person will wait 1 minute for the elevator on average.
       
 
-g.  Dispersion of Probability Distributions
+#### g.  Dispersion of Probability Distributions
 
-    The variance of a random variable $X$ is:
+The variance of a random variable $X$ is:
     
-    $$ Var(X) = E((X-E(X))^2) = E(X^2) - E(X)^2$$
+$$ Var(X) = E((X-E(X))^2) = E(X^2) - E(X)^2$$
     
-    The formulat can be applied to both discrete and continuous random variables.
-    
-    
-    The variance of a random variable also has nice properties:
-    
-    1. The variance of a constant $a$ is $0$: $Var(a) = 0$.
-    
-    2. $Var(X)$ is always weakly positive: $Var(X) \geq 0$.
-    
-    3. The variance of a constant $b$ times a random variable $X$ is that constant squared times the variance of $X$: $Var(bX) = b^2 Var(X)$.
-    
-    4. If $X$ and $Y$ are stochastically independent, then $Var(X+Y) = Var(X) + Var(Y)$.
+The formulat can be applied to both discrete and continuous random variables.
     
     
-    **Exercise 10**:
+The variance of a random variable also has nice properties:
     
-    10.1 What is the variance of $X$?
+1. The variance of a constant $a$ is $0$: $Var(a) = 0$.
     
-    10.2 What is $Var(2X)$?
+2. $Var(X)$ is always weakly positive: $Var(X) \geq 0$.
     
-    | $x$    | $0$   | $1$   | $2$   | $3$   |
-    |--------|-------|-------|-------|-------|
-    | $f(x)$ | $0.2$ | $0.1$ | $0.4$ | $0.3$ |
+3. The variance of a constant $b$ times a random variable $X$ is that constant squared times the variance of $X$: $Var(bX) = b^2 Var(X)$.
+    
+4. If $X$ and $Y$ are stochastically independent, then $Var(X+Y) = Var(X) + Var(Y)$.
     
     
-    **Exercise 11**:
+**Exercise 10**:
     
-    Recall the elevator question, please compute the variance of $X$.
+10.1 What is the variance of $X$?
     
-    $$f(x) = \begin{cases} x, & \text{for } 0 < x \leq 1\\ 2-x, & \text{for } 1 < x \leq 2 \\ 0, & \text{otherwise }  \end{cases} $$
+10.2 What is $Var(2X)$?
+    
+| $x$    | $0$   | $1$   | $2$   | $3$   |
+|--------|-------|-------|-------|-------|
+| $f(x)$ | $0.2$ | $0.1$ | $0.4$ | $0.3$ |
+    
+    
+**Exercise 11**:
+    
+Recall the elevator question, please compute the variance of $X$.
+    
+$$f(x) = \begin{cases} x, & \text{for } 0 < x \leq 1\\ 2-x, & \text{for } 1 < x \leq 2 \\ 0, & \text{otherwise }  \end{cases} $$
+    
+## Discussion V
+
+### 1. Solution Keys to Problem Set 5
+
+#### Question 1 (2 points)
+
+Consider the following scenario. There is an ice cream parlor with 10 different flavors of ice cream: 3 are sorbet (vegan) and 7 are milk-based. Since you are indecisive, you ask the shop to pick two scoops for you at random. Note that this could also mean you get two scoops of the same flavor. You can think of this as picking flavors "with replacement" -- the flavor of the first scoop does not affect the flavor of the second scoop. For the purposes of our analysis, we care about whether you each scoop is a sorbet or milk-based.
+
+1. Considering the type of ice cream you sample (sorbet or milk-based), what are the possible outcomes of an experiment like this? Remember that you get two scoops of two randomly selected flavors. (Hint: What is the sample space?)
+
+    **Answers:**
+
+    **The possible outcomes are: (1) both scoops are sorbet, (2) both scoops are milk-based, (3) the first scoop is sorbet and the second scoop is milk-based, (4) the first scoop is milk-based and the second scoop is sorbet. Let's say we denote sorbet by $S$ and milk-based by $M$. Then, the possible outcomes are: (1) $SS$, (2) $MM$, (3) $SM$, (4) $MS$. We can also say that the sample space is $S=\{SS, MM, SM, MS\}$.**
+    **- Note: Alternatively, we could also define 3 outcomes: (1) both scoops are sorbet ($S$), (2) both scoops are milk-based ($M$), (3) the scoops are different ($D$). In this case, the sample space would be $S=\{S, M, D\}$. In this case, we do not care about the order of the scoops. In that case, the answers for 1.2 and 1.3 would be slightly different.**
+
+2. Define a random variable to "translate" the sample space into numbers. Call this random variable $X$. How many possible values can your random variable take, and what are they?
+
+    **Answers:**
+
+    **Here is an example of a random variable. We have simply translated each possible outcome into a number.**
+
+    $$ X = \begin{cases} 0 & \text{if } s=SS \\ 1 & \text{if } s=MM \\ 2 & \text{if } s=SM \\ 3 & \text{if } s=MS \end{cases} $$
+
+3. Define the probability mass function for this random variable. Recall that the probability mass function is a function that assigns a probability to each possible realization of a random variable. 
+
+    **Answers:**
+
+    **Here is the PMF. We get there by simply multiplying the probabilities of each scoop being either $S$ or $M$. The probabilities are $Pr(S) = 3/10$ and $Pr(M) = 7/10$.**
+
+    $$ f(x) = \begin{cases} 0.09 & \text{if } s=SS \\ 0.49 & \text{if } s=MM \\ 0.21 & \text{if } s=SM \\ 0.21 & \text{if } s=MS \end{cases} $$
+
+4. What is the probability that you get "mixed" scoops, i.e. one scoop is sorbet and the other is milk-based?
+
+    **Answers:**
+
+    **The probability of getting mixed scoops is $Pr(SM) + Pr(MS) = 0.21 + 0.21 = 0.42$.**
+
+
+#### Question 2 (2 points)
+
+Assume we have the following discrete random variable, which can take on 4 different values.
+
+$$
+X = \begin{cases}
+1 & \text{with probability } 0.2 \\
+2 & \text{with probability } 0.3 \\
+3 & \text{with probability } 0.25 \\
+4 & \text{with probability } 0.25
+\end{cases}
+$$
+
+This random variable has a probability mass function $f(x)$, where we have, for example, $f(1) = 0.2$. The function tells us that the prbability of $X$ taking on the value 1 is 0.2. We can also write this as $Pr(X = 1) = 0.2$. As is standard, we denote the random variable by $X$ and the possible values it can take on by $x$.
+
+1. For this to be a valid PMF, we need three conditions. For the purposes of this problem set, you can assume that the following condition fulfilled: "For any subset of possible outcomes, the probability that any one of those outcomes arises is the sum of the probabilities of each outcome". What are the other two conditions? State them and check whether the function given above fulfills them.
+
+    **Answers:**
+
+    **The other two conditions are:** 
+        **- $1\geq f(x) \geq 0$ for all $x$. This is fulfilled, since none of the probabilities are negative or larger than 1.**
+        **- $\sum_x f(x) = 1$. We can add up the probabilities to check this: $0.2 + 0.3 + 0.25 + 0.25 = 1$. So this is also fulfilled.**
+
+
+2. What is the probability that $X$ takes on a value smaller or equal than 2?
+
+    **Answers:**
+
+    **We can simply add up the probabilities of $X$ taking on the values 1 and 2: $Pr(X \leq 2) = Pr(X=1) + Pr(X=2) = 0.2 + 0.3 = 0.5$.**
+
+3. Write down the cumulative distribution function (CDF) for $X$. Remember that the definition of the CDF is $F(x) = Pr(X \leq x)$, where $X$ is the random variable and $x$ is a possible value of that random variable.
+
+    **Answers:**
+
+    **The definition of the CDF is $F(x) = Pr(X \leq x)$. We can write this as follows (note that the previous question is helpful here):**
+
+    $$ F(x) = \begin{cases} 0 & \text{if } x < 1 \\ 0.2 & \text{if } 1 \leq x < 2 \\ 0.5 & \text{if } 2 \leq x < 3 \\ 0.75 & \text{if } 3 \leq x < 4 \\ 1 & \text{if } x = 4 \\ \end{cases} $$
+
+4. Draw a graph of the CDF of $X$, with $x$ on the x-axis and $F(x)$ on the y-axis.
+
+    **Answers:** 
+
+    **Here is a graph of the CDF:**
+    
+    <center>
+    ![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/graph.png)
+    </center>
+
+#### Question 3 (2 points)
+
+**Note 1:** You may find section 3.2--3.4 of the Gailmard book helpful for this question.
+
+**Note 2:** Short explanations (1-2 sentences) are sufficient for this question. 
+
+A colleague wants to study the relationship between socialization in college, particularly major choice, and political behavior. Your colleague argues that undergraduates that decide to major in economics rather than political science will become more likely to vote Republican later in life, since standard economic theory often espouses the idea that markets are efficient and that government intervention is counterproductive. Your colleague argues that this may then cause economics majors to be more likely than political science majors to vote Republican later in life, since the Republican party often advocates for free markets and less government intervention. To study this question, your colleague conducts a survey of UC Davis alumni who graduated in the last 5 years.
+
+1. Do you believe the data generating process described here is deterministic or stochastic? Briefly explain your answer.
+
+    **Answers:**
+
+    **Stochastic. There is little reason to believe that choosing either one of the two major always leads to the same outcome. For example, there are many other factors that could influence whether someone votes Republican or not.**
+
+2. One source of uncertainty is sampling uncertainty. Please elaborate on how this could apply in this setting. In particular, please define a "population" that your colleague is sampling from, and explain how uncertainty could arise due to sampling.
+
+    **Answers:**
+
+    **We could define the overall population as all college students who have graduated in the last 5 years, and have majored in PS or Econ. We are just taking a sample from this population. A different sample could lead to different results, i.e. the quantities we estimate depend on the sample we draw.**
+
+#### Question 4 (4 points)
+
+We will now look at the following discrete joint distribution. Here, the rows are values of $X$ and the columns are values of $Y$. The values in the cells are the probabilities of each combination of $X$ and $Y$, which is just the definition of the joint distribution.
+
+$$
+\begin{array}{c|cc}
+X \backslash Y & 1 & 2 \\
+\hline
+1 & 0.2 & 0.1 \\
+2 & 0.1 & 0.2 \\
+3 & 0.1 & 0.3
+\end{array}
+$$
+
+1. What are the marginal distributions of $X$ and $Y$? 
+
+    **Answer:**
+
+    **To get the marginal distribution for say $X=1$, we simply have to find all cells in the joint distribution for which $X=1$ and add up the probabilities. It works the same way for $X=2$ and $X=3$. The marginal distributions of $X$ and $Y$ are:**
+
+    $$ \begin{array}{c|ccc} X & 1 & 2 & 3 \\ \hline Pr(X) & 0.3 & 0.3 & 0.4 \\ \end{array} $$
+
+    $$ \begin{array}{c|cc} Y & 1 & 2 \\ \hline Pr(Y) & 0.4 & 0.6 \\ \end{array} $$
+
+
+2. What is the conditional distribution of $X$ given $Y=1$?
+
+    **Answer:**
+
+    **The conditional distribution of $X$ given $Y=1$ is:**
+
+    $$ \begin{array}{c|cc} X  & Pr(X|Y=1) \\ \hline 1 & 0.5 \\ 2 & 0.25 \\ 3 & 0.25 \end{array} $$
+
+
+3. Calculate the expected value of $X$ and the expected value of $X$ given that $Y=1$ (we call the latter the *conditional expectation* of $X$ given $Y=1$)
+
+    **Answer:**
+
+    $E(X)$ and $E(X|Y=1)$ are:
+
+    \begin{align*}
+    E[X] &= \sum_{i=1}^3 x_i Pr(X=x_i) \\
+    &= 1 \cdot 0.3 + 2 \cdot 0.3 + 3 \cdot 0.4 \\
+    &= 2.1
+    \end{align*}
+
+    \begin{align*}
+    E[X|Y=1] &= \sum_{i=1}^3 x_i Pr(X=x_i|Y=1) \\
+    &= 1 \cdot 0.5 + 2 \cdot 0.25 + 3 \cdot 0.25 \\
+    &= 1.75
+    \end{align*}
+
+4. Assume we have a new random variable $Z$, which is defined as $3+2X$. What is the expected value of $Z$?
+
+    **Answer:**
+
+    **Based on the properties of the expectation:**
+
+    $$E[3+2X] = E(3) + E(2X) = 3 + 2E(X) = 3 + 2 \cdot 2.1 = 7.2$$
+
+#### Question 5 (2 points)
+
+Evaluate the following statements. For each of these statements, please (i) state whether it is true or false and (ii) briefly explain why it is true or false. 
+
+**Note:** Recall that the probability density function / probability mass function of a random variable $X$ is called $f(x)$, and the cumulative distribution function is called $F(x)$.
+
+1. For a discrete random variable $X$ that can take values from 1 to 10, it can be the case that $f(a)>f(b)$ and also $F(a)>F(b)$ for some $a<b$, where both $a$ and $b$ are whole numbers between 1 and 10.
+
+    **Answers:**
+
+    **False. The statement is correct regarding the PMF, but not the CDF. The PMF is a function that assigns probabilities to each possible value of $X$. Therefore, it is possible that $f(a)>f(b)$ for some $a<b$. The CDF, on the other hand, tells us the probability that $X$ is smaller or equal than a certain value. Therefore, it is not possible that $F(a)>F(b)$ if the number $a$ is smaller than $b$. To give an example, if we know that $Pr(X\leq 2)=0.5$ then it is not possible that $Pr(X\leq 1)>0.5$, since $Pr(X\leq 2)=Pr(X\leq 1)+Pr(X=2)$. Since the probabilities are always weakly positive, this means that $Pr(X\leq 1)$ is at most $0.5$ in cases where $Pr(X= 2)=0$, but it can never be greater than that.**
+
+2. To account for theoretical uncertainty, it is always a good idea to specify a more complex theoretical model that ideally captures all possible ways in which the data could have been generated.
+
+    **Answers:**
+
+    **False. In many cases this will make the analyses much more complicated -- we are usually looking for a model that is simple enough for us to be able to analyze / understand it.**
+
+3. Calculating the conditional expectation $E[X|Y=y]$ for different values of $y$ can be useful to understand whether there is an association between $X$ and $Y$.
+
+    **Answers:**
+
+    **True.  To give an example, assume we have a random variable $X$ that is the number of hours a student studies for an exam, and $Y$ is the grade the student gets on the exam. If $E[X|Y=y]$ is increasing in $y$, this means that students who get higher grades tend to study more. This is an example of a positive association between $X$ and $Y$.**
+
+4. Assume we have a continuous random variable with probability density function $f(x)$. $X$ can take on any values between 0 and 1. In this case, the probability $P(X\leq 0.5)$ is the area under the curve of $f(x)$ between 0.5 and 1.
+
+    **Answers:**
+
+    **False. The probability $P(X\leq 0.5)$ is the area under the curve of $f(x)$ between 0 and 0.5. The area under the curve between 0.5 and 1 is $P(X>0.5)$.**
+
+#### Question 6 (required for students in the methods subfield, 3 points)
+
+#### Question 6.1
+
+Assume we have a continuous random variable with the following probability density function (PDF):
+
+$$
+f(x) = \begin{cases}
+ax & \text{if } 0 \leq x \leq 2 \\
+0 & \text{otherwise}
+\end{cases}
+$$
+
+Here, $a$ is a constant (i.e. just a number). One requirement for this to be a proper probability density function is that the integral over all possible values of $X$ is equal to 1. In other words, we need to have:
+
+$$
+\int_{0}^{2} f(x) dx = 1
+$$
+
+Note that the integral has to be over all possible values of $x$, which in this case is $0 \leq x \leq 2$. 
+
+- First, identify which value the constant $a$ has to have to make this a proper probability density function. 
+- Then, calculate the expected value of $X$.
+
+**Answer:** 
+
+**We can first calculate the value of the integral:**
+
+\begin{align*}
+\int_{0}^{2} f(x) dx &= \int_{0}^{2} ax dx \\
+&= \left[\frac{ax^2}{2}\right]^2_0 \\
+&= 2a
+\end{align*}
+
+**We know that the integral above has to be equal to 1, so we can solve for $a$. This simply means that $1=2a$, which implies that $a=1/2$.**
+
+**Now, we can calculate the expected value of $X$, which does not depend on $a$:**
+
+\begin{align*}
+E[X] &= \int_{0}^{2} x f(x) dx \\
+&= \int_{0}^{2} x \frac{1}{2}x dx \\
+&= \left[\frac{1}{2}\frac{x^3}{3}\right]^2_0 \\
+&= \frac{4}{3}
+\end{align*}
+
+
+#### Question 6.2
+
+Assume you have the following continuous joint PDF for the variables $X$ and $Y$ 
+
+$$
+f(x,y) = \begin{cases}
+\frac{3}{2}y^2 & \text{if } 0 \leq x \leq 2 \text{ and } 0 \leq y \leq 1 \\
+0 & \text{otherwise} 
+\end{cases}
+$$
+
+- What are the marginal probability density functions of $X$ and $Y$? 
+
+- Given what you found, are the two variables independent?
+
+**Hint:** When you integrate over one of the two variables in a joint distribution, then the limits of integration should be the range of values that the variable can take on. For example, if you want to integrate over $X$, then the limits of integration should be $0 \leq x \leq 2$.
+
+**Answer:** 
+
+**To get the marginal distribution of $X$, we need to integrate over all values $y$. This gives us:**
+
+\begin{align*}
+f_X(x) &= \int_0^1 \frac{3}{2}y^2 dy \\
+&= \frac{1}{2}\left[y^3\right]^1_0 \\
+&=\frac{1}{2}
+\end{align*}
+
+**We can do the same for $Y$:**
+
+\begin{align*}
+f_Y(y) &= \int_0^2 \frac{3}{2}y^2 dx \\
+&= \left[\frac{3}{2}xy^2\right]^2_0 \\
+&= 3y^2
+\end{align*}
+
+**Note the definition of independence requires that the joint distribution is equal to the product of the marginal distributions. In this case, we have:**
+
+$$
+f(x,y) = \frac{3}{2}y^2 = f_X(x)f_Y(y) = \frac{3}{2}y^2
+$$
+
+**Therefore, we can conclude that $X$ and $Y$ are independent.**
+
+#### Question 6.3 
+
+Now, let's look at the following joint distribution. Note that $c$ is just a constant.
+
+\begin{align*}
+f(x,y) = \begin{cases}
+c(x+y^2) & \text{if } 0 \leq x \leq 1 \text{ and } 0 \leq y \leq 1 \\
+0 & \text{otherwise}
+\end{cases}
+\end{align*}
+
+- Find the conditional distribution of $X$ given $Y$, i.e. $f_{X|Y}(x|y)$.
+- Then, calculate the following quantity: $Pr[X<\frac{1}{2}|Y=\frac{1}{2}]$. 
+
+**Note:** Unlike in 6.1, it is not necessary to find the value of $c$ to answer this question. You can just treat $c$ as a constant throughout the calculations. If you do everything correctly, you will see that $c$ eventually disappears from the final expression.
+
+**Hint:** To calculate the second quantity, you can just plug $Y=1/2$ into the conditional distribution you found, and use integration to find the desired quantity.
+
+**Answer:** 
+
+**For this, we first need to find the marginal distribution of $Y$.** 
+
+\begin{align*}
+f_Y(y) = \int_0^1 c(x+y^2) dx = \left[c\left(\frac{x^2}{2}+xy^2\right)\right]^1_0 = \frac{c}{2} + cy^2
+\end{align*}
+
+**Now to find the conditional distribution of $X$ given $Y$, we need to divide the joint distribution by the marginal distribution of $Y$:**
+
+\begin{align*}
+f_{X|Y}(x|y) &= \frac{f(x,y)}{f_Y(y)} \\
+&= \frac{c(x+y^2)}{\frac{c}{2} + cy^2} \\
+&= \frac{2(x+y^2)}{1 + 2y^2}
+\end{align*}
+
+**Next, we want this quantity: $Pr[X<\frac{1}{2}|Y=\frac{1}{2}]$. We can first plug in $Y=1/2$ into the conditional distribution we found, which gives us:**
+
+\begin{align*}
+f_{X|Y}(x|\frac{1}{2}) &= \frac{2(x+\frac{1}{4})}{1 + \frac{1}{2}} \\
+&= \frac{4(x+\frac{1}{4})}{3}
+\end{align*}
+
+**We now have the distribution we need. The probability we want is then:**
+
+\begin{align*}
+Pr[X<\frac{1}{2}|Y=\frac{1}{2}] &= \int_0^{\frac{1}{2}} \frac{4(x+\frac{1}{4})}{3} dx \\
+&= \left[\frac{4}{3}\left(\frac{x^2}{2}+\frac{x}{4}\right)\right]^{\frac{1}{2}}_0 \\
+&= \frac{1}{3}
+\end{align*}
+
+**Note that this is just the same as the "usual" way of calculating probabilities for continuous distributions, i.e. we evaluate the integral between the minimum of $X$ and the value we are interested in ($\frac{1}{2}$). The only difference is that we use the conditional distribution instead of the marginal distribution.**
+
+**Finally, note that we could also have calculated a more general version of this where we plug in $Y=y$ instead of $Y=1/2$ into the conditional distribution. This would give us:**
+
+\begin{align*}
+Pr[X<\frac{1}{2}|Y=y] &= \int_0^{\frac{1}{2}} \frac{4(x+y^2)}{3} dx \\
+&= \left[\frac{4}{3}\left(\frac{x^2}{2}+xy^2\right)\right]^{\frac{1}{2}}_0 \\
+&= \frac{2}{3}\left(\frac{1}{4}+y^2\right)
+\end{align*}
+
+**The nice thing about this expression is that we can can now plug in any value of $y$ we want. Also, we see that the probability that $X$ is smaller than $\frac{1}{2}$ is increasing in $y$.**
+
+
+#### Question 7 (extra credit, 1 point)
+
+Assume we have a continuous random variable $X$ with the following probability density function (PDF):
+
+$$
+f(x) = \begin{cases}
+3x^2 & \text{if } 0 \leq x \leq 1 \\
+0 & \text{otherwise}
+\end{cases}
+$$
+
+Calculate the expected value of $X$. 
+
+**Answer:**
+
+**We can use the definition of the expected value of continuous random variables to calculate this:**
+
+\begin{align*}
+E[X] &= \int_0^1 x f(x) dx \\
+&= \int_0^1 x 3x^2 dx \\
+&= \left[\frac{3x^4}{4}\right]^1_0 \\
+&= \frac{3}{4}
+\end{align*}
+
+### 2. Learning from Data II
+
+**Note**: Most of the materials for today's discussion can be referred to [STAT 414: Introduction to Probability Theory.](https://online.stat.psu.edu/stat414/).
+
+In today's discussion, we'll be reviewing some specially named discrete and continuous probability mass functions, such as bernoulli distribution, binomial distribution, uniform distribution, and normal distribution.
+
+The basic idea behind this lesson is that when certain conditions are met, we can derive a general formula for the probability mass function of a discrete random variable and the probability distribution function of a continuous random variable. 
+.
+#### a. Bernoulli Distribution
+
+Bernoulli Distribution is a type of discrete probability distribution where every experiment conducted asks a question that can be answered only in yes or no. In other words, the random variable can be 1 with a probability $p$ or it can be 0 with a probability $(1 - p)$. Such an experiment is called a Bernoulli trial. A pass or fail exam can be modeled by a Bernoulli Distribution. Bernoulli distribution can also be used to derive a binomial distribution, geometric distribution, and negative binomial distribution.
+
+For example, suppose there is an experiment where you flip a coin that is fair. If the outcome of the flip is heads then you will win. This means that the probability of getting heads is $p = \frac{1}{2}$. If $X$ is the random variable following a Bernoulli Distribution, we get $P(X = 1) = p = \frac{1}{2}$. We can also write it as $X \sim  Bernoulli(p)$ or just $X \sim  B(p)$.
+
+- Probability Mass Function (PMF)
+
+    A Bernoulli distribution is a discrete probability distribution where $Y=\left \{0, 1 \right \}$, its PMF is defined by:
+  
+    $$ f(y) = \begin{cases} 1 - p & \text{if } \ \ y = 0 \\ p & \text{if } \ \ y = 1 \\ \end{cases} $$
+    A Bernoulli distribution only has **one parameter**, $p$. It is a special case of the Binomial distribution when the number of trials = 1. 
+
+
+- Cumulative Distribution Function (CDF)
+
+    $$ F(y) = \begin{cases} 0 & \text{if } \ \ y < 0 \\ 1-p & \text{if } \ \ 0 \leq y < 1\\ 1 & \text{if } \ \ x \geq 1 \end{cases} $$
+
+- Expected Value and Variance
+
+    - Expected Value
+    
+      \begin{align*}
+      E(Y) &= \sum_{y \in Y}^{}yf(y) \\
+      &= 1 \times p + 0 \times (1-p)\\
+      &= p
+      \end{align*}
+      
+    - Variance
+    
+      \begin{align*}
+      Var(Y) &= E(Y^2) - (E(Y))^2 \\
+      &= [1^2 \times p + 0^2 \times (1-p)] - p^2\\
+      &= p - p^2 \\
+      &= p(1-p)
+      \end{align*}
+
+- Exercise 1:
+
+    1.1 We’re rolling a die and our random variable takes on the value $X = 1$ if the outcome is strictly greater than 4 and $X = 0$ otherwise. Then, $X \sim Bernoulli(\frac{1}{3})$. Please write out its PMF and CDF.
+    
+    1.2 What are the expected value and variance of rolling the die?
+
+
+#### b. Binomial Distribution
+
+Suppose we repeat a Bernoulli experiment $n$ times independently and we add up the outcomes. That is, suppose that our random variable is $Y = X_1 + X_2 + · · · + X_n$, where $X_i \sim Bernoulli(p)$ and the $X_i$ are
+independent. Then $Y$ is said to have a Binomial distribution with sample size $n$ and probability of success $p$, denoted $Y \sim Binomial(n, p)$. As you can see, a Binomial distribution has **two parameters**, $n$ and $p$.
+
+- Probability Mass Function (PMF)
+
+    $$ f(y) = \begin{cases} \binom{n}{y}p^y(1-p)^{N-y} & \text{if } \ \ y \in  \left \{0, 1, 2, ..., n \right \} \\ 0 & \text{otherwise } \end{cases} $$
+
+    where:
+    - $n$ is the number of trials (occurrences)
+    
+    - $y$ is the number of successful trials
+    
+    - $p$ is the probability of success in a single trial
+    
+    - $\binom{n}{y}$ is the combination of $n$ and $y$. A combination is the number of ways to choose a sample of $y$ elements from a set of $N$ distinct objects where order does not matter, and replacements are not allowed. Note that $\binom{n}{y}$ = \frac{n!}{y!(N-y)!}, where $!$ is factorial (so, $4! = 4 \times 3 \times 2 \times 1$).
+
+
+- Cumulative Distribution Function (CDF)
+
+    $$F(y) = P(Y \leq y) = \sum_{y=0}^{n} \binom{n}{y}p^y(1-p)^{n-y} $$
+    
+
+- Expected Value and Variance
+
+    - Expected Value
+    
+      Recall that expected value is a linear operator, which suggests that:
+    
+      \begin{align*}
+      E(Y) &= E(X_1) + E(X_2) + ... + E(X_n) \\
+      &= p + p + ... + p\\
+      &= np
+      \end{align*} 
+      
+    - Variance
+    
+      Recall that the variance of a sum of independent random variables is the sum of the variances:
+      
+      \begin{align*}
+      Var(Y) &= Var(X_1) + Var(X_2) + ... + Var(X_n) \\
+      &= p(1-p) + p(1-p) + ... + p(1-p)\\
+      &= np(1-p)
+      \end{align*}
+      
+      
+- Exercise 2:
+    
+    2.1 Bob makes 60% of his free-throw attempts and he always shoots 12 free-throws during the class break. What is the PMF and CDF of Bob making free-throws?
+    
+    2.2 What is the probability that Bob makes exact 10 free-throws out of the total 12 free-throws?
+    
+    2.3 What is the probability that Bob makes less than 3 times.
+    
+    2.4 What is the probability that Bob makes more than 3 times.
+    
+    2.5 Theoretically, in the long run, what are the expected value and variance of Bob making free-throws?
+
+      
+- Binomial Distribution in R
+
+    We can also use R to do the calculation for Excercise 2. Here are some base R functions to do it:
+
+    | Function | Description |
+    |------|------|
+    | `dbinom(x, size, prob)` | Find the probability of getting a certain number of successes (`x`) in a certain number of trials (`size`) where the probability of success on each trial is fixed (`prob`).|
+    | `pbinom(q, size, prob)` |Return the value of the cumulative density function (CDF) of the binomial distribution given a certain random variable `q`, number of trials (`size`) and probability of success on each trial (`prob`).|
+    | `qbinom(p, size, prob)` |The inverse of `pbinom()` function. It takes the probability value and gives output which corresponds to the probability value.|
+    | `rbinom(n, size, prob)` |Generate a vector of binomial distributed random variables given a vector length n, number of trials (`size`) and probability of success on each trial (`prob`).|
+
+
+    2.2 What is the probability that Bob makes exact 10 free-throws out of the total 12 free-throws?
+    
+    - number of successes x = 10
+    
+    - number of trials n = 12
+    
+    - prob of success on each trial p = 0.6
+    
+    ```{r, message=F, error=F, warning=F}
+    dbinom(x = 10, size = 12, prob = 0.6)
+    ```
+    
+    The probability that Bob makes exactly 10 shots is 0.0639.
+    
+    We can also plot all the probabilities when Bob makes exactly 0, 1, 2, ..., 12 shots.
+    
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    df <- data.frame(x = c(0:12), y = dbinom(x = c(0:12), 
+                 size = 12, prob = 0.6))
+    sum(df$y) ## Should be 1
+
+    ggplot(df, aes(x = x, y = y)) +
+      geom_col(color = "black", fill = "gray85") +
+      scale_x_continuous(limits = c(0, 12), 
+                         breaks = seq(0, 12, 1)) + 
+      scale_y_continuous(breaks = seq(0, 0.25, 0.02), 
+                         limits = c(0, 0.25)) + 
+      labs(x = "X", y = "Probability") + 
+      theme_bw() + 
+      theme(panel.grid.minor = element_blank())
+```
+    
+    2.3 What is the probability that Bob makes less than 3 times.
+    
+    ```{r, message=F, error=F, warning=F}
+    pbinom(q = 2, size = 12, prob = 0.6)
+    ```
+    
+    2.4 What is the probability that Bob makes more than 3 times.
+    
+    ```{r, message=F, error=F, warning=F}
+    1 - pbinom(q = 2, size = 12, prob = 0.6)
+    ```
+    
+    2.5 Theoretically, in the long run, what are the expected value and variance of Bob making free-throws?
+    
+    ```{r, message=F, error=F, warning=F}
+    set.seed(1234)
+    sample.throws <- rbinom(n = 100000, size = 12, prob = 0.6)
+
+    mean(sample.throws) # very close to 12*0.6=7.2
+    var(sample.throws) # very close to 12*0.6*0.4=2.88
+    ```
+    
+#### c. Uniform Distribution
+
+In statistics, uniform distribution is a term used to describe a form of probability distribution where every possible outcome has an equal likelihood of happening. The probability is constant since each variable has equal chances of being the outcome. There are two types of uniform distribution:
+
+1. Discrete uniform distribution
+
+    A discrete uniform distribution is a statistical distribution where the probability of outcomes is equally likely and with **finite values**. A good example of a discrete uniform distribution would be the possible outcomes of rolling a 6-sided die. The possible values would be 1, 2, 3, 4, 5, or 6. In this case, each of the six numbers has an equal chance of appearing. Therefore, each time the 6-sided die is thrown, each side has a chance of $\frac{1}{6}$. The number of values is finite. It is impossible to get a value of 1.3, 4.2, or 5.7 when rolling a fair die.
+
+
+2. Continuous uniform distribution
+
+    Not all uniform distributions are discrete; some are continuous. A continuous uniform distribution (also referred to as rectangular distribution) is a statistical distribution with an **infinite number** of equally likely measurable values. Unlike discrete random variables, a continuous random variable can take any real value within a specified range.
+
+    A continuous uniform distribution usually comes in a rectangular shape. A good example of a continuous uniform distribution is an idealized random number generator. With continuous uniform distribution, just like discrete uniform distribution, every variable has an equal chance of happening. However, there is an infinite number of points that can exist. Today, we will focus on continuous uniform distribution.
+    
+    - Probability Distribution Function (PDF)
+    
+      A continuous random variable $X$ has a uniform distribution, denoted $X \sim Uniform \left [a, b\right ]$, if its probability density function is:
+      
+      $$ f(x) = \begin{cases} \frac{1}{b-a}& \text{if } x \in [a, b] \\ 0 & \text{otherwise} \end{cases} $$
+      
+      for two constants $a$ and $b$, such that $a<x<b$. A graph of the PDF looks like this:
+      
+      <center>
+      ![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/uniform_pdf.png){width=50%}
+      </center>
+      
+      Note that the length of the base of the rectangle is $(b-a)$, while the length of the height of the rectangle is $\frac{1}{b-a}$.Therefore, as should be expected, the area under $f(x)$ and between the endpoints $a$ and $b$ is 1. Additionally, $f(x)>0$ over the support $a<x<b$. Therefore, $f(x)$ is a valid probability density function.
+    
+    
+    - Cumulative Distribution Function (CDF)
+    
+    The cumulative distribution function of a continuous uniform random variable is:
+    
+    $$F(x) = \begin{cases}  0 & \text{if } \ \ x < a \\ \frac{x-a}{b-a}& \text{if } \ \ x \in [a, b] \\ 1 & \text{if } \ \ x < a \\ \end{cases}$$
+     A graph of the CDF looks like this:
+     
+     <center>
+     ![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/uniform_cdf.png){width=50%}
+     </center>
+    
+    As the picture illustrates, $F(x)=0$ when $x$ is less than the lower endpoint of the support ($a$, in this case) and $F(x)=1$ when $x$ is greater than the upper endpoint of the support ($b$, in this case). The slope of the line between $a$ and $b$ is, of course, $\frac{1}{b-a}$.
+    
+    - Expected Value and Variance
+    
+      - Expected Value
+        
+        \begin{align*}
+        E(X) &= \int_{a}^{b}x(\frac{1}{b-a})dx \\
+        &= \frac{1}{b-a}\left[\frac{x^2}{2}\right]^b_a\\
+        &= \frac{1}{2(b-a)}(b^2-a^2) \\
+        &= \frac{1}{2(b-a)}(b+a)(b-a) \\
+        &= \frac{(a+b)}{2}
+        \end{align*} 
+      
+      - Variance
+        
+        \begin{align*}
+        E(X^2) &= \int_{a}^{b}x^2(\frac{1}{b-a})dx \\
+        &= \frac{1}{b-a}\left[\frac{x^3}{2}\right]^b_a\\
+        &= \frac{1}{3(b-a)}(b^3-a^3) \\
+        &= \frac{1}{3(b-a)}(b-a)(b^2+ab+a^2)\\
+        &= \frac{b^2+ab+a^2}{3}
+        \end{align*}
+        
+        \begin{align*}
+        Var(X) &= E(X^2) - (E(X))^2 \\
+        &= \frac{b^2+ab+a^2}{3} - (\frac{(a+b)}{2})^2 \\
+        &= \frac{b^2+ab+a^2}{3} - \frac{b^2+2ab+a^2}{4} \\
+        &= \frac{4b^2+4ab+4a^2-3b^2-6ab-3a^2}{12} \\
+        &= \frac{b^2-2ab+a^2}{12} \\
+        &= \frac{(b-a)^2}{12}
+        \end{align*}
+    
+    - Continuous Uniform Distribution in R
+    
+        | Function | Description |
+        |------|------|
+        | `dunif(x, min, max)` | Return the corresponding uniform probability density function (PDF) values of a certain vector quantile `x`. |
+        | `punif(q, min, max)` |Return the value of the cumulative density function (CDF) of the uniform distribution given a certain random variable q and the interval. |
+        | `qunif(p, min, max)` |The inverse of `punif()` function. It takes the probability value and gives output which corresponds to the probability value.|
+        | `runif(n, min, max)` |Generate `n` number of random numbers within any interval, defined by the min and the max argument.|
+        
+    - Exercise 3:
+    
+      Suppose we have a population distribution looks like this: $X \sim Uniform \left [0, 10\right ]$
+      
+      $$ f(x) = \begin{cases} \frac{1}{10}& \text{if } x \in [0, 10] \\ 0 & \text{otherwise} \end{cases} $$
+      
+      3.1 What does this continuous uniform distribution looks like?
+      
+        ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+          ggplot(data.frame(x = c(-5, 15)), aes(x = x)) + 
+              stat_function(fun = dunif, 
+                            args = list(min= 0, max = 10), 
+                            size = 1) + 
+              scale_y_continuous(name = "density") + 
+              scale_x_continuous(name = "X", 
+                                 breaks = seq(-5, 15, 2)) + 
+              theme_bw() + 
+              theme(panel.grid = element_blank())
+        ```
+          
+      3.2 What is the probability when $X \leq 4$?
+      
+        ```{r, message=F, echo= F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+          cut <- 4
+
+          # Define the function for the shading
+          funcShaded <- function(x, lower_bound) {
+            y = dunif(x, min = 0, max = 10)
+            y[x >= lower_bound] <- NA
+            return(y)
+          }
+
+          ggplot(data.frame(x = c(-5, 15)), aes(x = x)) + 
+            stat_function(fun = dunif, 
+                          args = list(min= 0, max = 10), 
+                          size = 1) + 
+            stat_function(fun = funcShaded, 
+                          args = list(lower_bound = cut),
+                          geom = "area", fill = "blue", 
+                          alpha = 0.3) +
+            scale_y_continuous(name = "density") + 
+            scale_x_continuous(name = "X", 
+                               breaks = seq(-5, 15, 1)) + 
+            theme_bw() + 
+            theme(panel.grid = element_blank()) 
+        ```
+
+        ```{r, message=F, error=F, warning=F}
+        punif(4, min = 0, max = 10)
+        ```
+
+        $P(X \leq 4) = 0.4$
+
+
+      3.3 What is the probability when $X \geq 4$?
+
+        ```{r, message=F, echo= F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+          # Define the function for the shading
+          funcShaded2 <- function(x, lower_bound) {
+              y = dunif(x, min = 0, max = 10)
+              y[x <= lower_bound] <- NA
+              return(y)
+          }
+
+          ggplot(data.frame(x = c(-5, 15)), aes(x = x)) + 
+              stat_function(fun = dunif, 
+                            args = list(min= 0, max = 10), 
+                            size = 1) + 
+              stat_function(fun = funcShaded2, 
+                            args = list(lower_bound = cut),
+                            geom = "area", fill = "red", 
+                            alpha = 0.3) +
+              scale_y_continuous(name = "density") + 
+              scale_x_continuous(name = "X", 
+                                 breaks = seq(-5, 15, 1)) + 
+              theme_bw() + 
+              theme(panel.grid = element_blank())
+        ```
+
+        ```{r, message=F, error=F, warning=F}
+        1- punif(4, min = 0, max = 10)
+        ```
+
+        $P(X \geq 4) = 1 - P(X \leq 4) = 0.6$
+          
+      3.4 What are the expected value and variance of this distribution? Please compute them by hand.
+      
+      
+      
+        ```{r, message=F, error=F, warning=F}
+        set.seed(1234)
+        sample.x <- runif(n = 100000, min = 0, max = 10) ## n is the number of obs I'd like to create; this can be seen as a sample we draw from a DGP under normal distribution
+        sample.x[1:50] 
+
+        mean(sample.x) ## very close to 5 
+        var(sample.x) ## very close to 8.33
+        ```
+
+#### d. Normal Distribution
+
+Normal distribution is the most important probability distribution function used in statistics because of its advantages in real case scenarios. For example, the height of the population, shoe size, IQ level, rolling a dice, and many more. 
+
+- Probability Distribution Function (PDF)
+
+    The continuous random variable $X$ follows a normal distribution if its probability density function is defined as:
+    
+    $$f(x)=\frac{1}{\sigma\sqrt{2\pi}}\left \{ -\frac{1}{2} (\frac{x-\pi}{\sigma})^2\right \}$$
+    
+    for $\infty < x < \infty$, $\infty < \mu < \infty$, and $0 < \sigma < \infty$. The mean of $X$ is $\mu$ and the variance of $X$ is $\sigma^2$. We say $X \sim N(\mu, \sigma^2)$.
+    
+    <center>
+    ![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/normal_pdf.png){width=60%}
+    </center>
+    
+    The probability density function of normal distribution is **bell-shaped** curve graph, which is symmetric. The graph signifies that the peak point is the mean of the data set and half of the values of data set lie on the left side of the mean and other half lies on the right part of the mean telling about the distribution of the values. The shape of any normal curve depends on its mean $\mu$ and standard deviation $\sigma$.
+
+    
+- Cumulative Distribution Function (CDF)
+
+    We won't focus on the CDF of normal distribution as it is ugly, but here it is.
+    
+    $$\Phi (\frac{x-\mu}{\sigma})=\frac{1}{2}\left [ 1+erf(\frac{x-\mu}{\sigma\sqrt{2}}) \right ]$$
+    
+    <center>
+    ![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/normal_cdf.png){width=60%}
+    </center>
+    
+    
+- Expected Value and Variance
+
+    - Expected Value
+    
+      $$E(x)=\int xf(x)dx=\int x\frac{1}{\sigma\sqrt{2\pi}}\left \{ -\frac{1}{2} (\frac{x-\pi}{\sigma})^2\right \}dx=\mu$$
+      
+    - Variance
+      
+      $$Var(x)=\int (x-E(x))^2f(x)dx=\int (x-\mu)^2\frac{1}{\sigma\sqrt{2\pi}}\left \{ -\frac{1}{2} (\frac{x-\pi}{\sigma})^2\right \}dx=\sigma^2$$
+    
+
+- Normal Distribution in R
+
+    | Function | Description |
+    |------|------|
+    | `dnorm(x, mean, sd)` | Probability density function (PDF). |
+    | `pnorm(x, mean, sd)` |Cumulative distribution function (CDF), which measures the probability that a random number $X$ takes a value less than or equal to $x$.|
+    | `qnorm(p, mean, sd)` |The inverse of `pnorm()` function. It takes the probability value and gives output which corresponds to the probability value.|
+    | `rnorm(n, mean, sd)` |Generate a vector of random numbers which are normally distributed.|
+
+
+- Exercise 4:
+
+    Suppose $X$, the grade on a midterm exam, is normally distributed with mean 70 and standard deviation 10, $X \sim N(70, 10^2)$.
+    
+    4.1 What does the grade on midterm exam normal distribution look like?
+    
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    ggplot(data.frame(x = c(30, 110)), aes(x = x)) + 
+      stat_function(fun = dnorm, 
+                    args = list(mean = 70, sd = 10), 
+                    size = 1) + 
+      scale_y_continuous(name = "density") + 
+      scale_x_continuous(name = "X", 
+                         breaks = seq(30, 110, 10)) + 
+      geom_vline(aes(xintercept = 70), lty = 2, 
+                     color = "red", alpha = 0.4) +
+      theme_bw() + 
+      theme(panel.grid = element_blank())
+```
+
+    4.2 What is the probability that a randomly selected student has a grade below 60?
+    
+    4.3 What is the probability that a randomly selected student has a grade above 90?
+    
+    4.4 What is the probability that a randomly selected student has a grade between 75 and 95?
+    
+    4.5 The instructor wants to give 15% of the class an A. What cutoff should the instructor use to determine who gets an A?   
+    
+    4.6 The instructor now wants to give 10% of the class an A−. What cutoff should the instructor use to determine who gets an A−?
+  
+  
+  
+  
+  
+  
+  
+  
+
+
