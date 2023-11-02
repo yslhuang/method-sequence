@@ -3138,7 +3138,7 @@ independent. Then $Y$ is said to have a Binomial distribution with sample size $
     2.4 What is the probability that Bob makes more than 3 times.
     
     ```{r, message=F, error=F, warning=F}
-    1 - pbinom(q = 2, size = 12, prob = 0.6)
+    1 - pbinom(q = 3, size = 12, prob = 0.6)
     ```
     
     2.5 Theoretically, in the long run, what are the expected value and variance of Bob making free-throws?
