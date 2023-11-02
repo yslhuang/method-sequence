@@ -3041,7 +3041,7 @@ independent. Then $Y$ is said to have a Binomial distribution with sample size $
     
     - $p$ is the probability of success in a single trial
     
-    - $\binom{n}{y}$ is the combination of $n$ and $y$. A combination is the number of ways to choose a sample of $y$ elements from a set of $N$ distinct objects where order does not matter, and replacements are not allowed. Note that $\binom{n}{y}$ = \frac{n!}{y!(N-y)!}, where $!$ is factorial (so, $4! = 4 \times 3 \times 2 \times 1$).
+    - $\binom{n}{y}$ is the combination of $n$ and $y$. A combination is the number of ways to choose a sample of $y$ elements from a set of $N$ distinct objects where order does not matter, and replacements are not allowed. Note that $\binom{n}{y} = \frac{n!}{y!(N-y)!}$, where $!$ is factorial (so, $4! = 4 \times 3 \times 2 \times 1$).
 
 
 - Cumulative Distribution Function (CDF)
