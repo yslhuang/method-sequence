@@ -2980,7 +2980,7 @@ E[X] &= \int_0^1 x f(x) dx \\
 In today's discussion, we'll be reviewing some specially named discrete and continuous probability mass functions, such as bernoulli distribution, binomial distribution, uniform distribution, and normal distribution.
 
 The basic idea behind this lesson is that when certain conditions are met, we can derive a general formula for the probability mass function of a discrete random variable and the probability distribution function of a continuous random variable. 
-.
+
 #### a. Bernoulli Distribution
 
 Bernoulli Distribution is a type of discrete probability distribution where every experiment conducted asks a question that can be answered only in yes or no. In other words, the random variable can be 1 with a probability $p$ or it can be 0 with a probability $(1 - p)$. Such an experiment is called a Bernoulli trial. A pass or fail exam can be modeled by a Bernoulli Distribution. Bernoulli distribution can also be used to derive a binomial distribution, geometric distribution, and negative binomial distribution.
