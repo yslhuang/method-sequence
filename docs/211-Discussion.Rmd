@@ -4312,7 +4312,7 @@ What is her estimate of Biden approval?
 mean(poll1)
 ```
 
-Now, instead of drawing one sample out of the population, simulate the sampling distribution of Biden approval in Sacramento with 100. Please draw the same size of the sample ($n=900$) for 100,000 times. 
+Now, instead of drawing one sample out of the population, simulate the sampling distribution of Biden approval in Sacramento. Please draw the same size of the sample ($n=900$) for 100,000 times. 
 
 ```{r, message=F, error=F, warning=F}
 ## Hint: replicate()
