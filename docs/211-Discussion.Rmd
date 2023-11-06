@@ -3414,6 +3414,964 @@ Normal distribution is the most important probability distribution function used
     4.6 The instructor now wants to give 10% of the class an A−. What cutoff should the instructor use to determine who gets an A−?
   
   
+## Discussion VI
+
+### 1. Solution Keys to Problem Set 5
+
+#### Question 1 (2 points, skip if answering question 5)
+
+Your friend loves ice cream. When it's sunny, your friend eats 3 scoops of ice cream per day. When it is not sunny, your friend flips a coin and eats 2 scoops of ice cream if the coin lands on heads, and 1 scoop if the coin lands on tails. You and your friend live in a place where it is sunny 60% of the time.
+
+**a.** Write down the probability mass function of the random variable $X$, which tells you how many scoops of ice cream your friend eats in a day. 
+
+**Answer:**
+
+**Let's first define the random variable $X$, which tells us how many scoops of ice cream your friend eats in a day. We can then write down the probability mass function of $X$:**
+
+$$
+\begin{aligned} 
+Pr(X=1) &= Pr(\text{not sunny})Pr(\text{tails}) = 0.4 \times 0.5 = 0.2 \\ Pr(X=2) &= Pr(\text{not sunny})Pr(\text{heads}) = 0.4 \times 0.5 = 0.2 \\ Pr(X=3) &= Pr(\text{sunny}) = 0.6 
+\end{aligned}
+$$
+
+**b.** What is the expected value of $X$?
+
+**Answer:**
+
+**We can now calculate the expected value of $X$:**
+
+$$
+\begin{aligned} 
+E(X) &= 1 \times 0.2 + 2 \times 0.2 + 3 \times 0.6 \\ 
+&= 0.2 + 0.4 + 1.8 \\ 
+&= 2.4 \end{aligned} 
+$$
+
+**c.** Let's define a new random variable $Y$, which is equal to 1 if you eat 3 scoops of ice cream on a given day, and 0 otherwise. This variable follows a "special" distribution. What is this distribution, and what is its parameter?
+
+**Answer:**
+
+**The distribution is the Bernoulli distribution, and the parameter is the probability of success, which is 0.6. We can write this as $Y \sim Bernoulli(0.6)$.**
+
+**d.** Now, let's define a new random variable $Z$, which is equal to the number of days in year that you eat 3 scoops of ice cream. What is the distribution of $Z$, and what are its parameters? Similar to the distribution of $Y$, it has a specific name. What is the expected value of $Z$?
+
+**Answer:**
+    
+**The distribution is the binomial distribution, and the parameters are the number of trials $N$ and the probability of success $p$. The number of trials is 365 (days in a year), and the probability of success is 0.6 (your friend eats 3 scoops with probability 0.6 on any given day). We can write this as $Z \sim Binomial(365, 0.6)$. We can now calculate the expected value of $Z$:**
+    
+$$
+\begin{aligned} 
+E(Z) &= Np \\ 
+&= 365 \times 0.6 \\ 
+&= 219 
+\end{aligned}
+$$
+
+#### Question 2 (4 points, skip if answering question 5)
+
+During the week, you can either bike, walk or take the bus to campus. On Monday, Tuesday and Wednesday, you don't have early classes, so you don't care about how long it takes you to get to campus. Therefore, on these days, you are equally likely to take the bus, walk or bike. On Thursday and Friday, you have class at 9 AM, so you want to get to campus as quickly as possible. On these days, you are equally likely to bike or take the bus, but you never walk.
+
+Assume you have two random variables: $X$ is the mode of transportation to campus on a given weekday, such that $\mathcal{X} = \{\text{bus}, \text{walk}, \text{bike}\}$, and $Y$ tells you whether you have a class at 9 AM on a given weekday, such that $\mathcal{Y} = \{\text{early class}, \text{no early class}\}$.\footnote{For this problem, we only consider weekdays, i.e. Monday, Tuesday, Wednesday, Thursday and Friday. We ignore the weekend.}
+
+**a.** What is the conditional distribution of $X$ given $Y$? Since X can have 3 values and Y can have 2 values, there are 6 possible combinations of $X$ and $Y$. 
+
+**Answer:**
+
+**We can write down the conditional distribution of $X$ given $Y$:**
+
+$$
+\begin{aligned} 
+Pr(X=\text{bus} | Y=\text{early class}) &= \frac{1}{2} \\ 
+Pr(X=\text{walk} | Y=\text{early class}) &= 0 \\ Pr(X=\text{bike} | Y=\text{early class}) &= \frac{1}{2} \\ 
+Pr(X=\text{bus} | Y=\text{no early class}) &= \frac{1}{3} \\
+Pr(X=\text{walk} | Y=\text{no early class}) &= \frac{1}{3} \\ 
+Pr(X=\text{bike} | Y=\text{no early class}) &= \frac{1}{3} \\ 
+\end{aligned}
+$$
+
+
+**b.** What is the marginal distribution of $Y$?
+
+**Answer:**
+
+**We can write down the marginal distribution of $Y$. This is given in the question.**
+
+$$
+\begin{aligned} 
+Pr(Y=\text{early class}) &= \frac{2}{5} \\ 
+Pr(Y=\text{no early class}) &= \frac{3}{5} \\ 
+\end{aligned} 
+$$
+
+**c.** Based on your answers to the previous questions, what is the joint distribution of $X$ and $Y$?
+
+**Hint:** The joint PMF tells you the probabilities $Pr(X=x, Y=y)$ for all combinations of $X$ and $Y$. Since this must follow the rules of probability, we know that the sum of all probabilities must be 1.
+
+**Answer:**
+
+**We can now write down the joint distribution of $X$ and $Y$. Note that from the definition of the conditional distribution, we know that the joint distribution is the product of the conditional distribution and the marginal distribution. For example, we have:**
+
+$$ 
+\begin{aligned} Pr(X=\text{bus}, Y=\text{early class}) &= Pr(X=\text{bus} | Y=\text{early class}) \times Pr(Y=\text{early class}) \\ 
+&= \frac{1}{2} \times \frac{2}{5} \\ 
+&= \frac{1}{5} 
+\end{aligned} 
+$$
+    
+**We can do this for all possible combinations of $X$ and $Y$, to get the following table:**
+    
+$$
+\begin{array}{c|cc} & Y=\text{early class} & Y=\text{no early class} \\ 
+\hline X=\text{bus} & \frac{1}{5} & \frac{1}{5} \\ 
+X=\text{walk} & 0 & \frac{1}{5} \\ 
+X=\text{bike} & \frac{1}{5} & \frac{1}{5} \\ 
+\end{array}
+$$
+
+**d.** So far, we have not assigned any numerical values $x$ to the random variable $X$. We will now do this -- more specifically, we will assign a speed to each mode of transportation as follows:
+
+$$
+\begin{aligned}
+\text{bus:} & 15 \text{ mph} \\
+\text{walk:} & 3 \text{ mph} \\
+\text{bike:} & 12 \text{ mph} \\
+\end{aligned}
+$$
+
+Instead of the mode of transportation, we will now consider the speed of each mode of transportation. Note that this has the same distribution that we determined before, but now the values of $X$ are numerical. This means that instead of $X=\text{bus}$, we now have $X=15$, and so on. However, $Pr(X=15)$ is still the same as $Pr(X=\text{bus})$.
+
+Calculate the conditional expected values $E(X|Y=\text{early class})$ and $E(X|Y=\text{no early class})$. For this, you will need the conditional distribution of $X$ given $Y$, which you calculated in part **a.**.
+
+**Answer:**
+
+**We can now calculate the conditional expected values $E(X|Y=\text{early class})$ and $E(X|Y=\text{no early class})$:**
+
+$$ 
+\begin{aligned} 
+E(X|Y=\text{early class}) = \frac{1}{2} \times 15 + \frac{1}{2} \times 12 = 13.5 \\ 
+E(X|Y=\text{no early class}) = \frac{1}{3} \times 15 + \frac{1}{3} \times 3 + \frac{1}{3} \times 12 = 10 
+\end{aligned} 
+$$
+
+**e.** Calculate the following quantity. You should have all you need for this from previous questions.
+
+$$E(X|Y=\text{early class})\cdot Pr(Y=\text{early class}) + E(X|Y=\text{no early class})\cdot Pr(Y=\text{no early class})$$
+
+**Answer:**
+
+$$
+\begin{aligned} 
+E(X|Y=\text{early class})\cdot Pr(Y=\text{early class}) + E(X|Y=\text{no early class})\cdot Pr(Y=\text{no early class}) &= 13.5 \times \frac{2}{5} + 10 \times \frac{3}{5} \\ 
+&= 5.4 + 6 \\ 
+&= 11.4 
+\end{aligned} 
+$$
+
+**f.** Find the marginal PMF of $X$ and then calculate the expected value of $X$. You should find the same value as in part **e.**. Briefly explain why the two are the same -- why does this make sense?
+
+**Answer:**
+
+**We now calculate the marginal PMF of $X$ based on the joint distribution of $X$ and $Y$ that we calculated in part **c.**:**
+
+$$ 
+\begin{aligned} 
+Pr(X=\text{bus}) &= \frac{1}{5} + \frac{1}{5} = \frac{2}{5} \\ 
+Pr(X=\text{walk}) &= 0 + \frac{1}{5} = \frac{1}{5} \\ 
+Pr(X=\text{bike}) &= \frac{1}{5} + \frac{1}{5} = \frac{2}{5} \\ 
+\end{aligned} 
+$$
+
+**We can now calculate the expected value of $X$:**
+
+$$
+\begin{aligned} 
+E(X) &= 15 \times \frac{2}{5} + 3 \times \frac{1}{5} + 12 \times \frac{2}{5} \\ 
+&= 6 + 0.6 + 4.8 \\ 
+&= 11.4 
+\end{aligned} 
+$$
+
+**This is the same as the answer to part **e.**. This makes sense, since the expected value of $X$ is the weighted average of the expected values of $X$ given $Y=\text{early class}$ and $Y=\text{no early class}$, where the weights are the probabilities of $Y=\text{early class}$ and $Y=\text{no early class}$ respectively. This is exactly what we calculated in part **e.**.**
+
+**Using the expression given in **e.** to calculate $E(X)$ is also called the law of total expectation, or the law of iterated expectation.**
+    
+#### Question 3 (3 points)
+
+Assume that you have two continuous uniform variables $X$ and $Y$ on the the following intervals:
+
+$$
+\begin{aligned}
+X &\sim U(3,9) \\
+Y &\sim U(2,4) \\
+\end{aligned}
+$$
+
+The two random variables are independent. From each distribution, you obtain values $x$ and $y$ respectively. You then want to draw a rectangle where the sides have lengths $x$ and $y$ respectively. 
+
+**a.** What is the expected value of the area of the rectangle?
+
+**Hint:** The expected value of a uniform distribution on the interval $[a,b]$ is $\frac{a+b}{2}$.
+
+**Answer:**
+
+**The area of the rectangle is given by $A = XY$. We can now calculate the expected value of the area of the rectangle:**
+
+$$
+\begin{aligned} 
+E(A) &= E\left(XY\right) \\ 
+&= E(X)E(Y) \\ 
+&=   \frac{3+9}{2} \frac{2+4}{2} \\ 
+&= \frac{12}{2} \frac{6}{2} \\ 
+&= 18 
+\end{aligned}
+$$
+**b.** One way to check analytical answers is to simulate the problem and see if the simulated answer is close to the analytical answer. You will now do this for the to the previous question. The general approach is as follows: Write code that simulates the problem. For example, you would write code that draws 1,000 values $x$ from a uniform distribution on the interval $[3,9]$, and 1,000 values $y$ from a uniform distribution on the interval $[2,4]$. You would then calculate the desired quantity, and assess the mean of the desired quantity across all draws (in this case, the mean of the area of the rectangle). You can then compare this to the analytical answer. Below is some code that provides a starting point for the simulation.
+
+```{r}
+# Set seed
+set.seed(3)
+
+# Draw 1000 values from a uniform distribution on the interval [3,9]
+x <- runif(1000, min = 3, max = 9)
+
+# Draw 1000 values from a uniform distribution on the interval [2,4]
+y <- runif(1000, min = 2, max = 4)
+
+# Your code here
+
+# ...
+
+```
+
+**Answer:**
+
+```{r}
+# Set seed
+set.seed(3)
+
+# Draw 1000 values from a uniform distribution on the interval [3,9]
+x <- runif(1000, min = 3, max = 9)
+
+# Draw 1000 values from a uniform distribution on the interval [2,4]
+y <- runif(1000, min = 2, max = 4)
+
+# Calculate the area of the rectangle
+area <- x * y
+
+# Calculate the mean of the area of the rectangle
+mean(area)
+```
+
+
+**c.** Use the simulation above to approximate the following quantities:
+
+  - The probability that the area of the rectangle is greater than 20.
+  - The probability that the area of the rectangle is greater than 20, given that the area of the rectangle is greater than 10.
+  - The variance of the area of the rectangle.
+
+**Note:** "approximate" means that you should use the simulated areas to calculate the probabilities and the variance. 
+
+**Answer:**
+
+```{r}
+# Assuming we have already run the code above
+# The probability that the area of the rectangle is greater than 20
+mean(area > 10)
+
+# The probability that the area of the rectangle is greater than 20, given that the area of the rectangle is greater than 10
+mean(area[area > 10] > 20)
+
+# The variance of the area of the rectangle
+var(area)
+```
+
+#### Question 4 (3 points)
+
+Evaluate the following statements. For each of them, indicate whether it is true or false, and explain why.
+
+1. For a discrete RV $X$, the marginal PMF must be a function such that $\sum_{x \in \mathcal{X}}Pr(X=x)=1$. However, this does not need to hold for the conditional PMF $f_{X|Y}(x|y)$, since values of $Y$ do not need to occur with the same probability.
+
+    **Hint:** $\sum_{x \in \mathcal{X}}$  means we sum over all possible values of the random variable $X$. The statement asks you whether $\sum_{x \in \mathcal{X}}Pr(X=x|Y=y)$ is necessarily equal to one or not. 
+
+    **Answer:**
+
+    **False. The marginal PMF must be a function such that $\sum_{x \in \mathcal{X}}Pr(X=x)=1$. However, this also needs to hold for the conditional PMF $f_{X|Y}(x|y)$, since the conditional PMF needs to follow the properties of all PMFs.**
+    
+    
+2. The expected value of a random variable is the value that the random variable takes most often.
+
+    **Answer:**
+
+    **False. The expected value is defined as the sum of each value multiplied by the probability of that value. The value that the random variable takes most often is the mode (in the discrete case).**
+
+3. In the discrete case, the joint PMF of two random variables $X$ and $Y$  tells you the probability that $X$ takes for a certain value $x$ and $Y$ takes for a certain value $y$. The marginal distribution then tells you the probability that $X$ takes for a certain value $x$, given some value of $Y$.
+
+    **Answer:**
+
+    **False. The joint PMF of two random variables $X$ and $Y$ tells you the probability that $X$ takes for a certain value $x$ and $Y$ takes for a certain value $y$. The marginal distribution then tells you the probability that $X$ takes for a certain value $x$, regardless of the value of $Y$.**
+
+4. If variables $Y$ and $X$ are independent, this implies that the expectation of $X$ given $Y$ does **not** differ across values of $Y$.
+
+    **Answer:**
+
+    **True. If $Y$ and $X$ are independent, this implies that $E(X|Y) = E(X)$, which means that the expectation of $X$ given $Y$ does not differ across values of $Y$.**
+
+5. A Bernoulli random variable is a binomial random variable with $N=2$.
+
+    **Answer:**
+
+    **False. A Bernoulli random variable is a binomial variable with $N=1$, i.e. it is a binomial variable with only one trial.**
+
+
+6. For a random variable $X$ with a normal distribution $X\sim N(0, \sigma^2)$, it is possible that $Pr(X<a)>Pr(X>(-a))$ for some $a\leq0$.
+
+    **Answer:**
+
+    **False. The normal distribution is symmetric around 0, so $Pr(X<a)=Pr(X>(-a))$ for any $a\leq0$.**
+
+#### Question 5 (required for students in the methods subfield, 3 points)
+
+#### 5.1 (1 point)
+
+Assume that we have a simple linear regression of the form $E(Y|X) = \alpha + \beta X$. The linear regression gives us an estimate of the expected value of $Y$ given $X$. 
+
+Note that the coefficients $\alpha$ and $\beta$ are chosen to minimize the following expression:
+
+$$
+E[(Y - \alpha - \beta X)^2]
+$$
+
+In other words, the coefficients are chosen to minimize the expectation of the squared difference between the expectation of $Y$ given $X$ and the actual value of $Y$. We can use the last expression to derive the following expression for $\beta$ and $\alpha$:
+
+$$
+\begin{aligned}
+\beta = \frac{Cov(X,Y)}{Var(X)} \\ 
+\alpha = E(Y) - \beta E(X) 
+\end{aligned}
+$$
+
+Show that the expressions of $\beta$ and $\alpha$ given above minimize the expression $E[(Y - \alpha - \beta X)^2]$. To do this, you can take the derivatives of the expression in (1) with respect to $\alpha$ and $\beta$, and set the derivatives to 0. You can then solve for $\alpha$ and $\beta$.\footnote{As in a previous problem set, we will ignore the second derivative, i.e. we will assume we found a minimum.}
+
+**Note:** For this question, you can assume the following:
+
+$$
+\frac{\partial E[f(x,y)]}{\partial(x)} = E\left[\frac{\partial f(x,y)}{\partial x}\right]
+$$
+
+Where $\frac{\partial f(x,y)}{\partial x}$ is the partial derivative of some function $f(x,y)$ with respect to $x$.
+
+**Hint 1:** For some constant $a$ and RVs $X$ and $Y$:
+ 
+  - $E(aX)=aE(X)$ 
+  - $E(a)=a$ 
+  - $E(Y+X) = E(Y) + E(X)$
+
+**Hint 2:** $Var(X) = E(X^2) - E(X)^2$
+
+**Hint 3:** $Cov(X) = E(XY) - E(X)E(Y)$
+
+**Answer**:
+
+**Let's first define that $e=E[(Y - \alpha - \beta X)^2]$. We then take the derivative of $e$ with respect to $\alpha$ and $\beta$.**
+
+$$
+\begin{aligned}
+\frac{\partial e}{\partial \alpha} = E[-2(Y-\alpha-\beta X)] \\
+\frac{\partial e}{\partial \beta} = E[-2X(Y-\alpha -\beta X)]
+\end{aligned}
+$$
+
+**We can now set these to 0. Note that we can take the -2 out of the expectation, since $E(aX)=aE(X)$. Let's start with the partial derivative wrt $\alpha$:**
+
+$$
+\begin{aligned}
+-2E[(Y-\alpha-\beta X)] &= 0 \\
+E(Y) - \alpha - \beta E(X) &= 0 \\
+E(Y) - \beta E(X) &=  \alpha \\
+\end{aligned}
+$$
+
+**Note that $\alpha$ and $\beta$ are constants, which is why we can do the last two steps.**
+
+**Next, let's look at the derivative of $e$ wrt $\beta$:**
+
+$$
+\begin{aligned}
+0 &= E[-2X(Y-\alpha -\beta X)] \\
+0 &= -2E[X(Y-\alpha -\beta X)] \\
+0 &= E(XY)-\alpha E(X) -\beta E(X^2)
+\end{aligned}
+$$ 
+
+**We also have a definition of $\alpha$ from above, which we can plug into the equation:**
+
+$$
+\begin{aligned}
+0 &= E(XY)-[E(Y) - \beta E(X)]E(X) -\beta E(X^2) \\
+0 &= E(XY) - E(X)E(Y) + \beta [E(X)^2 - E(X^2)] \\ 
+\beta [E(X^2) - E(X)^2] &= E(XY) - E(X)E(Y) \\ 
+\beta &= \frac{E(XY) - E(X)E(Y)}{E(X^2) - E(X)^2}
+\end{aligned}
+$$
+
+**Given what is stated in the hints, the last expression is equal to:**
+
+$$
+\begin{aligned}
+\beta &= \frac{Cov(X,Y)}{Var(X)} 
+\end{aligned}
+$$ 
+
+**In addition, we previously showed that:**
+
+$$
+\begin{aligned}
+\alpha &= E(Y) - \beta E(X) & \\
+\end{aligned}
+$$
+
+#### 5.2 (0.5 points)
+
+Next, recall that the definition of the correlation coefficient is:
+
+$$
+\rho(X,Y) = \frac{Cov(X,Y)}{\sqrt{Var(X)Var(Y)}}
+$$
+
+- Mathematically, what is the relationship between the correlation coefficient and the slope of the bivariate linear regression? 
+- When are the two the same?
+- Can you provide a brief intuition / explanation for the condition under which the two are the same?
+
+**Answer:**
+
+**From the definition of the correlation coefficient, we know that:**
+
+$$
+\begin{aligned}
+Cov(Y,Y) = \rho(X,Y) \sqrt{Var(X)Var(Y)}
+\end{aligned}
+$$
+
+**We can now substitute this into the expression for $\beta$:**
+
+$$
+\begin{aligned}
+\beta &= \frac{Cov(X,Y)}{Var(X)} \\
+&= \frac{\rho(X,Y) \sqrt{Var(X)Var(Y)}}{Var(X)} \\
+&= \rho(X,Y) \frac{\sqrt{Var(X)Var(Y)}}{Var(X)} \\
+&= \rho(X,Y) \sqrt{\frac{Var(Y)}{Var(X)}} \\
+\end{aligned}
+$$
+
+- **The two are the same when $\sqrt{\frac{Var(Y)}{Var(X)}} = 1$, which is the case when $Var(Y) = Var(X)$.**
+
+- **Intuitively, the condition $Var(Y) = Var(X)$ implies that the dispersion of the variables is the same, which can be interpreted as the two variables being on the same scale.**
+
+#### 5.3 (0.5 points)
+
+Consider the following PDF:
+
+$$
+f(x) = \begin{cases}
+\frac{3}{2}x^2 & \text{if } -1 \leq x \leq 1 \\
+0 & \text{otherwise} \\
+\end{cases}
+$$
+
+**a.** What is $E(X)$? Please do not use the integrals here, but rather come up with an intuitive explanation based on the shape of the distribution.
+
+**Answer:**
+
+**We can see that the PDF is symmetric around 0. This means that that the area under the PDF to the left of 0 is the same as the area under the PDF to the right of 0. As a result, the expected value of $X$ is 0.**
+
+
+**b.** What is the expected value of the new random variable $Y$, which is defined as the absolute value of $X$, i.e. $Y=|X|$?
+
+**Answer:**
+
+**We can now calculate the expected value of $Y$. First, note that $Y$ is a function of $X$, so we can use LOTUS to calculate the expected value of $Y$. So we can just use the PDF of $X$ to calculate the expected value of $Y$.** 
+
+**Next, note that $Y=|X|$ is a function that is defined as follows:**
+
+$$
+\begin{aligned} 
+Y &= \begin{cases} -X & \text{if } X < 0 \\ 
+X & \text{if } X \geq 0 \\ 
+\end{cases} 
+\end{aligned} 
+$$
+
+**Note, since $Y=|X|$, $Y$ takes the same value for both negative and positive values pf $X$ (e.g. for $X=-0.5$ and also for $X=0.5$, $Y=0.5$). Since the PDF of $X$ is symetric, we also know that $f(x) = f(-x)$ for some $x$ between 0 and 1. Therefore, expectation $Y$ for the "positive half" of $X$ should be the same as the expectation for the "negative half" of $X$. We therefore just calculate the expectation for the "positive half" of $X$ and multiply it by 2:**
+
+$$
+\begin{aligned} 
+E(Y) &= 2\int_0^1 x \cdot f(x) dx \\ 
+&= 2\int_0^1 x \cdot \frac{3}{2}x^2 dx \\ 
+&= 3 \int_0^1 x^3 dx \\ 
+&= 3 \left[\frac{x^4}{4}\right]_0^1 \\ 
+&= 3 \left[\frac{1}{4} - \frac{0}{4}\right] \\ 
+&= \frac{3}{4} 
+\end{aligned}
+$$
+
+
+#### 5.4 (0.5 points)
+
+Suppose that a point is chosen at random on a stick of length 1 and that the stick is broken into two pieces at that point. Find the expected value of the length of the longer piece.
+
+**Answer:**
+
+**The breakpoint is a uniform random variable:**
+
+$$
+\begin{aligned}
+X &\sim U(0,1) \\
+\end{aligned}
+$$
+
+**If $X \leq 0.5$, the longer piece is $1-X$. If $X > 0.5$, the longer piece is $X$. Note that, by the definition of the uniform distribution, the two cases are equally likely. We can define a new random variable $Y$ that tells us the length of the longer piece:**
+
+$$
+\begin{aligned}
+Y &= \begin{cases}
+1-X & \text{if } X \leq 0.5 \\
+X & \text{if } X > 0.5 \\
+\end{cases}
+\end{aligned}
+$$
+
+**Note that $Y$ is a function of $X$. We can therefore use LOTUS to calculate the expected value of $Y$:**
+
+$$
+\begin{aligned}
+&= \int_0^{0.5} (1-x) \cdot 1 dx + \int_{0.5}^1 x \cdot  1 dx \\
+&= \left[x - \frac{x^2}{2}\right]_0^{0.5} + \left[\frac{x^2}{2}\right]_{0.5}^1 \\
+&= \left[0.5 - \frac{0.5^2}{2}\right] + \left[\frac{1^2}{2} - \frac{0.5^2}{2}\right] \\
+&= 0.5 - \frac{0.5^2}{2} + \frac{1^2}{2} - \frac{0.5^2}{2} = 0.75\\
+\end{aligned}
+$$
+
+**Note that we use LOTUS since $Y=g(X)$, so we can just use the PDF $f(x)=1$ even though we don't consider $X$ directly (however, for the case $X>0.5$, $g(X)$ is simply $X$).**
+
+**Alternatively, this can also be deduced without integration as follows:**
+
+- **If $X>0.5$, then $Y$ is a uniform RV on the interval $[0.5,1]$. The expected value of a uniform RV on the interval $[a,b]$ is $\frac{a+b}{2}$. Therefore, $E(Y|X>0.5) = \frac{0.5+1}{2} = 0.75$.**
+- **If $X \leq 0.5$, then $Y$ is also a uniform RV on the interval $[0.5,1]$. Since $X$ can be at most 0.5, $Y$ can only range from 0.5 to 1. Therefore, $E(Y|X \leq 0.5) = \frac{0.5+1}{2} = 0.75$.**
+
+**So for both $X>0.5$ and $X \leq 0.5$, $E(Y|X) = 0.75$. As a result, the expected value of $Y$ is also 0.75.**
+
+#### 5.5 (0.5 points)
+
+Use a simulation to check your answer to question 5.4. 
+
+- First, simulate 1,000 draws to verify whether you answer from the previous question is correct. 
+- Then, write code that simulates $\bar{Y}_n$, which is the mean of $Y$ as a function of the number of draws $n$ from the uniform RV $X$. Here, $n\in\{10, 20, 30,\dots, 500\}$. What do you notice about the relation between $\bar{Y}_n$ and $n$, in particular with respect to $E(Y)$, which you derived in question 5.4?
+
+**Answer:** 
+
+**For question 5.4, we can do the following:**
+
+```{r, fig.align='center', fig.width=5, fig.height=4}
+# Set seed
+set.seed(3)
+
+# Draw 1000 values from a uniform distribution on the interval [0,1]
+x <- runif(1000, min = 0, max = 1)
+
+# Calculate the length of the longer piece
+y <- ifelse(x <= 0.5, 1 - x, x)
+
+# Calculate the mean of the length of the longer piece across all draws
+mean(y)
+
+## Next, do this for n = 10, 20, 30, ..., 500
+
+# Set seed
+set.seed(3)
+
+## Function to simulate E(Y_n) given n
+simulate <- function(n) {
+  
+  # Draw n values from a uniform distribution on the interval [0,1]
+  x <- runif(n, min = 0, max = 1)
+  
+  # Calculate the length of the longer piece
+  y <- ifelse(x <= 0.5, 1 - x, x)
+  
+  # Calculate the mean of the length of the longer piece across all draws
+  mean(y)
+  
+}
+
+## List of n
+n <- seq(10, 500, by = 10)
+
+## Simulate E(Y_n) for each n
+y_bar <- sapply(n, simulate)
+
+## To df
+df <- data.frame(n, y_bar)
+df$diff = abs(df$y_bar - 0.75)
+
+## Difference between E and 0.75 as a function of n
+plot(df$n, df$diff, type = "l", xlab = "n", 
+     ylab = "Abs. difference between mean(Y) and 0.75")
+
+```
+
+**The first simulation shows that the simulated answer is very close to the analytical answer. The second simulation shows that the mean of $Y_n$ converges to 0.75 as $n$ gets larger.**
+
+### 2. Learning from Data III
+
+In inferential statistics, we want to use characteristics of the sample (i.e. a statistic) to estimate the characteristics of the population (i.e. a parameter).
+
+In the previous lectures, we learned how to define events as random variables. By doing so, we can understand events mathematically by using probability functions, means, and standard deviations. All of this is important because it helps us reach our goal to be able to make inferences about the population based on the sample. But we need more.
+
+If we obtain a random sample and calculate a sample statistic from that sample, the sample statistic is also a random variable. However, the population parameters are fixed. If the statistic is a random variable, can we find the distribution? The mean? The standard deviation?
+
+The answer is yes! This is why we need to study the sampling distribution of statistics.
+
+#### a. Sampling Distribution
+
+The sampling distribution of a statistic is the distribution of all possible values taken by the statistic when all possible samples of a fixed size $n$ are taken from the population. It is a theoretical idea -- we do not actually build it.
+
+Simply said, the sampling distribution of a statistic is the probability distribution of that statistic.
+
+<center>
+![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/sampling_dist.png){width=60%}
+</center>
+
+Suppose we have a sample with independent and identically distributed (iid) draws. We know that $\bar{X}$ is a random variable with a sampling distribution.
+
+- Independent means that the sample items are all independent events. In other words, they are not connected to each other in any way; knowledge of the value of one variable gives no information about the value of the other and vice versa.
+    
+- Identically distributed means that there are no overall trends -- the distribution doesn't fluctuate and all items in the sample are taken from the same probability distribution.
+
+
+- The expected value of the sampling distribution of $\bar{X}$ is the population mean $\mu$.
+
+    $$\begin{aligned} E(\bar{X}) &= E(\frac{X_1+X_2+...+X_n}{n}) \\ &= \frac{1}{n}E(X_1+X_2+...+X_n) \\ &= \frac{1}{n}E(X_1)+\frac{1}{n}E(X_2)+...+\frac{1}{n}E(X_n) \\ &= \frac{1}{n}\mu + \frac{1}{n}\mu + ... + \frac{1}{n}\mu \\ &= \frac{1}{n}n\mu \\ &= \mu \end{aligned}$$
+
+    Note that $X_i$ are identically distributed, which means they have the same mean $\mu$. Therefore, we can replace $E(X_i)$ with the alternative notation $\mu$.
+    
+    The expected value of the sampling distribution for $\bar{X}$  is simply the mean of the population (DGP) distribution. This means that the sample mean $\bar{X}$ is an unbiased estimator for the population (DGP) mean, $\mu$.
+
+- The variance of the sampling distribution of $\bar{X}$ is the population variance $\sigma^2$ divided by the sample size $n$.
+
+    $$\begin{aligned} Var(\bar{X}) &= Var(\frac{X_1+X_2+...+X_n}{n}) \\ &= \frac{1}{n^2}Var(X_1+X_2+...+X_n) \\ &= \frac{1}{n^2}Var(X_1)+\frac{1}{n^2}Var(X_2)+...+\frac{1}{n^2}Var(X_n) \\&= \frac{1}{n^2}\sigma^2 + \frac{1}{n^2}\sigma^2 + ... + \frac{1}{n^2}\sigma^2 \\ &= \frac{1}{n^2}n\sigma^2 \\ &= \frac{\sigma^2}{n} \end{aligned}$$
+    Note the $X_i$ are identically distributed, which means they have the same variance $\sigma^2$. Therefore, we can replace $Var(X_i)$ with the alternative notation $\sigma^2$.
+    
+    If we take the square root of variance of the sampling distribution we get the standard deviation of the sampling distribution, which is known as **standard error**.
+    
+    $$SE(\bar{X}) = \sqrt{Var(\bar{X})} = \sqrt{\frac{\sigma^2}{n}} = \frac{\sigma}{\sqrt{n}}$$
+    
+    The standard error of a sampling distribution gives us a sense for how confident we should be in our estimate of the population mean. Our result indicates that as the sample size increases, the standard deviation of the sample mean decreases, which is good. It means that as long as our sample is large enough, we can be very confident about our estimate of the population mean based on the sample mean we have.
+
+
+In the following example, we use R to illustrate the sampling distribution for the sample mean for a hypothetical population. The sampling method is done without replacement.
+
+##### Exam Score Example
+
+An instructor of an introduction to statistics course has 200 students (which is the population). The population mean of their scores out of 100 points is $\mu = 71.18$, and the population standard deviation is $\sigma = 10.73$. That said, these 200 students' scores $X$ is following normal distribution with the parameter $\mu$ being 71.18 and $\sigma$ being 10.73, $X \sim N(71.18, 10.73)$.
+
+1. The sampling distribution of the sample mean when $n = 10$ for the exam scores data.
+
+- Let's first draw one sample based on the population distribution, $X \sim N(71.18, 10.73)$.
+
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    set.seed(1234) # to get replicable results
+    exam.sample <- rnorm(n = 10, mean = 71.18, sd = 10.73)
+    exam.sample 
+    ```
+
+- Now, let's replicate the above process for 1000 times, which will generate 1000 iid samples based on the population distribution, $X \sim N(71.18, 10.73)$.
+
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    set.seed(1234) 
+    exam.iid.sample <- replicate(1000, rnorm(n = 10, mean = 71.18, sd = 10.73))
+    exam.iid.sample <- as.data.frame(exam.iid.sample)
+    
+    knitr::kable(exam.iid.sample[, c(1:5)], "simple", align = "ccccc")
+    ```
+    
+- Since we draw 1000 iid samples from the population, we now should have 1000 sample mean based on these samples. Let's plot all these sample means in a histogram to observe the distribution of these sample means, which is sampling distribution. 
+
+    Note the process of taking many different samples in an effort to see what the sampling distribution looks like is referred to as a "Monte Carlo simulation." The "true" sampling distribution is the one where we take an infinite number of samples, which obviously we cannot achieve.
+    Monte Carlo simulation is the term for the process of repeated sampling to approximate something. We're using it here for sampling distributions, but it is used in other contexts as well.
+
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    # What is the mean of each sample?
+    sample.mean <- colMeans(exam.iid.sample)
+    sample.mean[1:5]
+
+    # Plot the distribution of these sample means
+    library(tidyverse)
+    
+    my.bins <- seq(62, 82, 0.5)
+    ggplot(data.frame(sample.mean = sample.mean), aes(x = sample.mean)) + 
+      geom_histogram(breaks = my.bins, color = "black", fill = "gray85") +
+      geom_vline(xintercept = mean(sample.mean), linetype = "dashed", 
+                 color = "red", alpha = 0.5, lwd = 0.8) +
+      geom_vline(xintercept = 71.18, linetype = "dashed", 
+                 color = "blue", alpha = 0.5, lwd = 0.8) +
+      scale_x_continuous(limits = c(62, 82)) + 
+      scale_y_continuous(limits = c(0, 250)) +
+      labs(x = "Sample mean (X bar)", y = "Frequency", 
+           title = "1000 Samples with n=10") + 
+      theme_bw() + 
+      theme(panel.grid.minor = element_blank())
+    ```
+    
+    What are the mean and standard error of the sample mean? 
+    
+    ```{r, message=F, error=F, warning=F}
+    mean(sample.mean)
+    sd(sample.mean)
+    ```
+    
+    As you can see, the mean and standard error based on all 1000 samples we drew are very close to the population mean of 71.18 and the standard deviation divided by the square root of the sample size ($\frac{10.73}{\sqrt{10}}=3.393124$). However, they are not exactly the same. The reason is that we can only simulate the sampling distribution of the exam scores but cannot simulate it for an infinite number of samples. That said, we can never reach the "true" sampling distribution.
+    
+
+2. The sampling distribution of the sample mean when $n = 100$ for the exam scores data.
+
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    set.seed(1234)
+    exam.iid.sample <- replicate(1000, rnorm(n = 100, mean = 71.18, sd = 10.73))
+    exam.iid.sample <- as.data.frame(exam.iid.sample)
+    ```
+    
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    # What is the mean of each sample?
+    sample.mean <- colMeans(exam.iid.sample)
+    sample.mean[1:5]
+
+    # Plot the distribution of these sample means
+    library(tidyverse)
+    
+    ggplot(data.frame(sample.mean = sample.mean), aes(x = sample.mean)) + 
+      geom_histogram(breaks = my.bins, color = "black", fill = "gray85") +
+      geom_vline(xintercept = mean(sample.mean), linetype = "dashed", 
+                 color = "red", alpha = 0.5, lwd = 0.8) +
+      geom_vline(xintercept = 71.18, linetype = "dashed", 
+                 color = "blue", alpha = 0.5, lwd = 0.8) +
+      scale_x_continuous(limits = c(62, 82)) + 
+      scale_y_continuous(limits = c(0, 250)) +
+      labs(x = "Sample mean (X bar)", y = "Frequency", 
+           title = "1000 Samples with n=100") + 
+      theme_bw() + 
+      theme(panel.grid.minor = element_blank())
+    ```
+
+    What are the mean and standard error of the sample mean? 
+    
+    ```{r, message=F, error=F, warning=F}
+    mean(sample.mean)
+    sd(sample.mean)
+    ```
+
+
+As you observe from the exam score example, if the population is normally distributed with mean $\mu$ and standard deviation $\sigma$, then the sampling distribution of the sample mean is also normally distributed no matter what the sample size is.
+
+#### b. Central Limit Theorem (CLT)
+
+What happens when the sample comes from a population that is not normally distributed? This is where the Central Limit Theorem comes in.
+
+For a large sample size ($n > 30$), $\bar{X}$ is approximately normally distributed, regardless of the distribution of the population one samples from. If the population has mean $\mu$ and standard deviation $\sigma$, then $\bar{X}$ follows an approximate normal distribution with mean $\mu$ and standard deviation $\frac{\sigma}{\sqrt{n}}$.
+
+The Central Limit Theorem applies to a sample mean from any distribution. We could have a left-skewed or a right-skewed distribution. As long as the sample size is large, the distribution of the sample means will follow an approximate normal distribution.
+
+Notes on the CLT:
+
+- If the population is skewed and sample size you draw is small, then the sample mean won't be normal.
+
+- If the population is normal, then the distribution of sample mean looks normal even if $n = 2$.
+
+- If the population is skewed, then the distribution of sample mean looks more and more normal when $n$ gets larger.
+
+- Note that in all cases, the mean of the sample mean is close to the population mean and the standard error of the sample mean is close to $\frac{\sigma}{\sqrt{n}}$.
+
+##### Right-skewed Distribution Example
+
+Suppose $X$ is following a chi-square distribution with 3 as the degrees of freedom , $X \sim Chi-square(3)$. The population mean of a chi-square distribution is the degrees of freedom. In this case, $\mu = 3$. Please do the following:
+
+This is what a chi-square distribution looks like:
+
+<center>
+![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/chisquare_pdf.png){width=60%}
+</center>
+
+
+1. Find the sampling distribution of the sample mean when $n = 10$ for $X$.
+
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    set.seed(1234)
+    iid.sample <- replicate(1000, rchisq(n = 5, df = 3, ncp = 0))
+    iid.sample <- as.data.frame(iid.sample)
+    ```
+    
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    # What is the mean of each sample?
+    sample.mean <- colMeans(iid.sample)
+    sample.mean[1:5]
+
+    # Plot the distribution of these sample means
+    my.bins <- seq(0, 8, 0.1)
+    ggplot(data.frame(sample.mean = sample.mean), aes(x = sample.mean)) + 
+      geom_histogram(breaks = my.bins, color = "black", fill = "gray85") +
+      geom_vline(xintercept = mean(sample.mean), linetype = "dashed", 
+                 color = "red", alpha = 0.5, lwd = 0.8) +
+      geom_vline(xintercept = 3, linetype = "dashed", 
+                 color = "blue", alpha = 0.5, lwd = 0.8) +
+      scale_x_continuous(limits = c(0, 8)) + 
+      scale_y_continuous(limits = c(0, 100)) +
+      labs(x = "Sample mean (X bar)", y = "Frequency", 
+           title = "1000 Samples with n=5") + 
+      theme_bw() + 
+      theme(panel.grid.minor = element_blank())
+    ```
+
+
+2. Find the sampling distribution of the sample mean when $n = 30$ for $X$.
+
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    set.seed(1234)
+    iid.sample <- replicate(1000, rchisq(n = 30, df = 3, ncp = 0))
+    iid.sample <- as.data.frame(iid.sample)
+    ```
+    
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    # What is the mean of each sample?
+    sample.mean <- colMeans(iid.sample)
+    sample.mean[1:5]
+
+    # Plot the distribution of these sample means
+    ggplot(data.frame(sample.mean = sample.mean), aes(x = sample.mean)) + 
+      geom_histogram(breaks = my.bins, color = "black", fill = "gray85") +
+      geom_vline(xintercept = mean(sample.mean), linetype = "dashed", 
+                 color = "red", alpha = 0.5, lwd = 0.8) +
+      geom_vline(xintercept = 3, linetype = "dashed", 
+                 color = "blue", alpha = 0.5, lwd = 0.8) +
+      scale_x_continuous(limits = c(0, 8)) + 
+      scale_y_continuous(limits = c(0, 100)) +
+      labs(x = "Sample mean (X bar)", y = "Frequency", 
+           title = "1000 Samples with n=30") + 
+      theme_bw() + 
+      theme(panel.grid.minor = element_blank())
+    ```
+
+
+#### c. Exercises
+
+##### Exercises 1: Weights of Baby Giraffes
+
+The weights of baby giraffes are known to have a mean of 125 pounds and a standard deviation of 15 pounds. If we obtained a random sample of 40 baby giraffes,
+
+1.1 what is the probability that the sample mean will be between 120 and 130 pounds?
+
+1.2 what is the 75th percentile of the sample means of size $n = 40$?
+
+##### Exercise 2: Biden approval
+
+Consider whether adults in Sacramento approve of Biden's performance in office. There are about 405,000 adults in Sacramento. 
+
+```{r}
+pop <- 405000
+```
+
+Let's define a dummy where 1 indicates approval for Biden and 0 indicates disapproval. We'll assume everyone has an opinion one way or the other. Suppose you were omniscient and know exactly which adults approve of Biden. Being omniscient means that you are magically given this dataset of all adults' approval or disapproval of Biden:
+
+```{r}
+set.seed(1029) 
+df <- bind_cols(adult = 1:pop, 
+                biden = sample(c(rep(1, 243000), rep(0, pop - 243000)), pop))
+```
+
+The population percentage of voters approve of Biden in Sacramento is 0.6.
+```{r}
+mean(df$biden)
+```
+
+The population variance of voters approve of Biden in Sacramento is 0.24 ($=p(1-p)=0.6*0.4$).
+```{r}
+var(df$biden)
+```
+
+In real life, nobody is omniscient! Now, let's think about a pollster who wants to learn what you already know by drawing a simple random sample of adults and calculating an estimate of Biden approval.
+
+The researcher decides to draw a simple random sample of 900 adults. She asks each adult whether they approve of Biden. Nobody lies.
+
+```{r}
+n <- 900 # sample size
+
+set.seed(1238) 
+poll1 <- sample(df$biden, n) # draw a sample of size N without replacement
+```
+
+What is her estimate of Biden approval?
+```{r}
+mean(poll1)
+```
+
+Now, instead of drawing one sample out of the population, simulate the sampling distribution of Biden approval in Sacramento with 100. Please draw the same size of the sample ($n=900$) for 100,000 times. 
+
+```{r, message=F, error=F, warning=F}
+## Hint: replicate()
+
+
+
+
+## Try out!
+```
+
+
+Plot the sample means from the simulations.
+```{r, message=F, error=F, warning=F}
+## Hint: calculate the sample means first before plotting a histogram
+
+
+
+
+## Try out!
+```
+
+Theoretically, what distribution does the sample means of Biden approval in Sacramento follow?
+
+$$\bar{X} \sim what?$$
+
+Now you know the sampling distribution of the sample means of Biden approval in Sacramento. Recall that the researcher drew a simple random sample of 900 adults and got an estimate of the Biden approval with 0.5344444. How likely is it to get an estimate of Biden approval rate below 0.5344444 based on the sampling distribution we have?
+
+```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+ggplot() + 
+  stat_function(data = data.frame(x = seq(0.53,0.67,0.001)), 
+                aes(x = x), fun = dnorm, 
+                args = list(mean = 0.6, sd = sqrt(0.24/n)), size = 1) + 
+  geom_vline(xintercept = 0.6, size = 1, color = "blue") + 
+  annotate("label", x = 0.6, y = 5, label = "true\nmean", 
+           lineheight = 0.75, color = "blue") + 
+  geom_vline(xintercept = mean(poll1), size = 1, color = "red") + 
+  annotate("label", x = mean(poll1), y = 5, label = "Poll 1", 
+           lineheight = 0.75, color = "red") +
+  theme_bw()
+```
+
+```{r}
+## Hint: pnorm()
+
+
+
+
+## Try out!
+```
+
+
+We can also calculate how many standard deviations is away from the true DGP mean is the estimate? To get this, we calculate the z score.
+```{r}
+z.score <- (mean(poll1) - 0.6)/(sqrt(0.24/n))
+z.score
+```
+
+The estimate is approximately 4 standard deviations below the mean of the sampling distribution (which, recall is the DGP mean). Since we are looking at a sampling distribution, we call the standard deviations "standard errors." So, it's a bit better to say the estimate from the poll the researcher conducted is approximately 4 standard errors below the mean of the sampling distribution.
+
   
   
   
