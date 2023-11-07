@@ -3676,7 +3676,7 @@ mean(area)
 ```{r}
 # Assuming we have already run the code above
 # The probability that the area of the rectangle is greater than 20
-mean(area > 10)
+mean(area > 20)
 
 # The probability that the area of the rectangle is greater than 20, given that the area of the rectangle is greater than 10
 mean(area[area > 10] > 20)
