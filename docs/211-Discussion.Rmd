@@ -4268,7 +4268,19 @@ The weights of baby giraffes are known to have a mean of 125 pounds and a standa
 
 1.1 what is the probability that the sample mean will be between 120 and 130 pounds?
 
+Let $X$ represent the weights of baby giraffes. According to the question, we know that $X \sim N(125, 15^2)$. This suggests that $\bar{X}$, the sample means of the weights of baby giraffes, also follows a normal distribution with the mean being 125 and the variance being $\frac{15^2}{40}$ (i.e., $\bar{X} \sim N(125, \frac{15^2}{40})$). So, the probability that the sample mean will be between 120 and 130 pounds is:
+
+```{r, warning=F, error=F, message=F}
+pnorm(130, mean = 125, sd = sqrt(15^2/40)) - 
+  pnorm(120, mean = 125, sd = sqrt(15^2/40))
+```
+
 1.2 what is the 75th percentile of the sample means of size $n = 40$?
+
+```{r, warning=F, error=F, message=F}
+qnorm(0.75, mean = 125, sd = sqrt(15^2/40)) 
+  
+```
 
 ##### Exercise 2: Biden approval
 
@@ -4314,29 +4326,32 @@ mean(poll1)
 
 Now, instead of drawing one sample out of the population, simulate the sampling distribution of Biden approval in Sacramento. Please draw the same size of the sample ($n=900$) for 100,000 times. 
 
-```{r, message=F, error=F, warning=F}
+```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
 ## Hint: replicate()
-
-
-
+set.seed(1234)
+sample <- replicate(100000, sample(df$biden, n))
+sample <- as.data.frame(sample)
 
 ## Try out!
 ```
 
 
 Plot the sample means from the simulations.
-```{r, message=F, error=F, warning=F}
+```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
 ## Hint: calculate the sample means first before plotting a histogram
+sample.mean <- colMeans(sample)
 
-
-
+ggplot(data.frame(sample.mean = sample.mean), aes(x = sample.mean)) +
+  geom_histogram(bins = 20, color = "black", fill = "gray85") +
+  theme_bw()
 
 ## Try out!
 ```
 
 Theoretically, what distribution does the sample means of Biden approval in Sacramento follow?
 
-$$\bar{X} \sim what?$$
+$$\bar{X} \sim N(0.6, \frac{0.24}{900})$$
+
 
 Now you know the sampling distribution of the sample means of Biden approval in Sacramento. Recall that the researcher drew a simple random sample of 900 adults and got an estimate of the Biden approval with 0.5344444. How likely is it to get an estimate of Biden approval rate below 0.5344444 based on the sampling distribution we have?
 
@@ -4356,9 +4371,7 @@ ggplot() +
 
 ```{r}
 ## Hint: pnorm()
-
-
-
+pnorm(0.5344444, mean = 0.6, sd = sqrt(0.24/900))
 
 ## Try out!
 ```
