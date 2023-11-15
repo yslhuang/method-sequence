@@ -1,0 +1,399 @@
+---
+title: "211-Discussion VII"
+author: "Yu-Shiuan (Lily) Huang"
+date: "Fall 2023"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      tidy.opts=list(width.cutoff = 80),
+                      tidy = FALSE)
+options(width = 80)
+```
+
+### 2. Hypothesis Testing
+
+Hypothesis testing is the process of making a choice between two conflicting hypotheses. It is a form of statistical inference that uses data from a sample to draw conclusions about a population parameter or a population probability distribution. First, a tentative assumption is made about the parameter or distribution. This assumption is called the **null hypothesis** and is denoted by $H_0$. An **alternative hypothesis** (denoted $H_a$), which is the opposite of what is stated in the null hypothesis, is then defined. The hypothesis-testing procedure involves using sample data to determine whether or not $H_0$ can be rejected. If $H_0$ is rejected, the statistical conclusion is that the alternative hypothesis $H_a$ is true.
+
+- Null hypothesis ($H_0$): The null hypothesis states the "status quo". This hypothesis is assumed to be true until there is evidence to suggest otherwise.
+
+- Alternative hypothesis ($H_a$): This is the statement that one wants to conclude. It is also called the research hypothesis.
+
+The goal of hypothesis testing is to see if there is enough evidence against the null hypothesis. In other words, to see if there is enough evidence to reject the null hypothesis. If there is not enough evidence, then we fail to reject the null hypothesis.
+
+
+We want to know the answer to a research question. We determine our null and alternative hypotheses. Now it is time to make a decision.
+
+The decision is either going to be:
+
+1. reject the null hypothesis or ...
+
+2. fail to reject the null hypothesis.
+
+**Note**: Why can’t we say we “accept the null”? The reason is that we are assuming the null hypothesis is true and trying to see if there is evidence against it. Therefore, the conclusion should be in terms of rejecting the null.
+
+Consider the following table. The table shows the decision/conclusion of the hypothesis test and the unknown "reality", or truth. We do not know if the null is true or if it is false. If the null is false and we reject it, then we made the correct decision. If the null hypothesis is true and we fail to reject it, then we made the correct decision.
+
+<center>
+![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/type_errors.png){width=70%}
+</center>
+
+
+What happens when we do not make the correct decision? When doing hypothesis testing, two types of mistakes may be made and we call them **Type I error** and **Type II error**. If we reject the null hypothesis when it is true, then we made a type I error. If the null hypothesis is false and we failed to reject it, we made another error called a Type II error.
+
+The “reality”, or truth, about the null hypothesis is unknown and therefore we do not know if we have made the correct decision or if we committed an error. We can, however, define the likelihood of these events.
+
+- $\alpha$: The probability of committing a Type I error. Also known as the significance level.
+
+- $\beta$: The probability of committing a Type II error.
+
+- Power: Power is the probability the null hypothesis is rejected given that it is false (i.e., $1-\beta$).
+
+$\alpha$ and $\beta$ are probabilities of committing an error so we want these values to be low. However, we cannot decrease both. As $\alpha$ increases, $\beta$ decreases.
+
+**Note**: Type I error is also thought of as the event that we reject the null hypothesis GIVEN the null is true. In other words, Type I error is a conditional event and $\alpha$ is a conditional probability. The same idea applies to Type II error and $\beta$.
+
+#### Trial Example 
+
+A man goes to trial and is tried for the murder of his ex-wife. He is either guilty or innocent. 
+
+Let's set up the null and alternative hypotheses.
+
+$$
+\begin{cases}
+H_0: \text{The man is innocent.} \\
+H_a: \text{The man is guilty.}
+\end{cases}
+$$
+Remember that we assume the null hypothesis is true and try to see if we have evidence against the null. Therefore, it makes sense in this example to assume the man is innocent and test to see if there is evidence that he is guilty.
+
+- What is the Type I Error in this example?
+
+    Type I error is committed if we reject $H_0$ when it is true. In other words, when the man is innocent but found guilty. $\alpha$ is the probability of a Type I error, or in other words, it is the probability that the man is innocent but found guilty.
+
+- What is the Type II Error in this example?
+
+    Type II error is committed if we fail to reject $H_0$ when it is false. In other words, when the man is guilty but found not guilty. $\beta$ is the probability of a Type II error, or in other words, it is the probability that the man is guilty but found not guilty.
+    
+As you can see here, the Type I error (putting an innocent man in jail) is the more serious error. Ethically thinking, it is more serious to put an innocent man in jail than to let a guilty man go free. So to minimize the probability of a type I error we would choose a smaller significance level (i.e., smaller $\alpha$).
+
+#### a. Hypothesis Test for One-sample parameter
+
+1. One-sample Mean Hypothesis Test
+
+    Recall that the distribution of the population is Normal and/or the sample size is large ($n>30$), the sampling distribution of the sample mean $\bar{X}$ is approximately normal with mean $\mu$ and standard error $\frac{\mu}{\sqrt{n}}$. Under these conditions, we can calculate **z-scores**, which follows the standard normal distribution, $Z \sim N(0, 1^2)$. Then we can check how is it likely to observe such z-score within the standard normal distribution and decide whether we should reject the null hypothesis.
+    
+    $$z = \frac{\bar{x}-\mu}{\frac{\mu}{\sqrt{n}}}$$
+    
+    If the population standard deviation is unknown, we use the estimated standard error based on the sample standard deviation from the observed data, $\frac{S_X}{\sqrt{n}}$. Under these conditions, we cannot calculate z-scores and instead have to calculate **t-scores** or **t-statistics**, which follows a t-distribution with $n-1$ degrees of freedom.
+    
+    $$t = \frac{\bar{x}-\mu}{\frac{S_X}{\sqrt{n}}}$$
+    
+    
+    **Emergency Room Wait Time Example**
+    
+    The administrator at your local hospital states that on weekends the average wait time for emergency room visits is 10 minutes. Based on discussions you have had with friends who have complained on how long they waited to be seen in the ER over a weekend, you dispute the administrator's claim. You decide to test your hypothesis. Over the course of a few weekends, you record the wait time for 40 randomly selected patients. The average wait time for these 40 patients is 11 minutes with a standard deviation of 3 minutes.
+
+    Do you have enough evidence to support your hypothesis that the average ER wait time exceeds 10 minutes? You opt to conduct the test at a 5% level of significance.
+    
+    
+    **Answer:**
+    
+    - Step 1: Set up the hypotheses and check conditions.
+    
+        At this point we want to check whether we can apply the central limit theorem. The sample size is greater than 30, so we should be okay.
+    
+        This is a right-tailed test.
+    
+        $$
+        \begin{cases}
+        H_0: \mu = 10 \\
+        H_a: \mu >10
+        \end{cases}
+        $$
+    
+    - Step 2: Decide on the significance level, $\alpha$.
+    
+        The problem states that $\alpha = 0.5$.
+        
+    - Step 3: Calculate the test statistic.
+    
+        Since the population standard deviation is unknown, we can only calculate a t-score based on the estimated standard error using the sample standard deviation, which is 3.
+        
+        $$\begin{aligned} t^* &= \frac{\bar{x}-\mu}{\frac{S_X}{\sqrt{n}}}=\frac{11-10}{\frac{3}{\sqrt{40}}}= 2.108185 \end{aligned}$$
+    - Step 4: Compute the appropriate p-value based on our alternative hypothesis.
+    
+        ```{r, warning=F, error=F, message=F}
+        t <- (11-10)/(3/sqrt(40))
+        pt(q = t, df = 40-1, lower.tail = FALSE)
+        ```
+      
+        If `lower.tail` argument is set to be TRUE (default), probabilities are $P(X \leq x)$, otherwise, $P(X > x)$. Since we are doing a right-tailed test, `lower.tail` should be set to be `FALSE`.
+
+    - Step 5: Make a decision about the null hypothesis.
+    
+        Since our p-value is 0.020746, we know it is less than our significance level, 5%. Therefore, we reject the null hypothesis.
+        
+    - Step 6: State an overall conclusion.
+    
+        There is enough evidence, at a significance level of 5%, to reject the null hypothesis and conclude that the mean waiting time is greater than 10 minutes.
+        
+
+2. One-sample Proportion Hypothesis Test
+
+    Recall that if $np$ and $n(1-p)$ are both greater than five, then the sample proportion $\hat{p}$ will have an approximate normal distribution with mean $p$ and standard error $\sqrt{\frac{p(1-p)}{n}}$. With these information, we are able to calculate z-score:
+
+    $$z = \frac{\hat{p} - p}{\sqrt{\frac{p(1-p)}{n}}}$$
+
+    **Online Purchases Example**
+    
+    An e-commerce research company claims that 60% or more graduate students have bought merchandise online. A consumer group is suspicious of the claim and thinks that the proportion is lower than 60%. A random sample of 80 graduate students shows that only 22 students have ever done so. Is there enough evidence to show that the true proportion is lower than 60%? Please Conduct the hypothesis test at 5% Type I error rate.
+    
+    - Step 1: Set up the hypotheses and check conditions.
+  
+        Since the research hypothesis is to check whether the proportion is less than 0.6 we set it up as a one (left)-tailed test:
+        
+        $$
+        \begin{cases}
+        H_0: p = 0.6 \\
+        H_a: p < 10
+        \end{cases}
+        $$
+        
+        Can we use the z-test statistic? The answer is yes since the hypothesized population value $p$ is 0.6 and we can check that: 
+        
+        $np = 80*0.6 = 48 > 5$
+        
+        $n(1-p) = 80*0.4 = 32 > 5$
+        
+    - Step 2: Decide on the significance level, $\alpha$.
+    
+        According to the question, $\alpha = 0.05$.
+        
+    - Step 3: Calculate the test statistic.
+    
+        $$z = \frac{\hat{p} - p}{\sqrt{\frac{p(1-p)}{n}}} = \frac{\frac{22}{80}-0.6}{\sqrt{\frac{0.6(1-0.6)}{80}}} = -5.933661$$
+    - Step 4: Compute the appropriate p-value based on our alternative hypothesis.
+    
+        ```{r, warning=F, error=F, message=F}
+        z <- ((22/80) - 0.6)/sqrt((0.6*0.4)/80)
+        pnorm(z, mean = 0, sd = 1)
+        ```
+
+    - Step 5: Make a decision about the null hypothesis.
+        
+        Since our p-value is very small and less than our significance level of 5%, we reject the null hypothesis.
+        
+    - Step 6: State an overall conclusion.
+    
+        There is enough evidence in the data provided to suggest, at 5% level of significance, that the true proportion of students who made purchases online was less than 60%.
+
+
+#### b. Comparing Two Population Parameters
+
+When we compare two population means or two population proportions, we consider the difference between the two population parameters. In other words, we consider either $\mu_x - \mu_y$ or $p_x - p_y$. 
+
+1. Two-sample Means Hypothesis Test
+
+    We present the theory here to give you a general idea of how we can apply the Central Limit Theorem.
+
+    - Let $X$have a normal distribution with mean $\mu_x$, variance $\sigma^2_x$, and standard deviation $\sigma_x$.
+
+    - Let $Y$have a normal distribution with mean $\mu_y$, variance $\sigma^2_y$, and standard deviation $\sigma_y$.
+
+    - If $X$ and $Y$ are independent, then $X-Y$ will follow a normal distribution with mean $\mu_x-\mu_y$, variance $\sigma^2_x + \sigma^2_y$, and standard deviation $\sqrt{\sigma^2_x + \sigma^2_y}$.
+
+    The idea is that, if the two random variables are normal, then their difference will also be normal. This is wonderful but how can we apply the Central Limit Theorem?
+
+    If $X$ and $Y$ are normal, we know that $\bar{X}$ and $\bar{Y}$ will also be normal. If $X$ and $Y$ are not normal but the sample size is large ($n > 30$), then $\bar{X}$ and $\bar{Y}$ will be approximately normal (applying the CLT). Using the theorem above, then $\bar{X}-\bar{Y}$ will be approximately normal with mean $\mu_x-\mu_y$ and standard deviation $\sqrt{\frac{\sigma^2_x}{n_x}+\frac{\sigma^2_y}{n_y}}$.
+    
+    However, in most cases, $\sigma_x$ and $\sigma_y$ are unknown, and they have to be estimated. It seems natural to estimate $\sigma_x$ by $S_x$ and $\sigma_y$ by $S_y$, so the estimated standard deivation is $\sqrt{\frac{S_x}{n_x}+\frac{S_y}{n_y}}$.
+
+    Theoretically, when the variances of the populations of the two groups are unknown, and we use the sample variances of the observed groups to estimate them, the test statistics we calculate should be t-scores. These t-scores will follow the t-distribution under certain degrees of freedom, which vary based on conditions. Conditions such as whether the variance of two groups are equal or unequal. However, in this class, for simplicity and that when the sample size is large, t-distribution becomes standard normal distribution, we will treat the t-scores we calculate as z-scores when doing hypothesis testing and use standrad normal distribution to calculate p-value.
+    
+    $$z = \frac{(\bar{x}-\bar{y})-(\mu_x - \mu_y)}{\sqrt{\frac{S_x}{n_x}+\frac{S_y}{n_y}}}$$
+    
+    **Mean Weight of Two Species of Turtles Example**
+    
+    Suppose we want to know whether or not the mean weight between two different species of turtles is equal. Suppose we collect a random sample of turtles from each population with the following information:
+    
+    Sample 1:
+    
+      - Sample size: $n_1 = 40$.
+      - Sample mean weight: $\bar{x_1} = 300$.
+      - Sample standard deviation: $s_1 = 18.5$.
+    
+    Sample 2:
+    
+      - Sample size: $n_2 = 38$.
+      - Sample mean weight: $\bar{x_2} = 305$.
+      - Sample standard deviation: $s_2 = 16.7$.
+    
+    Please perform a two sample t-test at significance level $\alpha = 0.05$. 
+    
+    - Step 1: Set up the hypotheses and check conditions.
+    
+        <br>
+
+        <br>
+        
+        <br>
+    
+    - Step 2: Decide on the significance level, $\alpha$.
+    
+        <br>
+
+        <br>
+        
+        <br>
+    
+    - Step 3: Calculate the test statistic.
+        
+        <br>
+
+        <br>
+        
+        <br>
+    
+    - Step 4: Compute the appropriate p-value based on our alternative hypothesis.
+        
+        <br>
+
+        <br>
+        
+        <br>
+        
+    - Step 5: Make a decision about the null hypothesis.
+        
+        <br>
+
+        <br>
+        
+        <br>
+        
+    - Step 6: State an overall conclusion.
+    
+        <br>
+
+        <br>
+        
+        <br>
+
+
+2. Two-sample Proportions Hypothesis Test
+
+    For a test for two proportions, we are interested in the difference. If the difference is zero, then they are not different (i.e., they are equal). Therefore, the null hypothesis will always be:
+
+    $$H_0: p_x - p_y = 0$$
+    
+    Another way to look at it is $p_x = p_y$. This is worth stopping to think about. Remember, in hypothesis testing, we assume the null hypothesis is true. In this case, it means that $p_x$ and $p_y$ are equal. Under this assumption, then $\hat{p_x}$ and $\hat{p_y}$ are both estimating the same proportion. Think of this proportion as $p^*$. Therefore, the sampling distribution of both proportions, $\hat{p_x}$ and $\hat{p_y}$, will, under certain conditions, be approximately normal centered around $p^*$, with standard error $\sqrt{p^*(1-p^*)(\frac{1}{n_x+n_y})}$.
+    
+    We take this into account by finding an estimate for this $p^*$ using the two sample proportions. We can calculate an estimate of $p^*$ using the following formula:
+    
+    $$\frac{x+y}{n_x+n_y}$$
+    
+    This value is the total number in the desired categories $x+y$ from both samples over the total number of sampling units in the combined sample $n_x+n_y$.
+    
+    Putting everything together, if we assume $p_x = p_y$, then the sampling distribution of $\hat{p_x} - \hat{p_y}$ will be approximately normal with mean 0 and standard error of $\sqrt{p^*(1-p^*)(\frac{1}{n_x+n_y})}$, under certain conditions. Therefore,
+    
+    $$z = \frac{(\hat{p_x} - \hat{p_y})-0}{\sqrt{p^*(1-p^*)(\frac{1}{n_x+n_y})}}$$
+    
+    which will follow standard normal distribution.
+    
+    **Received $100 by Mistake Example**
+    
+    Males and females were asked about what they would do if they received a $100 bill by mail, addressed to their neighbor, but wrongly delivered to them. Would they return it to their neighbor? Of the 69 males sampled, 52 said “yes” and of the 131 females sampled, 120 said “yes.”
+
+    Does the data indicate that the proportions that said “yes” are different for males and females at a 5% level of significance? 
+    
+    - Step 1: Set up the hypotheses and check conditions.
+    
+        $$\begin{cases} H_0: p_m - p_f = 0 \\ H_a: p_m - p_f \neq 0 \end{cases} $$
+    
+    - Step 2: Decide on the significance level, $\alpha$.
+        
+        According to the question, $\alpha = 0.05$.
+    
+    - Step 3: Calculate the test statistic.
+    
+        $n_m = 69$, $\hat{p_m} = \frac{52}{69}$
+        
+        $n_f = 131$, $\hat{p_f} = \frac{120}{131}$
+        
+        $\hat{p^*} = \frac{52+120}{69+131} = \frac{172}{200} = 0.86$
+        
+        $z^* = \frac{(\hat{p_m} - \hat{p_f})-0}{\sqrt{p^*(1-p^*)(\frac{1}{n_m+n_f})}} = \frac{\frac{52}{69}-\frac{120}{131}}{0.86(1-0.86)\sqrt{\frac{1}{69}+\frac{1}{131}}}=-3.146572$
+        
+    
+    - Step 4: Compute the appropriate p-value based on our alternative hypothesis.
+        
+        ```{r, message=F, error=F, warning=F}
+        z <- ((52/69)-(120/131))/sqrt((0.86*0.14)*((1/69)+1/131))
+        pnorm(z, mean = 0, sd = 1) + (1 - pnorm(-z, mean = 0, sd = 1))
+        ```
+
+    - Step 5: Make a decision about the null hypothesis.
+        
+        Since our p-value of 0.001651968 is less than our significance level of 5%, we reject the null hypothesis. 
+        
+    - Step 6: State an overall conclusion.
+    
+        There is enough evidence to suggest that proportions of males and females who would return the money are different.
+
+
+#### c. T-test in R
+
+1. One-sample T-test in R
+
+    To conduct a one-sample t-test in R, we use the syntax `t.test(x, mu = 0)` where `x` is the name of our variable of interest and `mu` is set equal to the mean specified by the null hypothesis.
+
+    For example, if we wanted to test whether the volume of a shipment of lumber ($x$) was less than usual ($\mu = 39000$ cubic feet), we would run:
+
+    ```{r, message=F, error=F, warning=F}
+    # draw a sample
+    set.seed(1234)
+    treeVolume <- rnorm(100, mean = 36500, sd = 2000)
+
+    t.test(treeVolume, mu = 39000) # H0: mu = 39000
+    ```
+
+    You should get the same answer as calculated by hand.
+    ```{r, message=F, error=F, warning=F}
+    t <- (mean(treeVolume)-39000)/(sd(treeVolume)/sqrt(100)); t
+
+    pt(t, 100-1, lower.tail = TRUE)
+    ```
+
+
+2. Independent-samples T-test in R
+
+    The independent-samples test can take one of three forms, depending on the structure of your data and the equality of their variances. The general form of the test is `t.test(y1, y2, paired=FALSE)`. By default, R assumes that the variances of `y1` and `y2` are unequal, thus defaulting to Welch's test. To toggle this, we use the flag `var.equal=TRUE`.
+
+    Let's test the hypothesis in which Clevelanders and New Yorkers spend different amounts for eating outside on a monthly basis.
+    
+    ```{r}
+    # draw two samples 
+    set.seed(1234)
+    Spenders_Cleve <- rnorm(60, mean = 380, sd = 77)
+    Spenders_NY <- rnorm(60, mean = 400, sd = 80)
+    ```
+
+    - Equal variance
+    
+        ```{r}
+        t.test(Spenders_Cleve, Spenders_NY, var.equal = TRUE)
+        ```
+    
+    - Unequal variance
+
+        ```{r}
+        t.test(Spenders_Cleve, Spenders_NY, var.equal = FALSE)
+        ```
+
+
+
+
+

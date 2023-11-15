@@ -2139,7 +2139,7 @@ What would you respond to this? What could one likely reason be why the manager 
 
 **This makes no sense at all, and completely destroys the actual relationship between $X$ and $Y$. By sorting both variables independently, the manager creates a meaningless data set where both $X$ and $Y$ become artificially correlated because they are both increasing in value as we go down the list of observations.**
 
-### 2. Learning from Data I
+### 2. Probability Distribution
 
 **Note**: Most of the materials for today's discussion can be referred to [STAT 414: Introduction to Probability Theory.](https://online.stat.psu.edu/stat414/).
 
@@ -2973,7 +2973,7 @@ E[X] &= \int_0^1 x f(x) dx \\
 &= \frac{3}{4}
 \end{align*}
 
-### 2. Learning from Data II
+### 2. Different Kinds of Probability Distribution
 
 **Note**: Most of the materials for today's discussion can be referred to [STAT 414: Introduction to Probability Theory.](https://online.stat.psu.edu/stat414/).
 
@@ -4021,7 +4021,7 @@ plot(df$n, df$diff, type = "l", xlab = "n",
 
 **The first simulation shows that the simulated answer is very close to the analytical answer. The second simulation shows that the mean of $Y_n$ converges to 0.75 as $n$ gets larger.**
 
-### 2. Learning from Data III
+### 2. Sampling Distribution
 
 In inferential statistics, we want to use characteristics of the sample (i.e. a statistic) to estimate the characteristics of the population (i.e. a parameter).
 
@@ -4385,8 +4385,817 @@ z.score
 
 The estimate is approximately 4 standard deviations below the mean of the sampling distribution (which, recall is the DGP mean). Since we are looking at a sampling distribution, we call the standard deviations "standard errors." So, it's a bit better to say the estimate from the poll the researcher conducted is approximately 4 standard errors below the mean of the sampling distribution.
 
+
+## Discussion VII
+
+### 1. Solution Keys to Problem Set 6
+
+#### Question 1 (3 points)
+
+**a.** For continuous distributions, please provide the defintion of the cumulative distribution function (CDF). Very briefly, in your own words, describe what it tells us. Finally, how can we calculate the CDF for a normal distribution in R?
+
+For the rest of the question, assume you have a normal distribution as follows:
+
+$$X \sim N(\mu = -1, \sigma^2 = 4)$$
+
+**b.** What is the probability of observing a value of $X$ that is greater than 0? Use R for this.
+
+**c.** Determine $x$ such that $P(X \leq x) = 0.25$. Use R for this.
+
+**d.** Given what we know about the distribution of $X$, what is the standard deviation of the mean of a random sample of size 100 from this distribution? Do not use R to answer this question.
+
+**e.** In R, generate a random sample of size 100 from this distribution and calculate the sample mean and sample variance. How do these values compare to the population parameters $\mu = -1$ and $\sigma^2 = 4$?
+
+**f.** Use the `dnorm` function in R to plot the probability density function of this distribution. 
+
+**Answer:**
+
+**a.** The CDF of a continuous random variable $X$ is defined as $F(x) = P(X \leq x)$ or $F(x) = P(X<x)$, with the two being equivalent in the continuous case . The CDF tells us the probability that $X$ is less than or equal to a particular value $x$. In R for a normal distribution, we can use the `pnorm()` function to calculate the CDF.
+
+**b.** We can use the `pnorm()` function to calculate the probability of observing a value of $X$ that is greater than 0. `pnorm` gives you the CDF of the normal distribution. Since we want the probability of observing a value of $X$ that is greater than 0, we need to calculate $1 - P(X \leq 0)$. 
+
+```{r}
+1 - pnorm(0, mean = -1, sd = 2)
+```
+
+**c.** We can use the `qnorm()` function to calculate the value of $x$ such that $P(X \leq x) = 0.25$. 
+
+```{r}
+qnorm(0.25, mean = -1, sd = 2)
+```
+
+**d.** The standard deviation of the mean of a random sample of size 100 from this distribution is equal to $\frac{\sigma}{\sqrt{N}} = \frac{2}{\sqrt{100}} = 0.2$. This follows from the fact that the variance of the sample mean is equal to $\frac{\sigma^2}{N}$, where $\sigma^2$ is the variance of the original distribution.
+
+**e.** We can use the `rnorm()` function to generate a random sample of size 100 from this distribution. 
+
+```{r}
+set.seed(1)
+
+x <- rnorm(100, mean = -1, sd = 2)
+
+mean(x)
+
+var(x)
+```
+
+The exact values of the sample mean and sample SD depend on the seed used, but shoud generally be close to the population parameters $\mu = -1$ and $\sigma^2 = 4$.
+
+**f.** We can use the `dnorm()` function to plot the probability density function of this distribution. 
+
+```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+x <- seq(-10, 10, by = 0.01)
+
+y <- dnorm(x, mean = -1, sd = 2)
+
+plot(x, y, type = "l")
+```
+
+
+#### Question 2 (2 points)
+
+Suppose you have a random variable $X$ with a uniform distribution on the interval $[0, 1]$:
+
+$$X \sim \text{Unif}(0, 1)$$
+
+**a.** What real life concept might you statistically model with a DGP that has a distribution like this?
+
+**b.** Draw two samples from this distribution, one with $N=20$ and one with $N=1,000$. For each of the two samples, calculate the sample mean and the standard error of the sample mean. 
+
+**c.** Now, you will simulate the sampling distributions of $\bar{X}$ for the two sample sizes given above. To do this, you will draw 1,000 samples of size $N=20$ and 1,000 samples of size $N=1,000$ from the distribution of $X$. For each of the two sample sizes, calculate the sample mean for each of the 1,000 samples. Then, use histograms to plot the distribution of 1,000 values of $\bar{X}$ for the two sample sizes.
+
+**d.** You will notice that the two distributions look like distributions we know. Briefly comment on why this is, i.e. why the distributions of the sample means follow a specific distribution. Finally, why is one of the two distributions "wider" than the other one? 
+
+**Answer:**
+
+**a.** One example is any variable that measures a proportion, e.g. the proportion of people who vote for a particular candidate in an election.
+
+**b.** We can use the `runif()` function to draw random samples from a uniform distribution. 
+
+```{r}
+set.seed(1)
+
+x1 <- runif(20, min = 0, max = 1)
+
+x2 <- runif(1000, min = 0, max = 1)
+
+mean(x1)
+
+sd(x1) / sqrt(20)
+
+mean(x2)
+
+sd(x2) / sqrt(1000)
+```
+
+**c.** We can use the `replicate()` function to draw 1,000 samples of size $N=20$ and 1,000 samples of size $N=1,000$ from the distribution of $X$. 
+
+```{r}
+set.seed(1)
+
+x1 <- replicate(1000, mean(runif(20, min = 0, max = 1)))
+
+x2 <- replicate(1000, mean(runif(1000, min = 0, max = 1)))
+
+```
+
+We can then plot the sampling distributions of $\bar{X}$ for the two sample sizes.
+
+```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+hist(x1, breaks = 20, freq = FALSE, main = "Sampling Distribution of X1")
+
+hist(x2, breaks = 20, freq = FALSE, main = "Sampling Distribution of X2")
+```
+
+**d.** The sampling distributions of $\bar{X}$ for the two sample sizes follow a normal distribution. This is because the sample mean is a linear combination of random variables, and the central limit theorem tells us that the distribution of the sample mean converges to a normal distribution as the sample size goes to infinity.
+
+The sampling distribution of $\bar{X}$ for $N=20$ is wider than the sampling distribution of $\bar{X}$ for $N=1,000$ because the variance of the sample mean decreases with the size of the sample $N$. 
+
+
+#### Question 3 (0.5 points)
+
+ A colleague analyses a 2023 survey of 778 high schools seniors who intend to attend college. Among them, about 25% ruled out colleges solely due to the politics, policies, or legal situation in the state where the school was located.\footnote{Based on this survey: https://indd.adobe.com/view/f7cb9b98-22ad-433e-bd68-ef225093ab27}
+
+Your colleague wonders why it makes sense to think about the variance of this proportion. She argues that she has only one dataset, and can therefore only calculate one proportion, so why would she care about whether this proportion varies. In simple terms, provide a brief explanation why it makes sense to think about the variance of this proportion.
+
+**Answer:** 
+
+In frequentist statistics, the sample mean is a random variable, since the mean will be different for every sample that we draw. If your colleague were to draw a different sample of high school seniors, she would get a different proportion of students who ruled out colleges solely due to the politics, policies, or legal situation in the state where the school was located. To characterize how much the sample mean varies across samples, we can calculate the variance (or standard error) of the sample mean. Note that the variance of the sample mean can be calculated even if we only have one sample.
+
+
+#### Question 4 (1 point)
+
+Assume you want to conduct an opinion poll to estimate the **proportion of voters** in the US who support presidential candidates Kang or Kodos, ranging from 0 (none of them) to 1 (all of them). Assuming that the true population proportion of people who support Kang over Kodos is 0.5. We already know that, in expectation, the estimated share of people who vote Kang in your poll should be 0.5. However, you will always get slightly different values since each poll is a sample from the set of all voters. 
+
+**a.** What is the minimum sample size you need to make sure that the standard error of your estimate is at most one percentage point (i.e. such that the standard error $SE(\bar{X})\leq0.01$)?\footnote{Here, we can think of this "standard error" as something similar to the "margin of error" that you commonly see in opinion polls.}
+
+**Note:** The sample mean $\bar{X}$ is the proportion of people who support candidate Kang. It is *not* the number of people. 
+
+**b.** Use a simulation to verify your answer to the previous question. To do this, you will need to simulate many samples of the sample size you calculated in the previous question. You can then obtain the distribution of the sample mean across all samples. Then, you can calculate the standard error of the sample mean. How does this compare to the standard error you calculated in the previous question?
+
+**Note:** you should not use R to answer the first question. Instead, you should use the definitions we discussed in lecture. The second question requires R.
+
+**Answer:**
+
+**a.** We know that the variance of the sample mean is given by $\frac{\sigma^2}{N}$. In this case, we know that $$\sigma^2 = 0.5 \times 0.5 = 0.25$$ since we are dealing with a Bernoulli distribution. For a Bernoulli distribution, the variance is equal to $p(1-p)$, where $p$ is the probability of success. We can think of a success as supporting Kang, although in this case it does not matter whether we define success as supporting Kang or Kodos, since $p=0.5$.
+
+We want to find the minimum sample size $N$ such that $\sqrt{\frac{0.25}{N}} \leq 0.01$, so we have to solve for $N$:
+
+$$
+\begin{aligned}
+\sqrt{\frac{0.25}{N}} & \leq 0.01 \\
+\frac{0.25}{N} & \leq 0.0001 \\
+\frac{0.25}{0.0001} & \leq N \\
+2500 & \leq N
+\end{aligned}
+$$
+
+This says that $N$ needs to be at least 2500 for the SE of the mean to be equal to 0.01. 
+
+**b.** We can use a simulation to verify this result. We can use the `rbinom()` function to simulate a sample of size $N$ from a Bernoulli distribution with $p=0.5$. We can then calculate the sample mean for each of the samples. We can then calculate the standard error of the sample mean across all samples. 
+
+```{r}
+set.seed(1)
+
+N <- 2500
+
+x <- replicate(1000, mean(rbinom(N, size = 1, prob = 0.5)))
+
+sd(x)
+
+```
+
+Looks the estimated SE of the mean for $N=2500$ is about $0.01$, which is what we expected given the previous question.
+
+
+#### Question 5 (1.5 points)
+
+**Note:** this question is a continuation of the previous question.
+
+Let's now assume a different DGP which states that the population probability of any given person voting for Kang is 0.6. Let's define the population as all voters for a certain election. Therefore, Kang will eventually win, since 60% of all voters will vote for Kang.
+
+You are a pollster who is trying to predict the election. Your method is very simple -- you randomly sample 101 voters and ask them who they will vote for. You then identify the candidate who has the most votes in your sample and predict that this candidate will win the election.\footnote{We assume all voters either vote for Kang or Kodos, i.e. no one abstains from voting.}
+
+**a.** Let's think of each voter in your sample as a draw from a Bernoulli distribution. By the central limit theorem, we know what the distribution of the sample mean will be. What is this distribution, and what is its mean and variance?
+
+**Hint 1:** The sample mean $\bar{X}$ of Bernoulli draws $X_1,X_2,\dots,X_N$ is just the proportion of draws that are equal to one. In class, we derived the expectation and standard error of the sample mean $\bar{X}$.
+
+**b.** Since you sample 101 voters, every sample is going to look different. Assuming you draw many samples, what is the share of samples for which you (correctly) predict that Kang will win the election?
+
+**Note:** Rounding answers is fine for both **a.** and **b.**. You should not use a simulation of the samples to answer this question. You can, however, use R.
+
+**c.** Assume the central limit theorem does not hold. In this case, would it be possible to give an answer to **b.**? Briefly explain why or why not.
+
+**Answer:**
+
+**a.** The distribution of the sample mean is a normal distribution with mean equal to the population mean ($\mu = 0.6$) and variance equal to $\frac{p(1-p)}{N}$, where $p$ is the population probability of success. In this case, $p=0.6$, and $N=101$. The variance of the sample mean is equal to $\frac{0.6 \times 0.4}{101} \approx 0.0024$.
+
+**b.** Based on the previous answers, we now the distribution of the sample mean. We also know that our prediction is correct if the sample mean is greater than 0.5. This is because we predict Kang to win if the sample mean is greater than 0.5, and Kodos to win if the sample mean is less than 0.5. 
+
+As a result, we simply need to know the probability that the sample mean is greater than 0.5. We can use the `pnorm()` function, which gives us the CDF, to calculate this probability, since we know the distribution of the sample mean. We calculate the following quantity: 
+
+$$P(\bar{X} > 0.5) = 1 - P(\bar{X} \leq 0.5)=1- F(0.5)$$
+
+where $\bar{X}\sim N(\mu = 0.6, \sigma^2 = 0.0024)$, and $F$ is the CDF of the normal distribution.:
+
+```{r} 
+1 - pnorm(0.5, mean = 0.6, sd = sqrt(0.0024))
+```
+
+The probability that we correctly predict that Kang will win the election is about 0.98 (alternatively, the share of samples in which we correctly predict that Kang will win the election is about 98%).
+
+This is a very high rate of correct predictions even though we only sample 101 voters ! 
+
+**c.** If the central limit theorem does not hold, we cannot give an answer to **b.**. This is because we do not know the distribution of the sample mean. In that case, we would need to know the distribution of the sample mean to calculate the probability that we correctly predict that Kang will win the election.
+
+
+#### Question 6 (2 points)
+
+Please evaluate the following statements. If the statement is true, explain why. If the statement is false, explain why.
+
+**a.** Assume you have $X\sim \text{Unif}(a,b)$. For a sample $X_1, X_2, ..., X_n$, the expectation of the sample mean is $E(\bar{X}) = \frac{a+b}{2}$, and the variance of the sample mean is $Var(\bar{X}) = \frac{(b-a)^2}{12}$.
+
+**b.** Any quantity that is a function of random variables (like the sum of random variables or the random variable multiplied by a constant) is a random variable.
+
+**c.** The distribution of the sample mean $\bar{X}$ for random variable $X$ converges to a normal distribution if (i) the sample size $N$ is large and (ii) the distribution of $X$ is continuous.
+
+**d.** The following code will always produce different results, since we are sampling values of a random variable:
+
+```{r}
+set.seed(1)
+
+x <- rnorm(5, mean = 0, sd = 1)
+x
+```
+
+**e.** An unbiased estimator can result in an estimate that is very different from the population parameter that it is supposed to estimate.
+
+**f.** For the regression coefficient $\hat{\beta}$ to be an unbiased estimate of the true population coefficient $\beta$, the error term $\varepsilon$ has to be equal to zero for all observations.
+
+**g.** The only way to gain information about the variance of an estimator, like the sample mean or the regression coefficient, is to draw many samples and then calculate the variance of the estimator across all samples.
+
+**h.** The following code uses simulation to approximate $P(Y<3)$ for $Y\sim N(\mu = 2, \sigma^2 = 5)$:
+
+```{r}
+set.seed(1)
+
+x <- rnorm(1000, mean = 0, sd = 1)
+y <- 3*x + 2
+
+mean(y < 3)
+```
+
+
+**Answers:**
+
+**a.** False. The statement is correct about the expectation, but the variance of the sample mean is equal to $\frac{(b-a)^2}{12N}$, where $N$ is the sample size. The variance of the sample mean always depends on the sample size.
+
+**b.** True. Any quantity that is a function of random variables is a random variable. This is because the value of the quantity will be different for every sample that we draw.
+
+**c.** False. The distribution of the sample mean $\bar{X}$ converges to a normal distribution no matter whether the distribution of $X$ is continuous or discrete.
+
+**d.** False. The code will always produce the same results, since we are setting the seed to 1. This means that the random number generator will always produce the same sequence of random numbers.
+
+**e.** True. An unbiased estimator can result in an estimate that is very different from the population parameter that it is supposed to estimate. For small sample sizes, estimators can have high variance. Since estimators like the sample mean are random variables, high variance means that our estimates can be very different from the population parameter that we are trying to estimate.
+
+**f.** False. For the regression coefficient $\hat{\beta}$ to be an unbiased estimate of the true population coefficient $\beta$, the covariance between the independent variable $X$ and the error term $\varepsilon$ has to be equal to zero. 
+
+**g.** False. We have a formula for a the variance of the sample mean, which is equal to $\frac{\sigma^2}{N}$, where $\sigma^2$ is the variance of the original RV. We do not need to draw many samples to calculate the variance of the sample mean. 
+
+**h.** False. Here, we sample from $X$ and then create a new RV that is equal to $Y = 3X + 2$. Therefore, the expectation of $Y$ is $E(Y) = 3E(X) + 2 = 2$. The variance of $Y$ is equal to $Var(Y) = Var(3X + 2) = 9Var(X) = 9$. Therefore, $Y\sim N(\mu = 2, \sigma^2 = 9)$. We can use the `pnorm()` function to calculate $P(Y<3)$:
+
+```{r}
+pnorm(3, mean = 2, sd = 3)
+```
+
+This value should be very close to what we get from the code above.
+
+
+#### Question 7 (required for students in the methods subfield, 3 points)
+
+#### 7.1 (1 point)
+
+An important result in statistics is the weak large of large numbers (WLLN), which we will now prove. It states the following:
+
+$$\lim_{n \to \infty} P(|\bar{X}_N - \mu| > \epsilon) = 0$$
+
+where $\bar{X}_N$ is the sample mean of a sample with $N$ iid draws from an RV $X$ with population mean $\mu$. The WLLN say that the probability that the sample mean is more than $\epsilon$ away from the population mean goes to zero as the sample size goes to infinity. This is called convergence in probability. 
+
+
+**a.** As a first step, prove the following, where $\bar{X}_N$ is the sample mean of a sample with $N$ draws from an RV $X$ with population mean $\mu$ and finite variance $\sigma^2$:
+
+$$\lim_{n \to \infty} E[(\bar{X}_N - \mu)^2] = 0$$
+
+**Hint 1:** You can use the fact that $E(\bar{X}_N)=\mu$
+
+**Hint 2:** The proof is short.
+
+**b.** An important inequality in probability theory is Chebyshev's inequality. It states the following:
+
+$$P(|Y|\geq \epsilon) \leq \frac{E(Y^2)}{\epsilon^2}$$
+
+Here, $Y$ is  a random variable and $\epsilon$ is a positive number.
+
+Use Chebyshev's inequality and the result from **a.** to prove the weak law of large numbers, which is stated above.
+
+Finally, briefly explain why the variance of the original RV has to be finite for the weak law of large numbers to hold.
+
+**Answer:**
+
+**a.** We can use the fact that $Var(\bar{X}) = E[(\bar{X}_N - E(\bar{X}_N))^2]= E[(\bar{X} - \mu)^2]$. We know that $Var(\bar{X}) = \frac{\sigma^2}{N}$. So the limit is equal to $\lim_{n \to \infty} \frac{\sigma^2}{N}$. As $N$ goes to infinity, this limit goes to zero, since $\sigma^2$ is a constant.
+
+**b.** To recap, we want to show the following:
+
+$$\lim_{n \to \infty} P(|\bar{X}_N - \mu| > \epsilon) = 0$$
+
+Aka we want to show that the probability that the sample mean is more than $\epsilon$ away from the population mean goes to zero as the sample size goes to infinity.
+
+Now, $|\bar{X}_N - \mu|$ is a random variable, so we can apply the Chebyshev inequality to it. We get:
+
+$$P(|\bar{X}_N - \mu| > \epsilon) \leq \frac{E[(\bar{X}_N - \mu)^2]}{\epsilon^2}$$
+
+Now, assume that $N$ is large. In that case, the RHS is going to converge to zero. This is because the numerator of the RHS is equal to $\frac{\sigma^2}{N}$, which goes to zero as $N$ goes to infinity, and the denominator is a constant. 
+
+Since the RHS converges to zero, and the RHS is an upper bound for the LHS, the LHS also has to converge to zero. This proves the WLLN.
+
+Note that the variance of the original RV has to be finite because otherwise the variance of the sample mean would not converge to zero as $N$ goes to infinity. This is because the variance of the sample mean is equal to $\frac{\sigma^2}{N}$, where $\sigma^2$ is the variance of the original RV. 
+
+#### 7.2 (1 point)
+
+Assume you have two independent uniform RVs distributed as follows:
+
+$$Y \sim \text{Unif}(0, 1)$$
+$$X \sim \text{Unif}(1, 2)$$
+
+Assume we draw a sample from each, where the sample size of each sample is $N$. We are now interested in $\bar{X}-\bar{Y}$. 
+
+**a.** If you want to ensure that, in 95\% of the cases, your estimate of $\bar{X}-\bar{Y}$ is within 0.1 of the population difference (i.e. $E(X) - E(Y)$), what is the minimum required sample size $N$ to achieve this? 
+
+**b.** Verify your answer using a simulation in R.
+
+**Answer:**
+
+**a.**: The expected value of $\bar{X}-\bar{Y}$ is equal to $E(X) - E(Y) = 1.5 - 0.5 = 1$. The variance of the two sample means is the same: $$Var(\bar{X}) = Var(\bar{Y}) = \frac{1}{12N}$$This follows since we know that the variance of the sample mean is the variance of the RV divided by the sample size.
+
+Now, for independent RV, the variance of the sum is equal to the sum of the variances. Therefore, the variance of $\bar{X}-\bar{Y}$ is equal to $\frac{2}{12N}$. We therefore know that the difference between the sample means follows a normal distribution with mean 1 and variance $\frac{2}{12N}$.
+
+For a normal distribution, we know that 95\% of the probability mass is within (approx.) 1.96 standard deviations of the mean. As a result, the square root of the variance of $\bar{X}-\bar{Y}$ has to be less than 0.1/1.96. This gives us the following inequality:
+
+$$\sqrt{\frac{2}{12N}} \leq \frac{0.1}{1.96}$$
+
+We can now solve this for $N$:
+
+$$
+\begin{aligned}
+\sqrt{\frac{2}{12N}} &\leq \frac{0.1}{1.96} \\
+\frac{2}{12N} &\leq \frac{0.1^2}{1.96^2} \\
+\frac{2}{12} &\leq \frac{0.1^2}{1.96^2} \times N \\
+\frac{2}{12} \times \frac{1.96^2}{0.1^2} &\leq N \\
+N &\geq 64.02667
+\end{aligned}
+$$
+
+**b.**
+
+```{r}
+set.seed(123)
+
+## Function to calculate the difference between the sample means of two uniform RVs
+
+get_diff <- function() {
+  x <- runif(64, 0, 1)
+  y <- runif(64, 1, 2)
+
+  mean(y) - mean(x)
+}
+
+## Simulate 10,000 draws from the distribution of the difference between the sample means
+
+out <- replicate(10000, get_diff())
+
+## Calculate the share of draws that are *not* within 0.1 of the population difference
+
+mean(out < 0.9)
+mean(out > 1.1)
+
+## We expected these to be about 2.5% each, which is the case 
+```
+
+#### 7.3 (1 point)
+
+For a linear regression model with observed values $x_i$ and $y_i$, the least squares estimator for the slope $\beta$ is given by:
+
+$$\hat{\beta} = \frac{\sum_{i=1}^N (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^N (x_i - \bar{x})^2}$$
+
+where $\bar{x}$ and $\bar{y}$ are the sample means of $x_i$ and $y_i$, respectively. Let's define $S^2_X = \sum_{i=1}^N (x_i - \bar{x})^2$. In addition, the variance of the RV $Y$ is $sigma^2$, and the draws $y_i$ are iid. Note that we can also write the above equation as:
+
+$$\hat{\beta} = \frac{\sum_{i=1}^N (x_i - \bar{x})y_i}{S_X^2}$$
+
+Find the variance of the least squares estimator $\hat{\beta}$. Note that for the purposes of this problem, we can treat the values $x_i$ as constants, i.e. not as random variables.\footnote{This is a convention that is often used in statistics -- we consider $\beta$ to be a function of the RV $Y$, but not of the RV $X$.}
+
+**Answer:**
+
+We can use the fact that $Var(a y_1 + b y_2) = a^2Var(y_1) + b^2Var(y_2)$ for any two independent RVs $y_1$ and $y_2$ (we assume those to be independent) and constants $a$ and $b$. Then:
+
+$$
+\begin{aligned}
+Var(\hat{\beta}) &= Var\left(\frac{\sum_{i=1}^N (x_i - \bar{x})y_i}{S_X^2}\right) \\
+&= \frac{1}{S_X^4} Var\left(\sum_{i=1}^N (x_i - \bar{x})y_i\right) \\
+& = \frac{1}{S_X^4} \sum_{i=1}^N Var\left[(x_i - \bar{x})y_i\right)] \\
+& = \frac{1}{S_X^4} \sum_{i=1}^N (x_i - \bar{x})^2 Var(y_i) \\
+& = \frac{1}{S_X^4} \sum_{i=1}^N (x_i - \bar{x})^2 \sigma^2 \\
+& = \frac{\sigma^2}{S_X^4} \sum_{i=1}^N (x_i - \bar{x})^2 \\
+& = \frac{\sigma^2}{S_X^4}S_X^2 \\
+& = \frac{\sigma^2}{S_X^2}
+\end{aligned}
+$$
+
+### 2. Hypothesis Testing
+
+Hypothesis testing is the process of making a choice between two conflicting hypotheses. It is a form of statistical inference that uses data from a sample to draw conclusions about a population parameter or a population probability distribution. First, a tentative assumption is made about the parameter or distribution. This assumption is called the **null hypothesis** and is denoted by $H_0$. An **alternative hypothesis** (denoted $H_a$), which is the opposite of what is stated in the null hypothesis, is then defined. The hypothesis-testing procedure involves using sample data to determine whether or not $H_0$ can be rejected. If $H_0$ is rejected, the statistical conclusion is that the alternative hypothesis $H_a$ is true.
+
+- Null hypothesis ($H_0$): The null hypothesis states the "status quo". This hypothesis is assumed to be true until there is evidence to suggest otherwise.
+
+- Alternative hypothesis ($H_a$): This is the statement that one wants to conclude. It is also called the research hypothesis.
+
+The goal of hypothesis testing is to see if there is enough evidence against the null hypothesis. In other words, to see if there is enough evidence to reject the null hypothesis. If there is not enough evidence, then we fail to reject the null hypothesis.
+
+
+We want to know the answer to a research question. We determine our null and alternative hypotheses. Now it is time to make a decision.
+
+The decision is either going to be:
+
+1. reject the null hypothesis or ...
+
+2. fail to reject the null hypothesis.
+
+**Note**: Why can’t we say we “accept the null”? The reason is that we are assuming the null hypothesis is true and trying to see if there is evidence against it. Therefore, the conclusion should be in terms of rejecting the null.
+
+Consider the following table. The table shows the decision/conclusion of the hypothesis test and the unknown "reality", or truth. We do not know if the null is true or if it is false. If the null is false and we reject it, then we made the correct decision. If the null hypothesis is true and we fail to reject it, then we made the correct decision.
+
+<center>
+![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/type_errors.png){width=70%}
+</center>
+
+
+What happens when we do not make the correct decision? When doing hypothesis testing, two types of mistakes may be made and we call them **Type I error** and **Type II error**. If we reject the null hypothesis when it is true, then we made a type I error. If the null hypothesis is false and we failed to reject it, we made another error called a Type II error.
+
+The “reality”, or truth, about the null hypothesis is unknown and therefore we do not know if we have made the correct decision or if we committed an error. We can, however, define the likelihood of these events.
+
+- $\alpha$: The probability of committing a Type I error. Also known as the significance level.
+
+- $\beta$: The probability of committing a Type II error.
+
+- Power: Power is the probability the null hypothesis is rejected given that it is false (i.e., $1-\beta$).
+
+$\alpha$ and $\beta$ are probabilities of committing an error so we want these values to be low. However, we cannot decrease both. As $\alpha$ increases, $\beta$ decreases.
+
+**Note**: Type I error is also thought of as the event that we reject the null hypothesis GIVEN the null is true. In other words, Type I error is a conditional event and $\alpha$ is a conditional probability. The same idea applies to Type II error and $\beta$.
+
+**Trial Example**
+
+A man goes to trial and is tried for the murder of his ex-wife. He is either guilty or innocent. 
+
+Let's set up the null and alternative hypotheses.
+
+$$
+\begin{cases}
+H_0: \text{The man is innocent.} \\
+H_a: \text{The man is guilty.}
+\end{cases}
+$$
+Remember that we assume the null hypothesis is true and try to see if we have evidence against the null. Therefore, it makes sense in this example to assume the man is innocent and test to see if there is evidence that he is guilty.
+
+- What is the Type I Error in this example?
+
+    Type I error is committed if we reject $H_0$ when it is true. In other words, when the man is innocent but found guilty. $\alpha$ is the probability of a Type I error, or in other words, it is the probability that the man is innocent but found guilty.
+
+- What is the Type II Error in this example?
+
+    Type II error is committed if we fail to reject $H_0$ when it is false. In other words, when the man is guilty but found not guilty. $\beta$ is the probability of a Type II error, or in other words, it is the probability that the man is guilty but found not guilty.
+    
+As you can see here, the Type I error (putting an innocent man in jail) is the more serious error. Ethically thinking, it is more serious to put an innocent man in jail than to let a guilty man go free. So to minimize the probability of a type I error we would choose a smaller significance level (i.e., smaller $\alpha$).
+
+#### a. Hypothesis Test for One-sample parameter
+
+1. One-sample Mean Hypothesis Test
+
+    Recall that the distribution of the population is Normal and/or the sample size is large ($n>30$), the sampling distribution of the sample mean $\bar{X}$ is approximately normal with mean $\mu$ and standard error $\frac{\sigma}{\sqrt{n}}$. Under these conditions, we can calculate **z-scores**, which follows the standard normal distribution, $Z \sim N(0, 1^2)$. Then we can check how is it likely to observe such z-score within the standard normal distribution and decide whether we should reject the null hypothesis.
+    
+    $$z = \frac{\bar{x}-\mu}{\frac{\sigma}{\sqrt{n}}}$$
+    
+    If the population standard deviation is unknown, we use the estimated standard error based on the sample standard deviation from the observed data, $\frac{S_X}{\sqrt{n}}$. Under these conditions, we cannot calculate z-scores and instead have to calculate **t-scores** or **t-statistics**, which follows a t-distribution with $n-1$ degrees of freedom.
+    
+    $$t = \frac{\bar{x}-\mu}{\frac{S_X}{\sqrt{n}}}$$
+    
+    
+    **Emergency Room Wait Time Example**
+    
+    The administrator at your local hospital states that on weekends the average wait time for emergency room visits is 10 minutes. Based on discussions you have had with friends who have complained on how long they waited to be seen in the ER over a weekend, you dispute the administrator's claim. You decide to test your hypothesis. Over the course of a few weekends, you record the wait time for 40 randomly selected patients. The average wait time for these 40 patients is 11 minutes with a standard deviation of 3 minutes.
+
+    Do you have enough evidence to support your hypothesis that the average ER wait time exceeds 10 minutes? You opt to conduct the test at a 5% level of significance.
+    
+    
+    **Answer:**
+    
+    - Step 1: Set up the hypotheses and check conditions.
+    
+        At this point we want to check whether we can apply the central limit theorem. The sample size is greater than 30, so we should be okay.
+    
+        This is a right-tailed test.
+    
+        $$
+        \begin{cases}
+        H_0: \mu = 10 \\
+        H_a: \mu >10
+        \end{cases}
+        $$
+    
+    - Step 2: Decide on the significance level, $\alpha$.
+    
+        The problem states that $\alpha = 0.5$.
+        
+    - Step 3: Calculate the test statistic.
+    
+        Since the population standard deviation is unknown, we can only calculate a t-score based on the estimated standard error using the sample standard deviation, which is 3.
+        
+        $$\begin{aligned} t^* &= \frac{\bar{x}-\mu}{\frac{S_X}{\sqrt{n}}}=\frac{11-10}{\frac{3}{\sqrt{40}}}= 2.108185 \end{aligned}$$
+    - Step 4: Compute the appropriate p-value based on our alternative hypothesis.
+    
+        ```{r, warning=F, error=F, message=F}
+        t <- (11-10)/(3/sqrt(40))
+        pt(q = t, df = 40-1, lower.tail = FALSE)
+        ```
+      
+        If `lower.tail` argument is set to be TRUE (default), probabilities are $P(X \leq x)$, otherwise, $P(X > x)$. Since we are doing a right-tailed test, `lower.tail` should be set to be `FALSE`.
+        
+        You can also use `pnorm` to calculate p-value as we know that when the sample size is large, t-distribution is very alike normal distribution. For practical purposes, the t-distribution can be treated as equal to the normal distribution when sample sizes are greater than 30.
+        
+        ```{r, warning=F, error=F, message=F}
+        1 - pnorm(t, mean = 0, sd = 1)
+        ```
+
+    - Step 5: Make a decision about the null hypothesis.
+    
+        Since our p-value is 0.020746 when using t-distribution and 0.01750749 when using standard normal distribution, we know both of them are less than the significance level, 5%. Therefore, we reject the null hypothesis.
+        
+    - Step 6: State an overall conclusion.
+    
+        There is enough evidence, at a significance level of 5%, to reject the null hypothesis and conclude that the mean waiting time is greater than 10 minutes.
+        
+
+2. One-sample Proportion Hypothesis Test
+
+    Recall that if $np$ and $n(1-p)$ are both greater than five, then the sample proportion $\hat{p}$ will have an approximate normal distribution with mean $p$ and standard error $\sqrt{\frac{p(1-p)}{n}}$. With these information, we are able to calculate z-score:
+
+    $$z = \frac{\hat{p} - p}{\sqrt{\frac{p(1-p)}{n}}}$$
+
+    **Online Purchases Example**
+    
+    An e-commerce research company claims that 60% or more graduate students have bought merchandise online. A consumer group is suspicious of the claim and thinks that the proportion is lower than 60%. A random sample of 80 graduate students shows that only 22 students have ever done so. Is there enough evidence to show that the true proportion is lower than 60%? Please Conduct the hypothesis test at 5% Type I error rate.
+    
+    - Step 1: Set up the hypotheses and check conditions.
   
-  
+        Since the research hypothesis is to check whether the proportion is less than 0.6 we set it up as a one (left)-tailed test:
+        
+        $$
+        \begin{cases}
+        H_0: p = 0.6 \\
+        H_a: p < 10
+        \end{cases}
+        $$
+        
+        Can we use the z-test statistic? The answer is yes since the hypothesized population value $p$ is 0.6 and we can check that: 
+        
+        $np = 80*0.6 = 48 > 5$
+        
+        $n(1-p) = 80*0.4 = 32 > 5$
+        
+    - Step 2: Decide on the significance level, $\alpha$.
+    
+        According to the question, $\alpha = 0.05$.
+        
+    - Step 3: Calculate the test statistic.
+    
+        $$z = \frac{\hat{p} - p}{\sqrt{\frac{p(1-p)}{n}}} = \frac{\frac{22}{80}-0.6}{\sqrt{\frac{0.6(1-0.6)}{80}}} = -5.933661$$
+    - Step 4: Compute the appropriate p-value based on our alternative hypothesis.
+    
+        ```{r, warning=F, error=F, message=F}
+        z <- ((22/80) - 0.6)/sqrt((0.6*0.4)/80)
+        pnorm(z, mean = 0, sd = 1)
+        ```
+
+    - Step 5: Make a decision about the null hypothesis.
+        
+        Since our p-value is very small and less than our significance level of 5%, we reject the null hypothesis.
+        
+    - Step 6: State an overall conclusion.
+    
+        There is enough evidence in the data provided to suggest, at 5% level of significance, that the true proportion of students who made purchases online was less than 60%.
+
+
+#### b. Comparing Two Population Parameters
+
+When we compare two population means or two population proportions, we consider the difference between the two population parameters. In other words, we consider either $\mu_x - \mu_y$ or $p_x - p_y$. 
+
+1. Two-sample Means Hypothesis Test
+
+    We present the theory here to give you a general idea of how we can apply the Central Limit Theorem.
+
+    - Let $X$have a normal distribution with mean $\mu_x$, variance $\sigma^2_x$, and standard deviation $\sigma_x$.
+
+    - Let $Y$have a normal distribution with mean $\mu_y$, variance $\sigma^2_y$, and standard deviation $\sigma_y$.
+
+    - If $X$ and $Y$ are independent, then $X-Y$ will follow a normal distribution with mean $\mu_x-\mu_y$, variance $\sigma^2_x + \sigma^2_y$, and standard deviation $\sqrt{\sigma^2_x + \sigma^2_y}$.
+
+    The idea is that, if the two random variables are normal, then their difference will also be normal. This is wonderful but how can we apply the Central Limit Theorem?
+
+    If $X$ and $Y$ are normal, we know that $\bar{X}$ and $\bar{Y}$ will also be normal. If $X$ and $Y$ are not normal but the sample size is large ($n > 30$), then $\bar{X}$ and $\bar{Y}$ will be approximately normal (applying the CLT). Using the theorem above, then $\bar{X}-\bar{Y}$ will be approximately normal with mean $\mu_x-\mu_y$ and standard deviation $\sqrt{\frac{\sigma^2_x}{n_x}+\frac{\sigma^2_y}{n_y}}$.
+    
+    However, in most cases, $\sigma_x$ and $\sigma_y$ are unknown, and they have to be estimated. It seems natural to estimate $\sigma_x$ by $S_x$ and $\sigma_y$ by $S_y$, so the estimated standard deivation is $\sqrt{\frac{S_x^2}{n_x}+\frac{S_y^2}{n_y}}$.
+
+    Theoretically, when the variances of the populations of the two groups are unknown, and we use the sample variances of the observed groups to estimate them, the test statistics we calculate should be t-scores. These t-scores will follow the t-distribution under certain degrees of freedom, which vary based on conditions. Conditions such as whether the variance of two groups are equal or unequal (for more detailed discussion, please check [here](https://online.stat.psu.edu/stat500/lesson/7/7.3)). However, in this class, for simplicity and that when the sample size is large, t-distribution becomes standard normal distribution, we will treat the t-scores we calculate as z-scores when doing hypothesis testing and use standrad normal distribution to calculate p-value.
+    
+    $$z = \frac{(\bar{x}-\bar{y})-(\mu_x - \mu_y)}{\sqrt{\frac{S_x^2}{n_x}+\frac{S_y^2}{n_y}}}$$
+    
+    **Mean Weight of Two Species of Turtles Example**
+    
+    Suppose we want to know whether or not the mean weight between two different species of turtles is equal. Suppose we collect a random sample of turtles from each population with the following information:
+    
+    Sample 1:
+    
+      - Sample size: $n_1 = 40$.
+      - Sample mean weight: $\bar{x_1} = 300$.
+      - Sample standard deviation: $s_1 = 18.5$.
+    
+    Sample 2:
+    
+      - Sample size: $n_2 = 38$.
+      - Sample mean weight: $\bar{x_2} = 305$.
+      - Sample standard deviation: $s_2 = 16.7$.
+    
+    Please perform a two sample t-test at significance level $\alpha = 0.05$. 
+    
+    - Step 1: Set up the hypotheses and check conditions.
+    
+        <br>
+
+        <br>
+        
+        <br>
+    
+    - Step 2: Decide on the significance level, $\alpha$.
+    
+        <br>
+
+        <br>
+        
+        <br>
+    
+    - Step 3: Calculate the test statistic.
+        
+        <br>
+
+        <br>
+        
+        <br>
+    
+    - Step 4: Compute the appropriate p-value based on our alternative hypothesis.
+        
+        <br>
+
+        <br>
+        
+        <br>
+        
+    - Step 5: Make a decision about the null hypothesis.
+        
+        <br>
+
+        <br>
+        
+        <br>
+        
+    - Step 6: State an overall conclusion.
+    
+        <br>
+
+        <br>
+        
+        <br>
+
+
+2. Two-sample Proportions Hypothesis Test
+
+    For a test for two proportions, we are interested in the difference. If the difference is zero, then they are not different (i.e., they are equal). Therefore, the null hypothesis will always be:
+
+    $$H_0: p_x - p_y = 0$$
+    
+    Another way to look at it is $p_x = p_y$. This is worth stopping to think about. Remember, in hypothesis testing, we assume the null hypothesis is true. In this case, it means that $p_x$ and $p_y$ are equal. Under this assumption, then $\hat{p_x}$ and $\hat{p_y}$ are both estimating the same proportion. Think of this proportion as $p^*$. Therefore, the sampling distribution of both proportions, $\hat{p_x}$ and $\hat{p_y}$, will, under certain conditions, be approximately normal centered around $p^*$, with standard error $\sqrt{p^*(1-p^*)(\frac{1}{n_x+n_y})}$.
+    
+    We take this into account by finding an estimate for this $p^*$ using the two sample proportions. We can calculate an estimate of $p^*$ using the following formula:
+    
+    $$\frac{x+y}{n_x+n_y}$$
+    
+    This value is the total number in the desired categories $x+y$ from both samples over the total number of sampling units in the combined sample $n_x+n_y$.
+    
+    Putting everything together, if we assume $p_x = p_y$, then the sampling distribution of $\hat{p_x} - \hat{p_y}$ will be approximately normal with mean 0 and standard error of $\sqrt{p^*(1-p^*)(\frac{1}{n_x+n_y})}$, under certain conditions. Therefore,
+    
+    $$z = \frac{(\hat{p_x} - \hat{p_y})-0}{\sqrt{p^*(1-p^*)(\frac{1}{n_x+n_y})}}$$
+    
+    which will follow standard normal distribution.
+    
+    **Received $100 by Mistake Example**
+    
+    Males and females were asked about what they would do if they received a $100 bill by mail, addressed to their neighbor, but wrongly delivered to them. Would they return it to their neighbor? Of the 69 males sampled, 52 said “yes” and of the 131 females sampled, 120 said “yes.”
+
+    Does the data indicate that the proportions that said “yes” are different for males and females at a 5% level of significance? 
+    
+    - Step 1: Set up the hypotheses and check conditions.
+    
+        $$\begin{cases} H_0: p_m - p_f = 0 \\ H_a: p_m - p_f \neq 0 \end{cases} $$
+    
+    - Step 2: Decide on the significance level, $\alpha$.
+        
+        According to the question, $\alpha = 0.05$.
+    
+    - Step 3: Calculate the test statistic.
+    
+        $n_m = 69$, $\hat{p_m} = \frac{52}{69}$
+        
+        $n_f = 131$, $\hat{p_f} = \frac{120}{131}$
+        
+        $\hat{p^*} = \frac{52+120}{69+131} = \frac{172}{200} = 0.86$
+        
+        $z^* = \frac{(\hat{p_m} - \hat{p_f})-0}{\sqrt{p^*(1-p^*)(\frac{1}{n_m+n_f})}} = \frac{\frac{52}{69}-\frac{120}{131}}{0.86(1-0.86)\sqrt{\frac{1}{69}+\frac{1}{131}}}=-3.146572$
+        
+    
+    - Step 4: Compute the appropriate p-value based on our alternative hypothesis.
+        
+        ```{r, message=F, error=F, warning=F}
+        z <- ((52/69)-(120/131))/sqrt((0.86*0.14)*((1/69)+1/131))
+        pnorm(z, mean = 0, sd = 1) + (1 - pnorm(-z, mean = 0, sd = 1))
+        ```
+
+    - Step 5: Make a decision about the null hypothesis.
+        
+        Since our p-value of 0.001651968 is less than our significance level of 5%, we reject the null hypothesis. 
+        
+    - Step 6: State an overall conclusion.
+    
+        There is enough evidence to suggest that proportions of males and females who would return the money are different.
+
+
+#### c. T-test in R
+
+1. One-sample T-test in R
+
+    To conduct a one-sample t-test in R, we use the syntax `t.test(x, mu = 0)` where `x` is the name of our variable of interest and `mu` is set equal to the mean specified by the null hypothesis.
+
+    For example, if we wanted to test whether the volume of a shipment of lumber ($x$) was less than usual ($\mu = 39000$ cubic feet), we would run:
+
+    ```{r, message=F, error=F, warning=F}
+    # draw a sample
+    set.seed(1234)
+    treeVolume <- rnorm(100, mean = 36500, sd = 2000)
+
+    t.test(treeVolume, mu = 39000) # H0: mu = 39000
+    ```
+
+    You should get the same answer as calculated by hand.
+    ```{r, message=F, error=F, warning=F}
+    t <- (mean(treeVolume)-39000)/(sd(treeVolume)/sqrt(100)); t
+
+    pt(t, 100-1, lower.tail = TRUE)
+    ```
+
+
+2. Independent-samples T-test in R
+
+    The independent-samples test can take one of three forms, depending on the structure of your data and the equality of their variances. The general form of the test is `t.test(y1, y2, paired=FALSE)`. By default, R assumes that the variances of `y1` and `y2` are unequal, thus defaulting to Welch's test. To toggle this, we use the flag `var.equal=TRUE`.
+
+    Let's test the hypothesis in which Clevelanders and New Yorkers spend different amounts for eating outside on a monthly basis.
+    
+    ```{r}
+    # draw two samples 
+    set.seed(1234)
+    Spenders_Cleve <- rnorm(60, mean = 380, sd = 77)
+    Spenders_NY <- rnorm(60, mean = 400, sd = 80)
+    ```
+
+    - Equal variance
+    
+        ```{r}
+        t.test(Spenders_Cleve, Spenders_NY, var.equal = TRUE)
+        ```
+    
+    - Unequal variance
+
+        ```{r}
+        t.test(Spenders_Cleve, Spenders_NY, var.equal = FALSE)
+        ```
+
+
+
   
   
   
