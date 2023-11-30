@@ -5247,16 +5247,10 @@ $$P[-z_{\frac{\alpha}{2}} \leq \frac{\bar{X}-\mu}{\sigma/\sqrt{n}} \leq z_{\frac
 
 Now, let's focus only on manipulating the inequality inside the brackets for a bit. Because we manipulate each of the three sides of the inequality equally, each of the following statements are equivalent:
 
-$$
--z_{\frac{\alpha}{2}} \leq \frac{\bar{X}-\mu}{\sigma/\sqrt{n}} \leq z_{\frac{\alpha}{2}} \\
-
+$$-z_{\frac{\alpha}{2}} \leq \frac{\bar{X}-\mu}{\sigma/\sqrt{n}} \leq z_{\frac{\alpha}{2}} \\
 -z_{\frac{\alpha}{2}}(\frac{\sigma}{\sqrt{n}}) \leq \bar{X}-\mu \leq z_{\frac{\alpha}{2}}(\frac{\sigma}{\sqrt{n}}) \\
-
 -\bar{X}-z_{\frac{\alpha}{2}}(\frac{\sigma}{\sqrt{n}})\leq -\mu \leq -\bar{X} + z_{\frac{\alpha}{2}}(\frac{\sigma}{\sqrt{n}}) \\
-
-\bar{X}-z_{\frac{\alpha}{2}}(\frac{\sigma}{\sqrt{n}})\leq \mu \leq \bar{X}+z_{\frac{\alpha}{2}}(\frac{\sigma}{\sqrt{n}})
-
-$$
+\bar{X}-z_{\frac{\alpha}{2}}(\frac{\sigma}{\sqrt{n}})\leq \mu \leq \bar{X}+z_{\frac{\alpha}{2}}(\frac{\sigma}{\sqrt{n}})$$
 So, in summary, by manipulating the inequality, we have shown that the following probability statement is true:
 
 $$P[\bar{X}-z_{\frac{\alpha}{2}}(\frac{\sigma}{\sqrt{n}})\leq \mu \leq \bar{X}+z_{\frac{\alpha}{2}}(\frac{\sigma}{\sqrt{n}})]=1-\alpha$$
