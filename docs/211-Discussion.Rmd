@@ -5194,6 +5194,172 @@ When we compare two population means or two population proportions, we consider 
         t.test(Spenders_Cleve, Spenders_NY, var.equal = FALSE)
         ```
 
+## Discussion VIII
+
+### 1. Confidence Intervals
+
+#### a. Statistical Inferences
+
+The real power of statistics comes from applying the concepts of probability to situations where you have data but not necessarily the whole population. The results, called statistical inference, give you probability statements about the population of interest based on that set of data.
+
+There are two types of statistical inferences: 
+
+1. Estimation: Use information from the sample to estimate (or predict) the parameter of interest. For instance, using the result of a poll about the president's current approval rating to estimate (or predict) his or her true current approval rating nationwide.
+
+2. Hypothesis Tests: Use information from the sample to determine whether a certain statement about the parameter of interest is true. For instance, suppose a news station claims that the President’s current approval rating is more than 75%. We want to determine whether that statement is supported by the poll data.
+
+#### b. Estimation
+
+Two common estimation methods are point and interval estimates:
+
+1. Point Estimates: An estimate for a parameter that is one numerical value. An example of a point estimate is the sample mean ($\bar{x}$) or the sample proportion ($\hat{p}$).
+
+2. Interval Estimates: When we use the sample mean ($\bar{x}$) to estimate the population mean ($\mu$), can we be confident that $\bar{x}$ is close to $\mu$? Interval estimates give an interval as the estimate for a parameter. Such intervals are built around point estimates which is why understanding point estimates is important to understanding interval estimates. Rather than using just a point estimate, we could find an interval (or range) of values that we can be really confident contains the actual unknown population parameter. For example, we could find lower ($L$) and upper ($U$) values between which we can be really confident the population mean falls:
+
+$$L < \mu < U$$
+
+An interval of such values is called a confidence interval. Each interval has a **confidence coefficient** (reported as a proportion):
+
+$$1-\alpha$$
+
+or a **confidence level** (reported as a percentage):
+
+$$(1-\alpha)*100 \%$$
+Typical confidence coefficients are 0.90, 0.95, and 0.99, with corresponding confidence levels 90%, 95%, and 99%. For example, upon calculating a confidence interval for a mean with a confidence level of, say 95%, we can say:
+
+"We can be 95% confident that the population mean falls between $L$ and $U$."
+
+As should agree with our intuition, the greater the confidence level, the more confident we can be that the confidence interval contains the actual population parameter.
+
+Now that we have a general idea of what a confidence interval is, we'll now turn our attention to deriving a particular confidence interval, namely that of a population mean $\mu$.
+
+<center>
+![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/1_alpha.png){width=50%}
+</center>
+
+From the above diagram of the standard normal curve, we can see that the following probability statement is true:
+
+$$P[-z_{\frac{\alpha}{2}} \leq Z \leq z_{\frac{\alpha}{2}}]=1-\alpha$$
+
+Then, simply replacing $Z$, we get:
+
+$$P[-z_{\frac{\alpha}{2}} \leq \frac{\bar{X}-\mu}{\sigma/\sqrt{n}} \leq z_{\frac{\alpha}{2}}]=1-\alpha$$
+
+Now, let's focus only on manipulating the inequality inside the brackets for a bit. Because we manipulate each of the three sides of the inequality equally, each of the following statements are equivalent:
+
+$$
+-z_{\frac{\alpha}{2}} \leq \frac{\bar{X}-\mu}{\sigma/\sqrt{n}} \leq z_{\frac{\alpha}{2}} \\
+
+-z_{\frac{\alpha}{2}}(\frac{\sigma}{\sqrt{n}}) \leq \bar{X}-\mu \leq z_{\frac{\alpha}{2}}(\frac{\sigma}{\sqrt{n}}) \\
+
+-\bar{X}-z_{\frac{\alpha}{2}}(\frac{\sigma}{\sqrt{n}})\leq -\mu \leq -\bar{X} + z_{\frac{\alpha}{2}}(\frac{\sigma}{\sqrt{n}}) \\
+
+\bar{X}-z_{\frac{\alpha}{2}}(\frac{\sigma}{\sqrt{n}})\leq \mu \leq \bar{X}+z_{\frac{\alpha}{2}}(\frac{\sigma}{\sqrt{n}})
+
+$$
+So, in summary, by manipulating the inequality, we have shown that the following probability statement is true:
+
+$$P[\bar{X}-z_{\frac{\alpha}{2}}(\frac{\sigma}{\sqrt{n}})\leq \mu \leq \bar{X}+z_{\frac{\alpha}{2}}(\frac{\sigma}{\sqrt{n}})]=1-\alpha$$
+This indicates that a $(1-\alpha)*100\%$ confidence interval for the mean $\mu$ is:
+
+$$[\bar{x} - z_{\frac{\alpha}{2}}(\frac{\sigma}{\sqrt{n}}), \ \  \bar{x} + z_{\frac{\alpha}{2}}(\frac{\sigma}{\sqrt{n}})]$$
+
+If the population standard deviation ($\sigma$) is unknown, we can use sample standard deviation to estimate it:
+
+$$[\bar{x} - z_{\frac{\alpha}{2}}(\frac{s_x}{\sqrt{n}}), \ \  \bar{x} + z_{\frac{\alpha}{2}}(\frac{s_x}{\sqrt{n}})]$$
+
+#### c. Interpretation
+
+Although the derivation of the $Z$-interval for a mean technically ends with the following probability statement:
+
+$$P[\bar{X}-z_{\frac{\alpha}{2}}(\frac{\sigma}{\sqrt{n}})\leq \mu \leq \bar{X}+z_{\frac{\alpha}{2}}(\frac{\sigma}{\sqrt{n}})]=1-\alpha$$
+
+it is *incorrect* to say: "The probability that the population mean $\mu$ falls between the lower value $L$ and the upper value $U$ is $1-\alpha$." Why?
+
+Probability statements are about random variables. The population mean $\mu$ is a constant, not a random variable. It makes no sense to make a probability statement about a constant that does not change.
+
+So, in short, frequentist statisticians don't like to hear people trying to make probability statements about constants, when they should only be making probability statements about random variables. So, okay, if it's incorrect to make the statement that seems obvious to make based on the above probability statement, what is the correct understanding of confidence intervals? Here's how frequentist statisticians would like the world to think about confidence intervals:
+
+1. Suppose we take a large number of samples, say 1000.
+2. Then, we calculate a 95% confidence interval for each sample.
+3. Then, "95% confident" means that we'd expect 95%, or 950, of the 1000 intervals to be correct, that is, to contain the actual unknown value $\mu$. (Recall the simulation Hanno presented in the lecture!)
+
+So, what does this all mean in practice?
+
+In reality, we take just one random sample. The interval we obtain is either correct or incorrect. That is, the interval we obtain based on the sample we've taken either contains the true population mean or it does not. Since we don't know the value of the true population mean, we'll never know for sure whether our interval is correct or not. We can just be very confident that we obtained a correct interval (because 95% or 99% of the intervals we could have obtained are correct).
+
+### Exercise 1: Confidence Intervals for the Difference in Means
+
+There's a line of literature suggests that those who voted for a winning party/coalition are more satisfied with how democracy works in general than those who voted for a losing party/coalition. To test if this statement is believable, a researcher draws nationally representative samples all over the democracies and has point estimates for both winners' and losers' mean scores of satisfaction with democracy. Satisfaction with democracy is assessed on a scale ranging from 1 (not at all satisfied) to 4 (very satisfied). 
+
+- winners: $\bar{x}_w = 2.70$, $SE_w = 0.01$, $n_w = 5462$
+
+- losers: $\bar{x}_l = 2.37$, $SE_l = 0.01$, $n_l = 12688$
+
+1. What is the distribution of the difference in mean satisfaction with democracy scores between winners and losers?
+
+<br/>
+
+<br/>
+
+<br/>
+
+2. Based on the above distribution, please construct a 95% confidence interval around the difference in mean satisfaction with democracy scores between winners and losers? What does this confidence interval mean substantively?
+
+<br/>
+
+<br/>
+
+<br/>
+
+3. Perform a hypothesis test to see if you can get same conclusion as above.
+
+<br/>
+
+<br/>
+
+<br/>
+
+
+### Exercise 2: Confidence Intervals for Regression Coefficients
+
+In addition to compare the satisfaction with democracy mean score difference between winners and losers, the researcher also ran a simple linear regression in which the dependent variable is satisfaction with democracy and the independent variable is winner-loser status. Winner-loser status is coded as 1 if a respondent self-reported that she voted for a losing party/coalition in the most recent election. 
+
+Here is the regression table:
+
+$$
+\begin{array}{|c|c|c|c|c|c|c|}
+\hline
+\texttt{} & \texttt{estimate} & \texttt{p-value} & \texttt{t value} & \texttt{std.error} & \texttt{CI lower} & \texttt{CI upper}\\ \hline
+\texttt{intercept}      & 2.70        & 0.002   &   &   &   &  \\ \hline
+\texttt{loser}      & -0.33        & 0.001      &   &   &   &  \\ \hline
+\end{array}
+$$
+
+1. Perform a hypothesis test to see if there is a relationship between one's winner-loser status and satisfaction with democracy.
+
+<br/>
+
+<br/>
+
+<br/>
+
+2. Find out the t values and std.error based on the information provided in the regression table.
+
+<br/>
+
+<br/>
+
+<br/>
+
+3. construct a 95% confidence interval around estimates of intercept and the coefficient of `loser`? What does this confidence interval mean substantively? Is you conclusion different from the one you derived from the hypothesis test?
+
+<br/>
+
+<br/>
+
+<br/>
+
 
 
   
