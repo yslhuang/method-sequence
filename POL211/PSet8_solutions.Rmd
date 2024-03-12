@@ -1,0 +1,477 @@
+---
+title: "Problem Set 8"
+author: "Pol211, UC Davis"
+date: "Due by 12/6, 2023 at 11:59 PM"
+output: 
+  pdf_document: default
+---
+
+**Note:** You can skip question 1 if you decide to answer question 5. However, this requires that you seriously attempt to answer all parts of question 5, i.e. you cannot skip question 1 and then just provide minimal answers to question 5.
+
+# Question 1 (4 points, skip if answering question 5)
+
+In a 2007 paper, Berry and Howell analyze electoral accountability in school board elections in South Carolina.\footnote{See here for the paper: https://www.journals.uchicago.edu/doi/10.1111/j.1468-2508.2007.00579.x}
+
+Their independent variable is the **change** in percentile test scores by one unit between 1999 and 2000, for schools close to the polling place. Percentile scores are student test scores that are on a scale from 0 to 100, where 100 is the best score. The dependent variable is the vote share (in %) of each candidate in the 2000 school board election in South Carolina. The unit of observation is the school board candidate. The authors only examine incumbents who are running for re-election. 
+
+In simplified terms, the authors estimate the following model:
+
+$$ \text{VoteShare}_{i} = \alpha + \beta \cdot \text{PercentileScoreChange}_{i} + \epsilon_i $$
+
+where $i$ indexes the school board candidate. The total number of observations is $N = 960$. 
+
+We focus on the estimated coefficient for the election in 2000. The estimated coefficient $\hat{\beta}_1$ and its standard error (in parentheses) are given in the table below. For this question, you can disregard the coefficients for 2002 and 2004.
+
+![Excerpt from table 2 from Berry and Howell, 2007](reg.jpg)
+
+**a.** Interpret the coefficient $\hat{\beta}$ -- what does it tell us?
+
+**b.** The estimated intercept is $\hat{\alpha} = 62.198$. Is this a meaningful quantity? If so, what does it tell us?
+
+**c.** For a regression analysis, what is the typical null hypothesis regarding the unobserved population parameter $\beta$? What is the alternative hypothesis?
+
+**d.** Substantively, what does the null hypothesis mean in this context? What does the alternative hypothesis mean?
+
+**e.** Assume the sample is large. Under the null hypothesis, what is the sampling distribution of the estimated coefficient $\hat{\beta}$?
+
+**f.** What is the two-tailed p-value for the null hypothesis? Assuming a threshold of $\alpha = 0.05$, can you reject the null hypothesis?
+
+**g.** Alternatively, we can conduct a one-tailed test, where where the null is $\beta = 0$ and the alternative is $\beta > 0$. What is the one-tailed p-value for the null hypothesis? Assuming a threshold of $\alpha = 0.05$, can you reject the null hypothesis?
+
+**h.** What is the 95% confidence interval for the population parameter $\beta$, based on the estimated coefficient $\hat{\beta}$ and its standard error?
+
+**i.** Give a correct definition of what the confidence interval means, in particular with respect to the unknown population parameter $\beta$.
+
+\clearpage
+
+**Answers to Q1:**
+
+**a.** When the change in percentile test scores increases by one unit, the vote share of the incumbent increases 0.327 percentage points.
+
+**b.** It is a meaninful quantity. It tells us that if the change in percentile test scores is zero, the vote share of the incumbent is 62.198 percentage points. A change in test scores of zero may occur, which is why this is a meaningful quantity.
+
+**c.** The null hypothesis is that the population parameter $\beta$ is zero. The alternative hypothesis is that the population parameter $\beta$ is not zero.
+
+$$H_0: \beta = 0 \quad \text{vs.} \quad H_1: \beta \neq 0$$
+
+**d.** The null hypothesis means that the change in percentile test scores has no effect on the vote share of the incumbent. The alternative hypothesis means that the change in percentile test scores has an effect on the vote share of the incumbent (either positive or negative).
+
+**e.** Under the null hypothesis, the sampling distribution of the estimated coefficient $\hat{\beta}$ is a normal distribution with mean zero and standard deviation equal to the standard error of the estimated coefficient, i.e. $$\hat{\beta} \sim N(\mu = 0, s_x = 0.191)$$.
+
+**f.** We can calculate a t-statistic as follows:
+
+$$t = \frac{\hat{\beta} - \mu}{s_x} = \frac{0.327 - 0}{0.191} = 1.712$$
+
+We can now either use the t distribution or the normal distribution to calculate the p-value:
+
+```{r}
+
+# t distribution
+
+(1 - pt(1.712, df = 959)) * 2
+
+# normal distribution
+
+(1 - pnorm(1.712)) * 2
+
+```
+
+The p-value is about 0.087. Assuming a threshold of $\alpha = 0.05$, we cannot reject the null hypothesis.
+
+**g.** For the one-tailed test, we only consider the probabilty $P(\hat{\beta} > .327)$. This means that the p-value is half the p-value from the two-tailed test, i.e. about 0.043. 
+
+We can check this in R:
+
+```{r}
+
+# t distribution
+
+(1 - pt(1.712, df = 959))
+
+# normal distribution
+
+(1 - pnorm(1.712))
+
+```
+
+For a threshold of $\alpha = 0.05$, we can reject the null hypothesis.
+
+**h.** The 95% confidence interval is given by:
+
+$$\hat{\beta} \pm 1.96 \cdot \text{SE}(\hat{\beta}) = 0.327 \pm 1.96 \cdot 0.191 = [-0.047, 0.701]$$
+
+We multiply the estimated standard error by 1.96 because $P(Z > 1.96) = 0.025$ and $P(Z < -1.96) = 0.025$ for a random variable $Z$ that is normally distributed with mean zero and standard deviation one.
+
+**i.** If we were two repeat the sample over and over, and we then run the regression and construct a confidence interval for each sample, we would expect that 95% of the confidence intervals contain the true population parameter $\beta$.
+
+Note that this shows the limits of frequentist statistics, since the researchers already have all the candidates from the 2000 school board elections in South Carolina. So it's somewhat difficult to think about what "repeated sampling" would mean in this context.
+
+\clearpage
+
+# Question 2 (1 point)
+
+Baldwin (2013) analyzes how connections between traditional chiefs and members of parliament (MPs) affect public goods provision in Zambia. In particular, she measures the number of years since a given chief has first met an MP as her independent variable. The dependent variable is number of temporary school classrooms in the chiefdom during the 2007-08 school year.\footnote{The paper is here: http://onlinelibrary.wiley.com/doi/abs/10.1111/ajps.12023}.
+
+**a.** Baldwin states the following:
+
+> "Model 1 shows the effect of connections between the chief and the MP on the number of temporary classrooms in the chiefdom is large, positive, and statistically significant at the 95% confidence level."
+
+When Baldwin says "statistically significant at the 95% confidence level", what does she mean, in particular with respect to the unknown population parameter $\beta$?
+
+**b.** Below an excerpt from table 1 in Baldwin's paper. 
+
+![Table 1 (excerpt) from Baldwin 2013](reg_baldwin.jpg){width=50%}
+
+Unlike most papers, Baldwin does not list the estimated coefficient $\hat{\beta}$ and its standard error $\text{SE}(\hat{\beta})$ in the table. Instead, she lists the coefficient and the p-value (in parentheses). Also, her sample size is $N=99$. Can you calculate the standard error of her estimated coefficient $\hat{\beta}$ in model (1) based on what is given in the table?
+
+**Hint:** `qnorm` or `qt` may be helpful.
+
+\clearpage
+
+**Answers to Q2:**
+
+**a.** "Statistically significant at the 95% confidence level" means that the author reject the null hypothesis of $\beta = 0$ at the 95% confidence level. This means that the two-sided p-value is less than 0.05.
+
+**b.** One way of getting the p-value is to first calculate a t-statistic:
+
+$$t = \frac{\hat{\beta} - \mu}{s_x}$$
+
+where $\mu = 0$ and $s_x = \text{SE}(\hat{\beta})$. Since we are given the p-value, we can use the quantile function of the t distribution to find the t-statistic for which we would get the p-value given in the table:
+
+```{r}
+
+qt(1 - (0.036 / 2), df = 97)
+
+```
+
+The code comes from the fact that we only want a probability of $0.036 / 2 = 0.018$ in both tails of the distribution. For the t distribution with 97 degrees of freedom, the quantile function gives us the $t$ such that $1-F(t) = 0.018$, where $F$ is the cumulative distribution function of the t distribution.
+
+The t-statistic we need is $t = 2.127$. Now, we just need to solve for the standard error:
+
+$$
+\begin{aligned}
+t &= \frac{\hat{\beta} - \mu}{s_x} \\
+2.127 &= \frac{0.352 - 0}{s_x} \\
+s_x &= \frac{0.352}{2.127} \\
+s_x &\approx 0.165 
+\end{aligned}
+$$
+
+\clearpage
+
+# Question 3 (4 points)
+
+A colleague asks you to help with an analysis of the relationship between news consumption and political engagement. Your colleague argues that news consumption may have a causal effect on political engagement, since people may learn more about politics by consuming more news. As a result, they may then learn about issues that they care about, and become more politically active to support the causes they care about.
+
+Your colleague collects a random sample of the adult population in the US, and then runs a regression of the number of hours of political activities per week ($Y$) on the number of hours of news consumption per week ($X$) . The former includes volunteering for a political campaign, attending campaign events, phonebanking, and so on.
+
+The regression is therefore:
+
+$$ Y = \alpha + \beta X + \epsilon $$
+
+Where $\alpha$ is the intercept, $\beta$ is the slope, and $\epsilon$ is the error term. 
+
+The estimated coefficient is $\hat{\beta} = 0.114$, and the p-value is 0.0278, so your colleague rejects the null hypothesis of $\beta = 0$ at the 95% confidence level. Your colleague then argues that this means that news consumption has a positive causal effect on political engagement.
+
+**a.** Do you think this relationship is causal? Why or why not?
+
+**Hint:** One issue could be confounding.
+
+---
+
+Your colleague gives you the data they collected (it is called `data.csv` and can be found on canvas).\footnote{This is a simulated data set.} In addition to the two aforementioned variables, the data also includes a binary, survey-based variable for whether a given respondents is interested in politics or not. The variable is coded as 1 if the respondent is interested in politics, and 0 if they are not interested in politics. We can call this variable $Z$.
+
+**b.** Discuss how the relationship between news consumption and political engagement could be subject to confounding. In particular, this discussion should reference the third variable in the data set, political interest. 
+
+---
+
+ In applied work, people will often state that they 'control' for a variable to account for confounding. We will now do this in two ways. Controlling generally means holding something constant. In this case, we want to hold the variable $Z$ for being interested in politics constant. It only has two possible values, so one way is simply to subset the data to respondents with either $Z = 1$ or $Z = 0$.
+
+ **c.** You should run three regressions: 
+
+  - First, regress political engagement on news consumption for all respondents (ie implement the specification given above). 
+  - Then, regress political engagement on news consumption *only* for respondents who are interested in politics ($Z$ = 1). 
+  - Finally, regress political engagement on news consumption for respondents who are not interested in politics ($Z$ = 0). 
+
+Compare (i) the magnitude of the estimated regression coefficient $\beta$ across all three specifications and (ii) state whether you can reject the null hypothesis at the 95% confidence level in each case.
+
+ **d.** Briefly discuss how your results relate to the issue of confounding. Do the results suggest the relationship between news consumption and political engagement is causal? Why or why not?
+
+ **e.** Instead of the subsetting method in part (c), you could also run a regression that includes the variable for being interested in politics as a control variable. In this case, the regression would be:
+
+  $$ Y = \alpha + \beta X + \gamma Z + \epsilon $$
+  
+  where $\gamma$ is the coefficient for the variable $Z$. 
+
+  Run this regression, and compare the coefficient $\beta$ from this new specification to the coefficient $\beta$ from only regressing $Y$ on $X$ (for the whole sample).
+
+  **f**. From the regression in part (e), what do you conclude regarding the issue of confounding? Does your conclusion align with what you wrote in (d)?
+
+  **g.** The NYT wants to print a story about the results of this research project. They want to call the story "Broadcast to Ballots: How News Makes People More Politically Engaged". Do you think this title accurately reflects your results? In simple terms (understandable to a journalist), provide a brief explanation for your answer.
+
+\clearpage
+
+**Answers to Q3:**
+
+**a.** Confounding could be an issue. We can think of a third variable that affects both news consumption and political engagement. For example, people who are more educated may be more likely to consume news, and they may also be more likely to be politically engaged. Other possible confounders could be age, income, and so on.
+
+**b.** Politically interested people may be more likely to read the news, and also more likely to be politically engaged. This means that the relationship between news consumption and political engagement could be confounded by political interest.
+
+**c.** We can run the regressions in R as follows:
+
+```{r}
+
+# load data
+
+data <- read.csv("data.csv")
+
+# regression for all respondents
+
+summary(lm(hours_pol_activities ~ hours_news_consumption, data = data))
+
+# regression for respondents who are interested in politics
+
+summary(lm(hours_pol_activities ~ hours_news_consumption, data = subset(data, pol_interest == 1)))
+
+# regression for respondents who are not interested in politics
+
+summary(lm(hours_pol_activities ~ hours_news_consumption, data = subset(data, pol_interest == 0)))
+
+```
+
+Generall, we find coefficients much closer to zero when we condition on political interest. In addition, we cannot reject the null for the regressions that condition on political interest. 
+
+**d.** The results suggest that the relationship between news consumption and political engagement is not causal. This is because the relationship is confounded by political interest.
+
+**e.** We can run the regression in R as follows:
+
+```{r}
+
+summary(lm(hours_pol_activities ~ hours_news_consumption + pol_interest, data = data))
+
+```
+
+**f.** The results suggest that the relationship between news consumption and political engagement is not causal. This is because the relationship is confounded by political interest.
+
+**g.** The title does not accurately reflect the results. The results suggest that the relationship between news consumption and political engagement is not causal. This is because the relationship is confounded by political interest. The title suggests that news consumption causes political engagement, but this is not what the results suggest.
+
+\clearpage
+
+# Question 4 (3 points)
+
+The table below contains data from a study similar to the one above. It shows a binary measure for whether someone is politically active or not (Y) as well as a another binary measure for whether a person consumes political news or not (X). 
+
+The table contains the *potential outcomes*, i.e. the outcome that would be observed if the person consumes political news ($Y_{1i}$) and the outcome that would be observed if a respondent does not consume political news ($Y_{0i}$). 
+
+| Case | $Y_{1i}$ | $Y_{0i}$ | $X_i$ | $Y_{1i} - Y_{0i}$ |
+|------|--------|--------|-----|-----------------|
+| 1    | 1      | 1      | 1   | 0               |
+| 2    | 1      | 1      | 1   | 0               |
+| 3    | 1      | 0      | 1   | 1               |
+| 4    | 0      | 0      | 0   | 0               |
+| 5    | 0      | 0      | 0   | 0               |
+
+**a.** Do we usually observe both $Y_{1i}$ and $Y_{0i}$ for each person? Why or why not?
+
+**b.** Assume that $Y_i$ is the outcome we actually observe for each person. In the table below, fill in the values for $Y_i$.
+
+| Case | $X_i$ | $Y_i$ |
+|------|-------|-----|
+| 1    | 1     | ?   |
+| 2    | 1     | ?   |
+| 3    | 1     | ?   |
+| 4    | 0     | ?   |
+| 5    | 0     | ?   |
+
+**c.** Next, we want to calculate the average of the **unit-level treatment effect**. This is the average of the difference between the potential outcomes for each case, i.e. the average of $Y_{1i} - Y_{0i}$. What is the average of $Y_{1i} - Y_{0i}$?\footnote{We can also write this as $E(Y_{1i} - Y_{0i})$} Is this a quantity we can usually calculate in an actual empirical study? Explain your answer.
+
+**d.** Next, we want to calculate the average treatment effect using the observed values of $Y_i$. This is defined as $E(Y_i | X_i = 1) - E(Y_i | X_i = 0)$. What is the average treatment effect? Is this a quantity we can usually calculate in an actual empirical study?Explain your answer.
+
+**e.** Are your answers to (c) and (d) the same or not? Comment on why they might be different. 
+
+**f.** What is a popular type of study that researchers often conduct to ensure that the answer to (d) is the same as the answer to (c)?
+
+\clearpage
+
+**Answers to Q4:**
+
+**a.** No, we usually do not observe both $Y_{1i}$ and $Y_{0i}$ for each person. This is because we can only observe one of the two potential outcomes, depending on whether the person consumes political news or not. This is called the **fundamental problem of causal inference**.
+
+**b.** We can fill in the values for $Y_i$ as follows:
+
+| Case | $X_i$ | $Y_i$ |
+|------|-------|-----|
+| 1    | 1     | 1   |
+| 2    | 1     | 1   |
+| 3    | 1     | 1   |
+| 4    | 0     | 0   |
+| 5    | 0     | 0   |
+
+**c.** The average of $Y_{1i} - Y_{0i}$ is 0.2. This is not a quantity we can usually calculate in an actual empirical study, since we usually do not observe both $Y_{1i}$ and $Y_{0i}$ for each person.
+
+**d.** $Y_i$ is actually constant within levels of $X_i$, so we can calculate the average treatment effect as follows:
+
+$$
+E(Y_i | X_i = 1) - E(Y_i | X_i = 0) = 1 - 0 = 1
+$$
+
+This is a quantity we can usually calculate in an actual empirical study, since we do observe both $Y_i$ and $X_i$ for each person.
+
+**e.** The answers are different. The reason is that there is a correlation between the treatment assignment $X_i$ and the potential outcomes $Y_{1i}$ and $Y_{0i}$. 
+
+In particular, cases 1 and 2 are always politically active, regardless of whether they consume political news or not. Cases 4 and 5 are never politically active, regardless of whether they consume political news or not. Case 3 is the only case that is politically active if they consume political news, but not politically active if they do not consume political news.
+
+It looks like people who more politically active to begin with tend to read the news more often. This means that the treatment assignment $X_i$ is not random, but correlated with the potential outcomes $Y_{1i}$ and $Y_{0i}$.
+
+Note that this data does not tell why exactly the correlation between the treatment assignment and the potential outcomes exists. This could be due to confounding or reverse causality, for example. 
+
+**f.** A popular type of study that researchers often conduct to ensure that the answer to (d) is the same as the answer to (c) is a **randomized experiment**. In a randomized experiment, the treatment assignment $X_i$ is random, so it is by design not correlated with the potential outcomes $Y_{1i}$ and $Y_{0i}$. This ensures that the answer to (d) is the same as the answer to (c).
+
+\clearpage
+
+# Question 5 (for students in the methods subfield) (3 points)
+
+An alternative way to test hypotheses without having to make assumptions about the distribution of the test statistic is **randomization inference**. 
+
+Let $Y_i$ be a binary outcome for unit $i$, and $D_i$ be a binary treatment assignment for unit $i$. As before, the potential outcomes are $Y_{1i}$ and $Y_{0i}$. We now test a sharp null hypothesis of $H_0: Y_{1i} = Y_{0i}$ for all $i$. 
+
+For our test statistic, we will use the absolute difference in means estimator, which is defined as follows:
+
+$$
+\begin{aligned}
+T = \left| \frac{1}{N_1} \sum_{i=1}^{N} D_iY_i - \frac{1}{N_0} \sum_{i=1}^{N} Y_i (1-D_1)Y_i\right|
+\end{aligned}
+$$
+
+where $N$ is the total number of units, $N_1$ is the number of units in the treatment group, and $N_0$ is the number of units in the control group.
+
+Our data looks like this:
+
+| Case | $Y_i$ | $D_i$ |
+|------|-------|-----|
+| 1    | 1     | 1   |
+| 2    | 1     | 1   |
+| 3    | 1     | 1   |
+| 4    | 0     | 0   |
+| 5    | 1     | 0   |
+| 6    | 0     | 0   |
+
+In R, we can calculate the test statistic as follows:
+
+```{r}
+
+# data
+
+Y = c(1, 1, 1, 0, 1, 0)
+D = c(1, 1, 1, 0, 0, 0)
+
+# number of units
+
+get_T <- function(Y, D) {
+
+  term1 <- mean(Y[D == 1])
+  term2 <- mean(Y[D == 0])
+
+  ## For some possible treatment vectors, the mean of Y[D == 1] or Y[D == 0] may be NaN
+  ## In those cases, just set the mean to zero
+  ## This is fine since the other term will simply be the mean of Y across all units 
+
+  term1 <- ifelse(is.nan(term1), 0, term1)
+  term2 <- ifelse(is.nan(term2), 0, term2)
+
+  abs(term1 - term2)
+  
+}  
+
+get_T(Y, D)
+
+```
+
+The observed $T$ is equal to 2/3. 
+
+**a.** Assume that the null hypothesis holds, but the treatment assignment $D_i$ is different from the one observed above, i.e. some cases receive the treatment that currently do not, and some cases do not receive the treatment that currently do. Under a different treatment assignment, what would the observed values of $Y_i$ be? 
+
+**b.** Assume each unit is able to receive the treatment or not. Let $D$ be a vector that contains the treatment assignment for each unit, which may be different from the one we actually observe. In the observed data, $D = (1, 1, 1, 0, 0, 0)$. How many different vectors $D$ are there in total?
+
+**c.** Assuming that the null holds, is it possible to calculate $T$ for a different treatment vector $D$ with the observed data given above (i.e. a vector different from the one observed above), or does the fundamental problem of causal inference prevent this?
+
+**d.** In R, create all possible permutations of the vector $D$. For each, calculate the test statistic $T$. This gives you the distribution of $T$ if the null hypothesis is true.
+
+**e.** We can now calculate a p-value, which tells us how "typical" our observed value of $T$ is under the null hypothesis. Let $\tilde{T}_k$ be test statistic that is derived from the $k$\textsuperscript{th} permutation of $D$. The p-value is then defined as follows:
+
+$$
+\begin{aligned}
+p = \frac{1}{K} \sum_{k=1}^{K} 1(\tilde{T}_k \geq T)
+\end{aligned}
+$$
+
+where $K$ is the total number of permutations, and $1(\cdot)$ is the indicator function.
+
+Calculate the p-value under the null. Using the typical threshold of $\alpha = 0.05$, can you reject the null hypothesis?
+
+**f.** What is the advantage of randomization inference over the CLT-based approach we have used so far, particularly in cases like the one above?
+
+**g.** Assume a similar scenario with $N=4$. In this case, is it possible to reject the null at the 95% confidence level? Why or why not?
+
+**h.** Unlike in the example above, assume that $N$ is large. Even with a modest sample size of 100, the number of possible permutations of $D$ is $>10^{30}$. This makes it infeasible to calculate the p-value as we did above. How can we still conduct randomization inference in this case? 
+
+\clearpage
+
+**Answers to Q5:**
+
+**a.** If the null hypothesis holds, the observed values of $Y_i$ would be exactly the same they as they are now, since the unit-level treatment effect is zero. 
+
+**b.** There are $2^6 = 64$ different vectors $D$ in total. This is because each unit can either receive the treatment or not, so there are two possibilities for each unit. 
+
+**c.** Under the sharp null, we can calculate $T$, since the sharp null implies that the observed values of $Y_i$ would be exactly the same they as they are now.
+
+**d.** We can create all possible permutations of the vector $D$ as follows:
+
+```{r, warning=F, message = F}
+
+# data
+
+Y = c(1, 1, 1, 0, 1, 0)
+D = c(1, 1, 1, 0, 0, 0)
+
+T_obs <- get_T(Y, D)
+
+# permutations
+
+library(gtools)
+
+perms <- expand.grid(rep(list(0L:1L), 6L))
+
+## This is a matrix where each row is a permutation of the vector D
+## Now, use the function from before to get the distribution of T
+
+T_all <- apply(perms, 1, function(d) get_T(Y, d))
+
+## Distribution
+
+hist(T_all, breaks = 10)
+
+```
+
+**e.** We can calculate the p-value as follows:
+
+```{r}
+
+mean(T_all >= T_obs)
+
+```
+
+The p-value is 0.25, which means that the observed value of $T$ is not particularly extreme under the null hypothesis. Assuming a threshold of $\alpha = 0.05$, we cannot reject the null hypothesis.
+
+**f.** The advantage of randomization inference is that it does not require any assumptions about the distribution of the test statistic. In particular, the CLT says that the test statistic follows a normal distribution if the sample size is *large*. This means that the using the normal approximation with small samples (like the one we assess here) may give us incorrect results; randomization inference does not have this problem.
+
+**g.** If $N=4$, there are $2^4 = 16$ different vectors $D$ in total. This means that the p-value can be at most $1/16 = 0.0625$. This means that we can never reject the null hypothesis at the 95% confidence level.
+
+**h.** We can still conduct randomization inference in this case by only assessing a sample of all possible treatment vectors. This is called **permutation testing**. In particular, we can randomly sample $K$ vectors from the set of all possible vectors, and then calculate the test statistic for each. Based on the distribution of the test statistic, we can then calculate a p-value.
+
+
+
+
+
+
+

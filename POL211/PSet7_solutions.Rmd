@@ -1,0 +1,497 @@
+---
+title: "Problem Set 7"
+author: "Pol211, UC Davis"
+date: "Due by 11/20, 2023 at 11:59 PM"
+output: 
+  pdf_document: default
+---
+
+**Note:** You can skip questions 2-3 if you decide to answer question 6. However, this requires that you seriously attempt to answer all parts of question 6, i.e. you cannot skip questions 2-3 and then just provide minimal answers to question 6.
+
+# Question 1 (3 points)
+
+Read the the following statements. For each, say whether it is true or false, and explain your answer (brief explanations are sufficient.)
+
+**a.** The goal of hypothesis testing is to determine the *exact* value of the population parameter of interest.
+
+**b.** Assume we are testing a null hypothesis using a regression coefficient $\hat{\beta}$, where the sample size is large. We therefore assume that $\hat{\beta}$ is normally distributed. For a one tailed test of $H_0: \beta = 0$ against $H_a: \beta > 0$ the resulting p-value will be larger than for a two-tailed test of $H_0: \beta = 0$ against $H_a: \beta \neq 0$.
+
+**c.** The p-value tells you the likelihood of the null hypothesis being true.
+
+**d.** Assume that our sample is large. Then, to test hypotheses about the sample mean $\bar{X}$, we need to know the distribution of $X$ (e.g. whether it is binomial, uniform, etc.)
+
+**e.** We can conduct hypothesis tests even if we do not know the distribution of the test statistic under the null hypothesis.  Some examples of a test statistic are the sample mean $\bar{X}$ or the regression coefficient $\hat{\beta}$.
+
+
+**f.** Since we do not observe the variance (or standard deviation) of the data-generating process, we commonly use the sample variance (or standard deviation) as an estimate of the unknown population parameter.
+
+**Answers:**
+
+**a.** False. The goal of hypothesis testing is to come up with a conjecture about the DGP and then test whether the estimate provides good evidence in favor of that conjecture.
+
+**b.** False. The p-value will be smaller for the one-tailed test, since we are only considering one tail of the distribution. Assume that $\bar{X} = 2$ and $SE(\bar{X}) = 1$. We can calculate the p-values for the one- and two-tailed tests as follows:
+
+```{r, fig.align = 'center', out.width="50%"}
+
+# One-tailed test
+
+1 - pnorm(2, 0, 1)
+
+# Two-tailed test
+
+2 * (1 - pnorm(2, 0, 1))
+
+# Visualize
+
+x <- seq(-3, 3, 0.01)
+y <- dnorm(x, 0, 1)
+
+
+```
+
+```{r echo=F, out.width="50%",fig.show='hold'}
+# One-tailed test
+
+library(ggplot2)
+
+ggplot() +
+  geom_line(aes(x, y)) +
+  geom_area(aes(x = x[x >= 2], y = y[x >= 2]), fill = "red") +
+  geom_vline(xintercept = 2, lty = 2) +
+  xlab("Sample mean") +
+  ylab("Density") +
+  theme_minimal() +
+  ggtitle("One-tailed test")
+
+# Two-tailed test
+
+ggplot() +
+  geom_line(aes(x, y)) +
+  geom_area(aes(x = x[x >= 2], y = y[x >= 2]), fill = "red") +
+  geom_area(aes(x = x[x <= -2], y = y[x <= -2]), fill = "red") +
+  geom_vline(xintercept = 2, lty = 2) +
+  geom_vline(xintercept = -2, lty = 2) +
+  xlab("Sample mean") +
+  ylab("Density") +
+  theme_minimal() +
+  ggtitle("Two-tailed test")
+
+```
+
+**c.** False. The p-value tells you the likelihood of observing the data you observed, or data that is more extreme, if the null hypothesis is true.
+
+**d.** False. We do not need to know the distribution of $X$ to test hypotheses about the sample mean $\bar{X}$. This is because, if the sample size is large, the distribution of $\bar{X}$ is approximately normal, regardless of the distribution of $X$. We know this from the central limit theorem.
+
+**e.** False. We need to know the distribution of the test statistic under the null hypothesis to calculate the p-value. 
+We want to know how "extreme" our test statistic is, given that the null hypothesis is true. To determine this, we need to know something about the "behavior" of the test statistic across many different samples. This behavior is described by the distribution of the test statistic under the null hypothesis. Therefore, without knowing the distribution of the test statistic under the null hypothesis, we have no idea whether our test statistic can be considered "extreme" or not.
+
+**f.** True. We do not observe the variance (or standard deviation) of the data-generating process, so we use the sample variance (or standard deviation) as an estimate. We denote the sample variance as $S_X^2$ and the sample standard deviation as $S_X$.
+
+
+
+
+
+
+
+\clearpage
+
+# Question 2 (1.5 points)
+
+**a.** What is the definition of the cumulative distribution function for a random variable $X$?
+
+**b.** How do we calculate the following two quantities, for a continuous random variable $X$ that has a known distribution? Use your answer to **a.**.
+ 
+  - $P(X \leq a)$, i.e. the probability that $X$ is less than or equal to some value $a$.
+  - $P(X > a)$, i.e. the probability that $X$ is greater than some value $a$.
+
+**c.** Below, you are given probability distributions; calculate the following probabilities in R, based on random variables $X$ that follow the distributions given below:
+
+  - $P(X \geq 1.96)$ for $X \sim N(0, 1)$
+  - $P(X \leq 0.2)$ for $X \sim \text{Unif}(0, 2)$
+  - $P(1 \leq X \leq 3)$ for $X \sim \text{Binom}(10, 0.4)$
+
+**Note:** For the first two, we are dealing with continuous random variables, so you do not have to worry about the difference between $P(X< a)$ and $P(X \leq a)$. However, the third probability is for a discrete random variable, so there is a difference between $P(X< a)$ and $P(X \leq a)$. As a result, we can also write the final quantity as $P(X \leq 3) - P(X \leq 0)$.
+
+**Answers:**
+
+**a.** The cumulative distribution function (CDF) of a random variable $X$ is defined as:
+
+$$F(x) = P(X \leq x)$$
+
+**b.** We can use the CDF to calculate the following probabilities:
+
+  - $P(X \leq a) = F(a)$
+  - $P(X \geq a) = 1 - F(a)$
+
+**c.** We can use the CDF functions in R to calculate the following probabilities:
+
+```{r}
+
+## Normal RV
+
+1 - pnorm(1.96, 0, 1)
+
+## Uniform RV
+
+punif(0.2, 0, 2)
+
+## Binomial RV
+
+pbinom(3, 10, 0.4) - pbinom(0, 10, 0.4)
+
+
+```
+
+\clearpage
+
+# Question 3 (1.5 points)
+
+Your friend loves Salmon. She always buys at the Davis Fish Mart, but she feels like the Salmon she buys at the Fish Mart is always less than what it says on the label. Your friend always asks for one pound of Salmon, but she tells you that she consistently gets actual amounts of Salmon that are 0.75 pounds or below. 
+
+The Fish Mart apologizes for this, but they say that their scale is imprecise, and randomly adds or subtracts at most 0.3 pounds from the true weight of the Salmon, with any value between -0.3 and 0.3 being equally likely. She knows you are good at statistics, so she asks you to evaluate whether the Fish Mart is telling the truth.
+
+**a.** Come up with a conjecture or hypothesis that we want to test. It should be based on what the Fish Mart told you. Under this hypothesis, what is the distribution of Salmon weights given that your friend always requests one pound of Salmon?
+
+**Hint:** There is only one distribution that we know which allows many different values in an interval that are all equally likely. 
+
+**b.** What is the probability of consistently observing a Salmon weight of 0.75 pounds or less if what the Fish Mart says is true? Do you reject the hypothesis you came up with in part **a.** if (i) the threshold for rejecting the hypothesis is $P(data|hypothesis)<0.1$ or (ii) the threshold for rejecting the hypothesis is $P(data|hypothesis)<0.05$? 
+
+**c.** Another friend overhears your conversation, and tell you that he recently bought a pound of Salmon at the Fish Mart, but then weighed it at home and found that it was only 0.65 pounds. Given the distribution of Salmon weights that you came up with in part **a.**, what is the probability the Fish Mart is telling the truth? Does this change the interpretation of your answer to part **b.**? Why or why not?\footnote{We assume both of your friends' scales are perfectly accurate, and that the Salmon does not lose or gain weight between the time it is weighed at the Fish Mart and the time it is weighed at home.}
+
+**Answers:**
+
+**a.** For the null hypothesis, we want to test whether the Fish Mart is telling the truth. The Fish Mart says that their scale is imprecise, and randomly adds or subtracts 0.3 pounds from the true weight of the Salmon, with any value between -0.3 and 0.3 being equally likely. If what the store says (i.e. under the null hypothesis), the distribution of Salmon weights given that your friend always requests one pound of Salmon is:
+
+$$S\sim \text{Unif}(0.7, 1.3)$$
+
+**b.** The probability of consistently observing a Salmon weight of 0.75 pounds or less if what the Fish Mart says is true is:
+
+$$P(S\leq 0.75) = \frac{0.75-0.7}{1.3-0.7} = \frac{5}{100} \frac{5}{3} = \frac{1}{12}$$
+
+This is pretty small. If the threshold for rejecting the hypothesis is $P(data|hypothesis)<0.1$, we would reject the hypothesis. If the threshold for rejecting the hypothesis is $P(data|hypothesis)<0.05$, we would not reject the hypothesis.
+
+**c.** Given the distribution of $S$ in **a.**, which is consistent with what the Fish Mart told us, the probability that the Fish Mart is telling the truth is 0. This is because $P(X<0.7)=0$, i.e. the story of the Fish Mart is incompatible with values below 0.7. This would change the interpretation in **b.** if we decided not to reject our initial conjecture there. 
+
+\clearpage
+
+# Question 4 (2 points)
+
+The city of Fraudville is notorious for its rigged elections. You are an investigator tasked with evaluating whether the most recent election was rigged. Fraudville has a total of 100 electoral districts. The mayor of Fraudville also happens to be the head of the Fraudville Election Commission. In each district, Election Commission bureaucrats count the number of votes. Then, the commission publishes the total number of votes for and against the mayor for each district. The incumbent mayor won the election. 
+
+One way to investigate whether the results were fraudulent is by looking at digit patterns in the reported vote totals. It is known that people tend to select particular digits when they make up numbers; in particular, it is known that humans tend to come up with numbers that end with zero more often than any other last digit. In contrasts, all possible last digits should be equally likely for the reported vote totals in a fair election, where the totals have not been manipulated.\footnote{There are several papers that use this strategy to detect fraud in elections. See, for example, https://doi.org/10.1093/pan/mps003.}
+
+Below is the distribution of last digits for the reported vote totals in the most recent election. There are a total of 100 last digits, since there are 100 districts. The mayor claims there is no fraud, i.e. the vote totals reported have not been manipulated.
+
+| Last digit of pro-mayor vote total | Frequency |
+|------------|-----------|
+| 0          | 18        |
+| 1          | 7         |
+| 2          | 11        |
+| 3          | 8         |
+| 4          | 9         |
+| 5          | 11        |
+| 6          | 8         |
+| 7          | 9         |
+| 8          | 11        |
+| 9          | 8         |
+
+**Note:** As an example, the reported vote totals in Districts 7 and 28 are 1320 and 2550.  Both of these two districts will be counted toward the 0 category for the last digit.
+
+**a.** The mayor claims that elections were not rigged. If the mayor is telling the truth, should the probability of observing each last digit be the same? Why or why not?
+
+**b.** Come up with a conjecture about the probability of observing 0 as the last digit, based on what the mayor said. Under this conjecture, what is the distribution of the number of districts in which the last digit is 0? Plot this distribution, and draw a vertical line at the observed value of 18.
+
+**Hint:** For this problem, it is helpful to think of each district has a "trial", where the last digit can either be 0 or one of the other 9 last digits. 
+
+**c.** Given the observed distribution of last digits in the table above, what is the probability of observing 18 or more districts in which the last digit is 0?
+
+**d.** A commonly used threshold is to reject the original conjecture (or null hypothesis) if the probability you calculated in **c.** is less than 5%. Based on this threshold, do you think the mayor is telling the truth? Why or why not? 
+
+**Answer:**
+
+**a.** If the mayor is telling the truth, the probability of observing each last digit should be the same. This is because the vote totals are not manipulated, so the last digit should be equally likely to be any of the 10 possible last digits. Therefore, $P(D=0)=P(D=1)=\dots=P(D=9)=0.1$, where $D$ is the last digit. 
+
+**b.** Based on what the mayor said, we can define a random variable $X$, which is the number of districts in which the last digit is 0. If the election was not rigged, $X$ is binomially distributed with $n=100$ and $p=0.1$. 
+
+```{r, out.width="70%", fig.align = 'center'}
+
+# Define the number of districts
+n <- 100
+
+# Define the probability of observing 0 as the last digit
+
+p <- 0.1
+x <- 0:30
+
+# Calculate the probability of observing each value of X
+
+prob <- dbinom(x, n, p)
+
+# Plot the distribution of X
+
+plot(x, prob,
+  type = "h", lwd = 2,
+  xlab = "Number of districts with last digit 0", 
+  ylab = "Probability under the null hypothesis"
+)
+abline(v = 18, lwd = 2, lty = 2)
+
+```
+
+**c.** We can use the CDF of the binomial distribution, since: 
+
+$$P(X\geq 18) = 1 - P(X\leq 17) = F(17)$$
+
+Where $F$ is the CDF of the binomial distribution. We can use the binomial CDF function in R to calculate this probability:
+
+```{r}
+1 - pbinom(17, 100, 0.1)
+```
+
+**d.** The probability we calculated in **c.** is $P(X\geq 18) \approx 0.01$. This is less than 5%, so we would reject the null hypothesis that the election was not rigged. 
+
+# Question 5 (4 points)
+
+In a randomized experiment, researchers want to evaluate an intervention that informs young people about the importance of participation in local politics. The outcome that the researchers are interested in is the amount of hours that the participants spend participating in local politics, which includes activities such as attending city council meetings, working for local political campaigns, and so on. 
+
+Individuals are randomly assigned to the intervention (the "treatment group") or to a control group where they are exposed to information unrelated to politics. After the experiment, the researchers observe the that the average number of hours spent participating in local politics is 2.3 hours per week for the treatment group, and 2 hours per week for the control group. The variance of the number of hours spent participating in local politics is 8 for both groups. The sample size for both groups is 400. 
+
+For the rest of the problem, let the sample mean for the treatment group be $\bar{X}_T$, and the sample mean for the control group be $\bar{X}_C$.
+
+**a.** We are interested in the difference between the average number of hours spent participating in local politics for the treatment and control groups. What is this difference, and what is its standard error? 
+
+**Hint:** We can treat the sample means as independent, normally distributed random variables. In this case, the variance of the difference between the sample means is the sum of the variances of the sample means, and the difference between the sample means is itself normally distributed.
+
+**b.** Next, we want to make some inferences about the (unobserved) population means $\mu{_T}$ and $\mu{_C}$. We want to test the null hypothesis that the intervention has no effect on the average number of hours spent participating in local politics. What is the null hypothesis, and what is the alternative hypothesis?
+
+**Hint:** For the alternative hypothesis, we are interested in whether the intervention increases *or* decreases the average number of hours spent participating in local politics -- basically whether there is any effect different from zero.
+
+**c.** Under the null hypothesis, what is the distribution of the difference between the sample means?
+
+**d.** What is the probability of observing a difference between the sample means equal to or more extreme than the one we observed, if the null hypothesis is true? Using the convential threshold of $P<0.05$, can you reject the null hypothesis?
+
+**Hint:** Note that this is a two-tailed test, i.e. you should consider cases where the difference between the sample means is either larger than 0.3 or smaller than -0.3.
+
+**e.** Suppose that the sample size in both groups is instead equal to 900. The sample means and variances given above are the same. How does your answer to **d.** change?
+
+**f.** Finally, a colleague remarks the following: highly educated individuals are (i) more interested in learning about the value of political participation and (ii) more likely to participate in local politics. Therefore, the observed differences between the two groups could be due to people in the treatment group being more educated than people in the control group. 
+
+For this specific study, do you agree with your colleague?
+
+**Answers:**
+
+**a.** The difference between the average number of hours spent participating in local politics for the treatment and control groups is:
+
+$$\Delta \bar{X} = \bar{X}_T - \bar{X}_C = 2.3 - 2 = 0.3$$
+
+The standard error of this difference is:
+
+$$SE(\Delta \bar{X}) = \frac{\sqrt{8+8}}{\sqrt{400}}=\frac{4}{20}=\frac{1}{5}=0.2$$
+
+**b.** The null hypothesis is that the intervention has no effect on the average number of hours spent participating in local politics, i.e. $\mu_T = \mu_C$. The alternative hypothesis is that the intervention has an effect on the average number of hours spent participating in local politics, i.e. $\mu_T \neq \mu_C$.
+
+**c.** Under the null hypothesis, the distribution of the difference between the sample means is normal with mean 0 and standard deviation 0.2. 
+
+**d.** The probability of observing a difference between the sample means equal to or more extreme than the one we observed, if the null hypothesis is true, is:
+
+$$P(\Delta \bar{X} \geq 0.3 \text{ or } \Delta \bar{X} \leq -0.3) = P(\Delta \bar{X} \geq 0.3) + P(\Delta \bar{X} \leq -0.3)$$
+
+Where $\Delta \bar{X}$ is distributed as $N(0, 0.2)$. We can use the normal CDF function in R to calculate this probability:
+
+```{r}
+
+pval <- (1 - pnorm(0.3, 0, 0.2)) + (pnorm(-0.3, 0, 0.2))
+pval
+```
+
+The p-value is 0.1336144, which is larger than the conventional threshold of 0.05. Therefore, we cannot reject the null hypothesis.
+
+**e.** 
+
+If the sample size in both groups is instead equal to 900, the standard error of the difference between the sample means is:
+
+$$SE(\Delta \bar{X}) = \frac{\sqrt{8+8}}{\sqrt{900}}=\frac{4}{30}=\frac{2}{15}$$
+
+As a result, the p-value becomes:
+
+```{r}
+
+pval <- (1 - pnorm(0.3, 0, 2 / 15)) + (pnorm(-0.3, 0, 2 / 15))
+pval
+
+```
+
+At about 0.025, this is below the conventional threshold of 0.05, so we would reject the null hypothesis. 
+
+**f.** No. The study is a randomized experiment, so people could not select which group they are in. As a result, the difference between the two groups cannot be due to differences in education.
+
+
+# Question 6 (required for students in the methods subfield)
+
+## 6.1 (1.5 points)
+
+Assume the same setup as in question 5, with $N_T = N_C =900$. We now want to calculate the *power* of the test. Power is defined as the probability of rejecting the null hypothesis when the null hypothesis is false.\footnote{Making statements like "the null hypothesis is false" requires us to make some assumptions about the true population parameters.} In particular, we will now assume that the true difference between the population means is 0.3 hours per  week, i.e. $\mu_T - \mu_C = \Delta \mu = 0.3$. Further, we choose the significance level to be 0.05.
+
+**a.** Under the null hypothesis in question 5, what are the values for which we reject the null, using the significance level given above? Show this region graphically in a plot of the distribution of the sample mean under the assumption that the null hypothesis holds.
+
+**b.** Consider scenario outlined above, where $\Delta \mu = 0.3$. What is the distribution of the difference between the sample means under this scenario? Show this distribution graphically. In the same plot, visualize the rejection region you derived in part **a.**.
+
+**c.** Under the assumption that the true $\Delta \mu = 0.3$, what is the probability of rejecting the null hypothesis? This is the power of the test. Interpret the quantity you calculated in words.
+
+**d.** The previous steps only gave us the power for one specific value of $\Delta \mu$. In practice, we are interested in the power for a range of values of $\Delta \mu$. Use R to plot the power of our test for values of $\Delta \mu$ between -0.5 and 0.5. Interpret the shape of the curve.
+
+**e.** The previous question asked you to show how power depends on the true difference in means $\Delta \mu$. Assuming that $\Delta \mu$ is fixed, what are some other ways of increasing the power of the test described in question 5? Name at least two.  
+
+**f.** We say that we make a type II error if we fail to reject the null when it is false. In the context of this question, what is the probability of making a type II error if $\Delta \mu = 0.3$?
+
+**Answers:**
+
+**a.** Under the null hypothesis, the distribution of the difference between the sample means is normal with mean 0 and standard error $\hat{S}_X =\frac{2}{15}$. We reject if either (i) $\Delta \bar{X} < 0-1.96 \hat{S}_X$ or (ii) $\Delta \bar{X} > 0+1.96 \hat{S}_X$. Graphically:
+
+```{r, out.width="70%", fig.align = 'center'}
+
+x <- seq(-0.5, 0.5, 0.01)
+y <- dnorm(x, 0, 2 / 15)
+plot(x, y,
+  type = "l", lwd = 2,
+  xlab = "Difference between sample means", 
+  ylab = "Density"
+)
+abline(v = 0, lwd = 2, lty = 2)
+abline(v = -1.96 * 2 / 15, lwd = 2, lty = 2)
+abline(v = 1.96 * 2 / 15, lwd = 2, lty = 2)
+
+```
+
+**b.** Under the alternative hypothesis, the distribution of the difference between the sample means is normal with mean 0.3 and standard error $\hat{S}_X =\frac{2}{15}$. Graphically:
+
+```{r, out.width="70%", fig.align = 'center'}
+
+x <- seq(-0.5, 0.8, 0.01)
+y <- dnorm(x, 0.3, 2 / 15)
+
+plot(x, y,
+  type = "l", lwd = 2,
+  xlab = "Difference between sample means", 
+  ylab = "Density"
+)
+
+abline(v = -1.96 * 2 / 15, lwd = 2, lty = 2)
+abline(v = 1.96 * 2 / 15, lwd = 2, lty = 2)
+
+```
+
+**c.** We already said that we reject the null if the observed difference in means is larger than $1.96 \cdot \frac{2}{15}$ or smaller than $-1.96 \cdot \frac{2}{15}$. Now, under the alternative hypothesis, $\Delta \bar{X} \sim N(0.3, \frac{2}{15})$. We can therefore use the CDF of $\Delta \bar{X}$ under the alternative hypothesis to calculate the probability of rejecting the null hypothesis:
+
+$$P(\Delta \bar{X} \geq 1.96 \cdot \frac{2}{15}) = 1-F_A(1.96 \cdot \frac{2}{15})$$
+
+To be explicit, we can write $F_A$ to denote the CDF of $\Delta \bar{X}$ under the alternative hypothesis. We can use the normal CDF function in R to calculate this probability:
+
+```{r}
+
+power <- 1 - pnorm(1.96 * 2 / 15, 0.3, 2 / 15)
+power
+
+```
+
+If the true difference in means is 0.3, the probability of rejecting the null hypothesis is about 0.61. 
+
+Note that we do not consider the case of $\Delta \bar{X} \leq -1.96 \cdot \frac{2}{15}$, since the likelihood of observing this is practically 0 under the alternative hypothesis.
+
+**d.** We can use the same approach as in **c.** to calculate the power for a range of values of $\Delta \mu$, which is a function of the CDF of $\Delta \bar{X}$ under the alternative hypothesis. We can use the normal CDF function in R to calculate this probability across values of $\Delta \mu$:
+
+```{r, out.width="70%", fig.align = 'center'}
+
+delta_mu <- seq(-0.5, 0.5, 0.01)
+power <- 1 - pnorm(1.96 * 2 / 15, delta_mu, 2 / 15) +
+  pnorm(-1.96 * 2 / 15, delta_mu, 2 / 15)
+
+plot(delta_mu, power,
+  type = "l", lwd = 2,
+  xlab = "True difference in means",
+  ylab = "Power"
+)
+abline(v = 0.3, lwd = 2, lty = 2)
+
+```
+
+Note that this time, we also consider the rejection region that is smaller than $-1.96 \cdot \frac{2}{15}$, since rejection in this region becomes more likely as we consider smaller / more negative values of $\Delta \mu$.
+
+We can see that, for constant $N$, the power of the test increases as $|\Delta \mu|$ increases. This makes sense intuitively -- we are more likely to correctly reject the null as the true difference in means becomes larger. The original assumed difference in population means from the previous questions is marked by the vertical line.
+
+**e.** First, we can increase the sample size, which decreases the standard errors and therefore makes the rejection region larger. We can also choose a different significance level (a larger one, i.e. we reject the null hypothesis for a larger range of values of $\Delta \bar{X}$), which also makes the rejection region larger.
+
+**f.** The probability of making a type II error is 1-power, i.e. the probability of not rejecting the null hypothesis when it is false. If $\Delta \mu = 0.3$, the probability of making a type II error is about 0.39.
+
+## 6.2 (1.5 points)
+
+We will continue with the example from question 5. We assume the alternative hypothesis is correct, i.e. $\Delta \mu = 0.3$. We further assume a significance level of 0.05 and standard error of the difference in means that is $SE(\bar{X}) = 4/\sqrt{N}$. However, our goal is now to determine the size of each group $N$ for a one-tailed test that has a power of 0.9. 
+
+We now denote $\Delta \mu_0 = 0$ as the difference in means under the null hypothesis, and $\Delta \mu_A = 0.3$ as the difference in means under the alternative hypothesis. For a one-tailed test to have a power of 0.9, the following needs to hold: 
+
+$$P\left(\frac{\Delta \bar{X} - \Delta \mu_0}{4/\sqrt{N}}>1.645\right) = 0.9$$
+
+So we are just saying: the probability of the standardized difference in sample means being greater than the critical value of 1.645 needs to be 0.9. For a one-tailed test with the significance level of 0.05, the critical value is 1.645.
+
+Determine the required sample size $N$ for a power of 0.9 by solving the equation above for $N$.
+
+**Hint 1:** This calculation should be done assuming that the alternative hypothesis is true, which implies that $E(\Delta \bar{X}) = \Delta \mu_A = 0.3$.
+
+**Hint 2:** The inverse of the CDF is called the quantile function. In R, this function is called `qnorm`.
+
+**Answer:**
+
+$$
+\begin{aligned}
+0.9 &= P\left(\frac{\Delta \bar{X} - \Delta \mu_0}{4/\sqrt{N}}>1.645\right) = P\left(\frac{\Delta \bar{X}}{4/\sqrt{N}}>1.645 + \frac{\Delta \mu_0}{4/\sqrt{N}}\right)  \\
+& = P\left(\frac{\Delta \bar{X}-\Delta \mu_A}{4/\sqrt{N}}>1.645 + \frac{\Delta \mu_0-\Delta \mu_A}{4/\sqrt{N}}\right)  \\
+& = 1-P\left(\frac{\Delta \bar{X}-\Delta \mu_A}{4/\sqrt{N}}\leq 1.645 + \frac{\Delta \mu_0-\Delta \mu_A}{4/\sqrt{N}}\right)  \\
+& = 1-F\left(1.645 + \frac{\Delta \mu_0-\Delta \mu_A}{4/\sqrt{N}}\right) 
+\end{aligned}
+$$
+
+Here, the we make use of the fact that (i) we can substract $\Delta \mu_A/4/\sqrt{N}$ from both sides of the inequality, and (ii) the expression $(\Delta \bar{X} - \Delta \mu_A)/(4/\sqrt{N})$ is distributed as $N(0, 1)$ under the alternative hypothesis.
+
+Finally, the expression in the second to last line is one minus the CDF of a normal distribution with mean 0 and standard deviation 1, evaluated at $1.645 + \frac{\Delta \mu_0-\Delta \mu_A}{4/\sqrt{N}}$. 
+
+Based on the previous derivation, we know that 
+
+$$\begin{aligned}
+0.1 &= F\left(1.645 + \frac{\Delta \mu_0-\Delta \mu_A}{4/\sqrt{N}}\right) \\
+\end{aligned}
+$$
+
+This means that:
+
+$$\begin{aligned}
+F^{-1}(0.1) &= 1.645 + \frac{\Delta \mu_0-\Delta \mu_A}{4/\sqrt{N}} \\
+\end{aligned}
+$$
+
+Where $F^{-1}$ is the inverse CDF (or the quantile function) of the standard normal distribution. We can now plug in all the values we know (i.e. all values other than $N$) and solve for $N$:
+
+$$
+\begin{aligned}
+F^{-1}(0.1) &= 1.645 + \frac{0-0.3}{4/\sqrt{N}} \\
+\frac{0.3\sqrt{N}}{4}&= F^{-1}(0.1) -1.645 \\
+\sqrt{N}&= \frac{40}{3} \left(F^{-1}(0.1) -1.645\right) \\
+N&= \left(\frac{40}{3} \left(F^{-1}(0.1) -1.645\right)\right)^2 \\
+\end{aligned}
+$$
+
+We can use the quantile function of the standard normal distribution in R to calculate the value of $F^{-1}(0.1)$:
+
+```{r}
+
+qnorm(0.1)
+
+```
+
+This is about -1.281. Plugging this into the equation above, we obtain:
+
+$$
+\begin{aligned}
+N&= \left(\frac{40}{3} \left(-1.281 -1.645\right)\right)^2 \approx 1522.04\\
+\end{aligned}
+$$ 
+

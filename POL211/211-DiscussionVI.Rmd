@@ -1,0 +1,368 @@
+---
+title: "211-Discussion VI"
+author: "Yu-Shiuan (Lily) Huang"
+date: "Fall 2023"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      tidy.opts=list(width.cutoff = 80),
+                      tidy = FALSE)
+options(width = 80)
+```
+
+### 2. Learning from Data III
+
+In inferential statistics, we want to use characteristics of the sample (i.e. a statistic) to estimate the characteristics of the population (i.e. a parameter).
+
+In the previous lectures, we learned how to define events as random variables. By doing so, we can understand events mathematically by using probability functions, means, and standard deviations. All of this is important because it helps us reach our goal to be able to make inferences about the population based on the sample. But we need more.
+
+If we obtain a random sample and calculate a sample statistic from that sample, the sample statistic is also a random variable. However, the population parameters are fixed. If the statistic is a random variable, can we find the distribution? The mean? The standard deviation?
+
+The answer is yes! This is why we need to study the sampling distribution of statistics.
+
+#### a. Sampling Distribution
+
+The sampling distribution of a statistic is the distribution of all possible values taken by the statistic when all possible samples of a fixed size $n$ are taken from the population. It is a theoretical idea -- we do not actually build it.
+
+Simply said, the sampling distribution of a statistic is the probability distribution of that statistic.
+
+<center>
+![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/sampling_dist.png){width=60%}
+</center>
+
+Suppose we have a sample with independent and identically distributed (iid) draws. We know that $\bar{X}$ is a random variable with a sampling distribution.
+
+- Independent means that the sample items are all independent events. In other words, they are not connected to each other in any way; knowledge of the value of one variable gives no information about the value of the other and vice versa.
+    
+- Identically distributed means that there are no overall trends -- the distribution doesn't fluctuate and all items in the sample are taken from the same probability distribution.
+
+
+- The expected value of the sampling distribution of $\bar{X}$ is the population mean $\mu$.
+
+    $$\begin{aligned} E(\bar{X}) &= E(\frac{X_1+X_2+...+X_n}{n}) \\ &= \frac{1}{n}E(X_1+X_2+...+X_n) \\ &= \frac{1}{n}E(X_1)+\frac{1}{n}E(X_2)+...+\frac{1}{n}E(X_n) \\ &= \frac{1}{n}\mu + \frac{1}{n}\mu + ... + \frac{1}{n}\mu \\ &= \frac{1}{n}n\mu \\ &= \mu \end{aligned}$$
+
+    Note that $X_i$ are identically distributed, which means they have the same mean $\mu$. Therefore, we can replace $E(X_i)$ with the alternative notation $\mu$.
+    
+    The expected value of the sampling distribution for $\bar{X}$  is simply the mean of the population (DGP) distribution. This means that the sample mean $\bar{X}$ is an unbiased estimator for the population (DGP) mean, $\mu$.
+
+- The variance of the sampling distribution of $\bar{X}$ is the population variance $\sigma^2$ divided by the sample size $n$.
+
+    $$\begin{aligned} Var(\bar{X}) &= Var(\frac{X_1+X_2+...+X_n}{n}) \\ &= \frac{1}{n^2}Var(X_1+X_2+...+X_n) \\ &= \frac{1}{n^2}Var(X_1)+\frac{1}{n^2}Var(X_2)+...+\frac{1}{n^2}Var(X_n) \\&= \frac{1}{n^2}\sigma^2 + \frac{1}{n^2}\sigma^2 + ... + \frac{1}{n^2}\sigma^2 \\ &= \frac{1}{n^2}n\sigma^2 \\ &= \frac{\sigma^2}{n} \end{aligned}$$
+    Note the $X_i$ are identically distributed, which means they have the same variance $\sigma^2$. Therefore, we can replace $Var(X_i)$ with the alternative notation $\sigma^2$.
+    
+    If we take the square root of variance of the sampling distribution we get the standard deviation of the sampling distribution, which is known as **standard error**.
+    
+    $$SE(\bar{X}) = \sqrt{Var(\bar{X})} = \sqrt{\frac{\sigma^2}{n}} = \frac{\sigma}{\sqrt{n}}$$
+    
+    The standard error of a sampling distribution gives us a sense for how confident we should be in our estimate of the population mean. Our result indicates that as the sample size increases, the standard deviation of the sample mean decreases, which is good. It means that as long as our sample is large enough, we can be very confident about our estimate of the population mean based on the sample mean we have.
+
+
+In the following example, we use R to illustrate the sampling distribution for the sample mean for a hypothetical population. The sampling method is done without replacement.
+
+##### Exam Score Example
+
+An instructor of an introduction to statistics course has 200 students (which is the population). The population mean of their scores out of 100 points is $\mu = 71.18$, and the population standard deviation is $\sigma = 10.73$. That said, these 200 students' scores $X$ is following normal distribution with the parameter $\mu$ being 71.18 and $\sigma$ being 10.73, $X \sim N(71.18, 10.73)$.
+
+1. The sampling distribution of the sample mean when $n = 10$ for the exam scores data.
+
+- Let's first draw one sample based on the population distribution, $X \sim N(71.18, 10.73)$.
+
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    set.seed(1234) # to get replicable results
+    exam.sample <- rnorm(n = 10, mean = 71.18, sd = 10.73)
+    exam.sample 
+    ```
+
+- Now, let's replicate the above process for 1000 times, which will generate 1000 iid samples based on the population distribution, $X \sim N(71.18, 10.73)$.
+
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    set.seed(1234) 
+    exam.iid.sample <- replicate(1000, rnorm(n = 10, mean = 71.18, sd = 10.73))
+    exam.iid.sample <- as.data.frame(exam.iid.sample)
+    
+    knitr::kable(exam.iid.sample[, c(1:5)], "simple", align = "ccccc")
+    ```
+    
+- Since we draw 1000 iid samples from the population, we now should have 1000 sample mean based on these samples. Let's plot all these sample means in a histogram to observe the distribution of these sample means, which is sampling distribution. 
+
+    Note the process of taking many different samples in an effort to see what the sampling distribution looks like is referred to as a "Monte Carlo simulation." The "true" sampling distribution is the one where we take an infinite number of samples, which obviously we cannot achieve.
+    Monte Carlo simulation is the term for the process of repeated sampling to approximate something. We're using it here for sampling distributions, but it is used in other contexts as well.
+
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    # What is the mean of each sample?
+    sample.mean <- colMeans(exam.iid.sample)
+    sample.mean[1:5]
+
+    # Plot the distribution of these sample means
+    library(tidyverse)
+    
+    my.bins <- seq(62, 82, 0.5)
+    ggplot(data.frame(sample.mean = sample.mean), aes(x = sample.mean)) + 
+      geom_histogram(breaks = my.bins, color = "black", fill = "gray85") +
+      geom_vline(xintercept = mean(sample.mean), linetype = "dashed", 
+                 color = "red", alpha = 0.5, lwd = 0.8) +
+      geom_vline(xintercept = 71.18, linetype = "dashed", 
+                 color = "blue", alpha = 0.5, lwd = 0.8) +
+      scale_x_continuous(limits = c(62, 82)) + 
+      scale_y_continuous(limits = c(0, 250)) +
+      labs(x = "Sample mean (X bar)", y = "Frequency", 
+           title = "1000 Samples with n=10") + 
+      theme_bw() + 
+      theme(panel.grid.minor = element_blank())
+    ```
+    
+    What are the mean and standard error of the sample mean? 
+    
+    ```{r, message=F, error=F, warning=F}
+    mean(sample.mean)
+    sd(sample.mean)
+    ```
+    
+    As you can see, the mean and standard error based on all 1000 samples we drew are very close to the population mean of 71.18 and the standard deviation divided by the square root of the sample size ($\frac{10.73}{\sqrt{10}}=3.393124$). However, they are not exactly the same. The reason is that we can only simulate the sampling distribution of the exam scores but cannot simulate it for an infinite number of samples. That said, we can never reach the "true" sampling distribution.
+    
+
+2. The sampling distribution of the sample mean when $n = 100$ for the exam scores data.
+
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    set.seed(1234)
+    exam.iid.sample <- replicate(1000, rnorm(n = 100, mean = 71.18, sd = 10.73))
+    exam.iid.sample <- as.data.frame(exam.iid.sample)
+    ```
+    
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    # What is the mean of each sample?
+    sample.mean <- colMeans(exam.iid.sample)
+    sample.mean[1:5]
+
+    # Plot the distribution of these sample means
+    library(tidyverse)
+    
+    ggplot(data.frame(sample.mean = sample.mean), aes(x = sample.mean)) + 
+      geom_histogram(breaks = my.bins, color = "black", fill = "gray85") +
+      geom_vline(xintercept = mean(sample.mean), linetype = "dashed", 
+                 color = "red", alpha = 0.5, lwd = 0.8) +
+      geom_vline(xintercept = 71.18, linetype = "dashed", 
+                 color = "blue", alpha = 0.5, lwd = 0.8) +
+      scale_x_continuous(limits = c(62, 82)) + 
+      scale_y_continuous(limits = c(0, 250)) +
+      labs(x = "Sample mean (X bar)", y = "Frequency", 
+           title = "1000 Samples with n=100") + 
+      theme_bw() + 
+      theme(panel.grid.minor = element_blank())
+    ```
+
+    What are the mean and standard error of the sample mean? 
+    
+    ```{r, message=F, error=F, warning=F}
+    mean(sample.mean)
+    sd(sample.mean)
+    ```
+
+
+As you observe from the exam score example, if the population is normally distributed with mean $\mu$ and standard deviation $\sigma$, then the sampling distribution of the sample mean is also normally distributed no matter what the sample size is.
+
+#### b. Central Limit Theorem (CLT)
+
+What happens when the sample comes from a population that is not normally distributed? This is where the Central Limit Theorem comes in.
+
+For a large sample size ($n > 30$), $\bar{X}$ is approximately normally distributed, regardless of the distribution of the population one samples from. If the population has mean $\mu$ and standard deviation $\sigma$, then $\bar{X}$ follows an approximate normal distribution with mean $\mu$ and standard deviation $\frac{\sigma}{\sqrt{n}}$.
+
+The Central Limit Theorem applies to a sample mean from any distribution. We could have a left-skewed or a right-skewed distribution. As long as the sample size is large, the distribution of the sample means will follow an approximate normal distribution.
+
+Notes on the CLT:
+
+- If the population is skewed and sample size you draw is small, then the sample mean won't be normal.
+
+- If the population is normal, then the distribution of sample mean looks normal even if $n = 2$.
+
+- If the population is skewed, then the distribution of sample mean looks more and more normal when $n$ gets larger.
+
+- Note that in all cases, the mean of the sample mean is close to the population mean and the standard error of the sample mean is close to $\frac{\sigma}{\sqrt{n}}$.
+
+##### Right-skewed Distribution Example
+
+Suppose $X$ is following a chi-square distribution with 3 as the degrees of freedom , $X \sim Chi-square(3)$. The population mean of a chi-square distribution is the degrees of freedom. In this case, $\mu = 3$. Please do the following:
+
+This is what a chi-square distribution looks like:
+
+<center>
+![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/chisquare_pdf.png){width=60%}
+</center>
+
+
+1. Find the sampling distribution of the sample mean when $n = 10$ for $X$.
+
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    set.seed(1234)
+    iid.sample <- replicate(1000, rchisq(n = 5, df = 3, ncp = 0))
+    iid.sample <- as.data.frame(iid.sample)
+    ```
+    
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    # What is the mean of each sample?
+    sample.mean <- colMeans(iid.sample)
+    sample.mean[1:5]
+
+    # Plot the distribution of these sample means
+    my.bins <- seq(0, 8, 0.1)
+    ggplot(data.frame(sample.mean = sample.mean), aes(x = sample.mean)) + 
+      geom_histogram(breaks = my.bins, color = "black", fill = "gray85") +
+      geom_vline(xintercept = mean(sample.mean), linetype = "dashed", 
+                 color = "red", alpha = 0.5, lwd = 0.8) +
+      geom_vline(xintercept = 3, linetype = "dashed", 
+                 color = "blue", alpha = 0.5, lwd = 0.8) +
+      scale_x_continuous(limits = c(0, 8)) + 
+      scale_y_continuous(limits = c(0, 100)) +
+      labs(x = "Sample mean (X bar)", y = "Frequency", 
+           title = "1000 Samples with n=5") + 
+      theme_bw() + 
+      theme(panel.grid.minor = element_blank())
+    ```
+
+
+2. Find the sampling distribution of the sample mean when $n = 30$ for $X$.
+
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    set.seed(1234)
+    iid.sample <- replicate(1000, rchisq(n = 30, df = 3, ncp = 0))
+    iid.sample <- as.data.frame(iid.sample)
+    ```
+    
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    # What is the mean of each sample?
+    sample.mean <- colMeans(iid.sample)
+    sample.mean[1:5]
+
+    # Plot the distribution of these sample means
+    ggplot(data.frame(sample.mean = sample.mean), aes(x = sample.mean)) + 
+      geom_histogram(breaks = my.bins, color = "black", fill = "gray85") +
+      geom_vline(xintercept = mean(sample.mean), linetype = "dashed", 
+                 color = "red", alpha = 0.5, lwd = 0.8) +
+      geom_vline(xintercept = 3, linetype = "dashed", 
+                 color = "blue", alpha = 0.5, lwd = 0.8) +
+      scale_x_continuous(limits = c(0, 8)) + 
+      scale_y_continuous(limits = c(0, 100)) +
+      labs(x = "Sample mean (X bar)", y = "Frequency", 
+           title = "1000 Samples with n=30") + 
+      theme_bw() + 
+      theme(panel.grid.minor = element_blank())
+    ```
+
+
+#### c. Exercises
+
+##### Exercises 1: Weights of Baby Giraffes
+
+The weights of baby giraffes are known to have a mean of 125 pounds and a standard deviation of 15 pounds. If we obtained a random sample of 40 baby giraffes,
+
+1.1 what is the probability that the sample mean will be between 120 and 130 pounds?
+
+1.2 what is the 75th percentile of the sample means of size $n = 40$?
+
+##### Exercise 2: Biden approval
+
+Consider whether adults in Sacramento approve of Biden's performance in office. There are about 405,000 adults in Sacramento. 
+
+```{r}
+pop <- 405000
+```
+
+Let's define a dummy where 1 indicates approval for Biden and 0 indicates disapproval. We'll assume everyone has an opinion one way or the other. Suppose you were omniscient and know exactly which adults approve of Biden. Being omniscient means that you are magically given this dataset of all adults' approval or disapproval of Biden:
+
+```{r}
+set.seed(1029) 
+df <- bind_cols(adult = 1:pop, 
+                biden = sample(c(rep(1, 243000), rep(0, pop - 243000)), pop))
+```
+
+The population percentage of voters approve of Biden in Sacramento is 0.6.
+```{r}
+mean(df$biden)
+```
+
+The population variance of voters approve of Biden in Sacramento is 0.24 ($=p(1-p)=0.6*0.4$).
+```{r}
+var(df$biden)
+```
+
+In real life, nobody is omniscient! Now, let's think about a pollster who wants to learn what you already know by drawing a simple random sample of adults and calculating an estimate of Biden approval.
+
+The researcher decides to draw a simple random sample of 900 adults. She asks each adult whether they approve of Biden. Nobody lies.
+
+```{r}
+n <- 900 # sample size
+
+set.seed(1238) 
+poll1 <- sample(df$biden, n) # draw a sample of size N without replacement
+```
+
+What is her estimate of Biden approval?
+```{r}
+mean(poll1)
+```
+
+Now, instead of drawing one sample out of the population, simulate the sampling distribution of Biden approval in Sacramento. Please draw the same size of the sample ($n=900$) for 100,000 times. 
+
+```{r, message=F, error=F, warning=F}
+## Hint: replicate()
+
+
+
+
+## Try out!
+```
+
+
+Plot the sample means from the simulations.
+```{r, message=F, error=F, warning=F}
+## Hint: calculate the sample means first before plotting a histogram
+
+
+
+
+## Try out!
+```
+
+Theoretically, what distribution does the sample means of Biden approval in Sacramento follow?
+
+$$\bar{X} \sim what?$$
+
+Now you know the sampling distribution of the sample means of Biden approval in Sacramento. Recall that the researcher drew a simple random sample of 900 adults and got an estimate of the Biden approval with 0.5344444. How likely is it to get an estimate of Biden approval rate below 0.5344444 based on the sampling distribution we have?
+
+```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+ggplot() + 
+  stat_function(data = data.frame(x = seq(0.53,0.67,0.001)), 
+                aes(x = x), fun = dnorm, 
+                args = list(mean = 0.6, sd = sqrt(0.24/n)), size = 1) + 
+  geom_vline(xintercept = 0.6, size = 1, color = "blue") + 
+  annotate("label", x = 0.6, y = 5, label = "true\nmean", 
+           lineheight = 0.75, color = "blue") + 
+  geom_vline(xintercept = mean(poll1), size = 1, color = "red") + 
+  annotate("label", x = mean(poll1), y = 5, label = "Poll 1", 
+           lineheight = 0.75, color = "red") +
+  theme_bw()
+```
+
+```{r}
+## Hint: pnorm()
+pnorm(0.5344444, 0.6, sqrt(0.24/900))
+
+
+
+## Try out!
+```
+
+
+We can also calculate how many standard deviations is away from the true DGP mean is the estimate? To get this, we calculate the z score.
+```{r}
+z.score <- (mean(poll1) - 0.6)/(sqrt(0.24/n))
+z.score
+```
+
+The estimate is approximately 4 standard deviations below the mean of the sampling distribution (which, recall is the DGP mean). Since we are looking at a sampling distribution, we call the standard deviations "standard errors." So, it's a bit better to say the estimate from the poll the researcher conducted is approximately 4 standard errors below the mean of the sampling distribution.
+
+

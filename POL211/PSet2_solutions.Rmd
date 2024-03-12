@@ -1,0 +1,369 @@
+---
+title: "Problem Set 2"
+author: "Pol211, UC Davis"
+date: "Due by 10/16/23, 2023 at 11:59 PM"
+output: 
+  pdf_document: default
+---
+
+## Question 1 (2 points)
+
+Creating descriptive statistics is a key part of any research project. We will work with data compiled by Raj Chetty and coauthors.  Alternatively, you can also read a summary report here: https://opportunityinsights.org/wp-content/uploads/2018/03/coll_mrc_summary.pdf). The purpose of this data is measure the role of colleges in facilitating upward (economic) mobility.
+
+1. In the report, the authors define a measure called "Mobility Rate", which is defined as the product of "Access" and "Success Rate". Provide brief definitions of "Access" and "Success Rate". Then, provide a brief explanation why using either one of these two measures separately may not be sufficient to measure how much each college contributes to upward mobility.
+
+2. Recall that studies can be classified as descriptive, causal or measurement. For each of these three categories, please state (i) whether the paper falls in that category and (ii) why or why not in can be grouped in that category. 
+
+**Answers:**
+
+1.  Access is defined as the fraction of students at a given college who come from families in the bottom 20% of the income distribution. Success rate is defined as the fraction of students at a given college who reach the top 20% of the income distribution. Using either one of these measures separately may not be sufficient to measure how much each college contributes to upward mobility, since colleges with a high access rate may not necessarily have a high success rate, and vice versa.
+
+2. Descriptive and measurement. The study does not answer the question of whether some characteristic of colleges causes some colleges to be more successful than others. The abstract actually states that "Although our descriptive analysis does not identify colleges' causal effects on students' outcomes, the publicly available statistics constructed here highlight colleges that deserve further study as potential engines of upward mobility."
+
+## Question 2 (4 points)
+
+The next questions focus on the variables `par_median` and `mr_kq5_pq1`, which are the median income of parents of students at a given college and its mobility rate, respectively.
+
+1.  Calculate the mean, median, standard deviation and interquartile range of `par_median`. Briefly interpret the difference between the mean and the median -- what does it tell you about the distribution of `par_median`?
+
+```{r}
+
+library(tidyverse)
+
+df <- read.csv("~/Dropbox/UCDavis/03_Teaching/02_211_Fall2023/Data/chetty_data.csv")
+
+## Mean
+
+mean(df$par_median)
+
+## Median
+
+median(df$par_median)
+
+## Mean is higher than the median -- outliers in the right tail
+
+## SD
+
+sd(df$par_median)
+
+## IQR
+
+IQR(df$par_median)
+
+```
+
+2. Create two histograms of `par_median`, one with 10 bins, and one with 50 bins. Do you find one of them more informative?
+
+```{r}
+
+ggplot(df, aes(par_median)) +
+  geom_histogram(bins = 10) +
+  theme_bw()
+
+ggplot(df, aes(par_median)) +
+  geom_histogram(bins = 50) +
+  theme_bw()
+
+```
+
+3. Next, create two histograms, with any number of bins, for public and private colleges separately. Note that you should do this in one plot. You can use the `facet_wrap` function.
+
+```{r}
+
+ggplot(df, aes(par_median)) +
+  geom_histogram(bins = 50) +
+  facet_wrap(~public) +
+  theme_bw()
+
+```
+
+4. Next, an education policymaker is interested in comparing mobility rates (see question 1.1) across states. The variable is called `mr_kq5_pq1`. In particular, the policymaker is interested in the median mobility rates, as well as mobility rates at the 80th percentile, for each state separately. Calculate these quantities by state. Next, you should create two plots. The first, should show the median mobility rate by state. The second should show the mobility rate at the 80th percentile by state. In each plot, you should only provide a single quantity for each state. 
+
+- Ideally, these would be ranked by mobility rates, such that the order of the points in each plot is either ascending or descending. However, this is not strictly required for this problem set. You can use the `fct_reorder` function to reorder the states by the median mobility rate. 
+- For readability, it makes the most sense to put the state on the y-axis, and the mobility rate on the x-axis. 
+
+```{r}
+
+## Calculate median and 80th percentile by state
+
+df_mobility <- df %>% 
+  group_by(state) %>% 
+  summarise(median_mobility = median(mr_kq5_pq1),
+            p80_mobility = quantile(mr_kq5_pq1, probs = 0.8)) %>% 
+  ungroup()
+
+## Plot 1 : median mobility by state
+## Arrange by median mobility
+
+df_mobility <- df_mobility %>%
+  mutate(
+    state = factor(state),
+    state = fct_reorder(state, median_mobility)
+  )
+
+ggplot(df_mobility, aes(median_mobility, state)) +
+  geom_point() +
+  theme_bw()
+
+## Plot 2 : 80th percentile mobility by state
+## Arrange by 80th percentile mobility
+
+df_mobility <- df_mobility %>%
+  mutate(
+    state = factor(state),
+    state = fct_reorder(state, p80_mobility)
+  )
+
+ggplot(df_mobility, aes(p80_mobility, state)) +
+  geom_point() +
+  theme_bw()
+
+```
+
+## Question 3 (2 points)
+
+As in the previous problem set, evaluate the following statements, and provide explanations if you think the statements do not make sense. Short responses are sufficient. You do not need to calculate anything.
+
+1.  In the definition of the variance, we calculate the average of the squared the average deviations from the mean. A colleague proposes a different way of calculating variability in the data. Instead of squaring the deviations, your colleague recommends just taking the "normal" difference between each observation and the mean of the data, and then taking the average of that (the mathematical representation of this would be $\frac{1}{N}\sum_{i}^N (x_i-\bar{x})$, where $\bar{x}$ is the sample mean). Is this a good approach of summarizing how much the sample varies?
+
+2.  You analyze a variable, and find that the median is significantly larger than the mean. A colleague argues that this suggests outliers in the data. Specifically, your colleague suggests outliers in what is called the "right tail" of the distribution, i.e. values that are much larger than most other values that you observe.
+
+3.  You are tasked with providing an estimate of the violent crime rate that the average person on the West Coast is exposed to. West Coast here refers to the states of California, Oregon and Washington. You use this state-level data from 2020 (see below). Your colleague suggests that an informative way of summarizing this data is to average over the three states, which results in an average exposure of 342.5 violent crimes per 100,000 inhabitants. Do you agree with this suggestion?
+
+    | State | Violent crimes / 100,000 people |
+    |-------|---------------------------------|
+    | CA    | 442.0                           |
+    | OR    | 291.9                           |
+    | WA    | 293.7                           |
+
+4.  Assume a variable, which takes on these values: (0,3,5,7,8,10,11). The median of the variable is 7. A colleague argues that the median will remain 7 even if we replace the first three values with any value smaller or equal than 7. The median will also remain 7 if we replace the last three values with any value greater or equal than 7.
+
+**Answers:**
+
+1.  This does not make sense, since this way of calculating the dispersion will include negative values, and might result in $\frac{1}{N}\sum_{i}^N (x_i-\bar{x})=0$.
+
+2.  This result suggests outliers, but not in the way described here -- rather it suggests outliers that are much *smaller* than the other values of the empirical distribution. Therefore, this statement does not make sense.
+
+3.  Note that the target quantity here is the violent crime rate that the *average person on the West Coast is exposed to*. California has significantly more inhabitants than Oregon and Washington combined. Using a weighted average, with the population as weights, makes more sense here. Therefore, the proposed approach does not make sense given the target quantity.
+
+4.  This is correct.
+
+\clearpage
+
+## Question 4 (4 points)
+
+An important concept in R are functions. A function in R takes one or more arguments, and then returns the desired output. \footnote{You can learn more about functions at https://r4ds.hadley.nz/functions.html or in chapter 3 of this course: https://www.datacamp.com/courses/intermediate-r} The syntax for functions is as follows:
+
+```{r example}
+
+my_square <- function(x) {
+  
+  ## Calculate the square of x, save as new object
+  
+  x_sq <- x^2
+  
+  ## Return
+  ## The last line usually just returns the desired output
+  
+  x_sq
+  
+}
+
+## Expected output: 4
+
+my_square(2)
+
+## Expected output: 16
+
+my_square(4)
+
+```
+
+The function takes the input `x` and then returns its square. This works for any `x` that is a number.
+
+Your task is to write a function `my_sd`. It takes a variable as its argument, and then returns the standard deviation of this variable. This involves calculating the mean of `x` (you can use the `mean` function for this), and then implementing the formula for the sample standard deviation that is given below:
+
+$$\sqrt{\frac{1}{N - 1}\sum_{i=1}^N (x_i - \overline{x})^2}$$
+
+In this example, you will implement this function and then use the function you created to calculate the standard deviation of `sat_avg_2013` from the `chetty_data.csv` data set we used above. Please note the following:
+
+-   `sat_avg_2013` contains missing values. For $N$, we only want the number of non-missing observations. The simplest way to deal with this is to remove all missing values in `sat_avg_2013` before the main calculations -- this can be done inside the function.
+-   Do not use the built-in `var` and `sd` functions in your function -- the purpose of this question is to help you practice how functions in R work. You can, however, use `sd` to check if your function returns the correct standard deviation.
+-   You can use a loop to implement the function, but a loop is actually not necessary for this problem.
+
+```{r make-function}
+
+df <- read.csv("~/Dropbox/UCDavis/03_Teaching/02_211_Fall2023/Data/chetty_data.csv")
+
+x <- df$sat_avg_2013
+
+my_sd <- function(x) {
+  
+  ## Remove missings from x
+  
+  x <- x[!is.na(x)]
+  
+  ## Mean of x, observations
+  
+  m_x <- mean(x)
+  n <- length(x)
+  
+  ## Get sum of squared differences 
+  
+  ss <- sum((x - mean(x))^2)
+  
+  ## Divide by n-1 (sample variance)
+  
+  sample_variance <- ss/(n-1)
+  
+  ## Square root to get SD
+  
+  standard_dev <- sqrt(sample_variance)
+  
+  ## return this
+  
+  standard_dev
+  
+}
+
+## Try if this works
+
+my_sd(df$sat_avg_2013)
+
+## Compare with sd function (with na.rm = T to remove missings)
+
+sd(df$sat_avg_2013, na.rm = T)
+
+```
+
+# Additional question (required for students in the methods subfield)
+
+**Note:** You may encounter R commands that you have not seen before. A good source for learning more about these commands is the book "R for Data Science" by Wickham et al, which you can access here https://r4ds.hadley.nz/
+
+## Question 5
+
+1. Using a for loop, calculate the mean and standard deviation of the following variables in the Chetty data: `sat_avg_2013`, `par_median`, `par_top1pc`. The result should be a data frame with 3 columns: `variable`, `mean` and `sd`, and three rows, one for each variable.
+
+```{r}
+
+## Create empty data frame
+
+df_loop <- data.frame(
+  variable = character(),
+  mean = numeric(),
+  sd = numeric()
+)
+
+## Create vector of variables
+
+vars <- c("sat_avg_2013", "par_median", "par_top1pc")
+
+## Loop over vars
+
+for (i in vars) {
+  
+  ## Calculate mean and sd
+  
+  mean_i <- mean(df[[i]], na.rm = T)
+  sd_i <- sd(df[[i]], na.rm = T)
+  
+  ## Add to df_loop
+  
+  df_loop <- df_loop %>% 
+    add_row(variable = i,
+            mean = mean_i,
+            sd = sd_i)
+  
+}
+
+df_loop
+
+```
+
+2. In R, an alternative to for loops are the `apply` family of functions. Repeat subquestion 1 using the `apply` function of your choice (eg `apply`, `sapply`, `lapply`). The output should be the same as for subquestion 1. 
+
+```{r}
+
+## Create vector of variables
+
+vars <- c("sat_avg_2013", "par_median", "par_top1pc")
+
+## Loop over vars
+
+list_loop <- lapply(vars, function(x) {
+  
+  ## Calculate mean and sd
+  
+  mean_i <- mean(df[[x]], na.rm = T)
+  sd_i <- sd(df[[x]], na.rm = T)
+  
+  ## Add to df_loop
+  
+  c(x, mean_i, sd_i)
+  
+})
+
+## Note that this creates a list
+## We can then convert this to a data frame
+
+df_loop <- list_loop %>%
+  reduce(rbind)
+
+colnames(df_loop) <- c("variable", "mean", "sd")
+df_loop
+
+## This "reduces" the list to a data frame
+
+```
+
+The standard deviation measures dispersion of the data. However, we can also create another measure of the dispersion of the sample mean, called the **standard error of the mean**. It is defined as follows: $s_{\bar{x}} = \frac{s_x}{\sqrt{N}}$, where $s_x$ is the standard deviation of a variable $x$, and $N$ is the number of observations. 
+
+3. Write a short function that calculates the SE of the mean, and takes a variable `x` as the argument. Then, calculate the mean and the SE of the mean for `par_median` separately for CA, NY, TX and FL. Finally, create a plot that has the name of each state on the x-axis. It should then show the mean of `par_median` as a point on the y-axis, and also show error bars that visualize the following interval: $[\bar{x}- 1.96s_{\bar{x}},\;\bar{x}+1.96 s_{\bar{x}}]$
+
+- I recommend doing this in `ggplot` using the functions `geom_point` and `geom_errorbar`
+
+```{r}
+
+## Function to calculate SE of the mean
+
+my_se_mean <- function(x) {
+  
+  ## Remove missings from x
+  
+  x <- x[!is.na(x)]
+  
+  ## SE of the mean 
+  
+  sd(x) / sqrt(length(x))
+  
+  
+}
+
+## Calculate mean and SE of mean by state state
+
+df_plot <- df %>% 
+  filter(state %in% c("CA", "FL", "TX", "NY")) %>% 
+  group_by(state) %>% 
+  summarise(x_bar = mean(par_median), 
+            x_bar_se = my_se_mean(par_median)) %>% 
+  ungroup()
+
+## Divide by 1000s for better readability
+
+df_plot <- df_plot %>% 
+  mutate(across(all_of(c("x_bar", "x_bar_se")), ~./1000))
+
+## Plot this
+
+p1 <- ggplot(df_plot, aes(state, x_bar)) +
+  geom_errorbar(aes(ymin = x_bar - 1.96*x_bar_se,
+                    ymax = x_bar + 1.96*x_bar_se),
+                width = 0) +
+  geom_point() + 
+  theme_bw() +
+  ylab("Avg. parental median income (1000 USD)") +
+  xlab("State")
+
+p1
+
+```

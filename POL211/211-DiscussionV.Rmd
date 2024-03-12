@@ -1,0 +1,452 @@
+---
+title: "211-Discussion V"
+author: "Yu-Shiuan (Lily) Huang"
+date: "Fall 2023"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      tidy.opts=list(width.cutoff = 80),
+                      tidy = FALSE)
+options(width = 80)
+```
+
+### 2. Learning from Data II
+
+**Note**: Most of the materials for today's discussion can be referred to [STAT 414: Introduction to Probability Theory.](https://online.stat.psu.edu/stat414/).
+
+In today's discussion, we'll be reviewing some specially named discrete and continuous probability mass functions, such as bernoulli distribution, binomial distribution, uniform distribution, and normal distribution.
+
+The basic idea behind this lesson is that when certain conditions are met, we can derive a general formula for the probability mass function of a discrete random variable and the probability distribution function of a continuous random variable. 
+.
+#### a. Bernoulli Distribution
+
+Bernoulli Distribution is a type of discrete probability distribution where every experiment conducted asks a question that can be answered only in yes or no. In other words, the random variable can be 1 with a probability $p$ or it can be 0 with a probability $(1 - p)$. Such an experiment is called a Bernoulli trial. A pass or fail exam can be modeled by a Bernoulli Distribution. Bernoulli distribution can also be used to derive a binomial distribution, geometric distribution, and negative binomial distribution.
+
+For example, suppose there is an experiment where you flip a coin that is fair. If the outcome of the flip is heads then you will win. This means that the probability of getting heads is $p = \frac{1}{2}$. If $X$ is the random variable following a Bernoulli Distribution, we get $P(X = 1) = p = \frac{1}{2}$. We can also write it as $X \sim  Bernoulli(p)$ or just $X \sim  B(p)$.
+
+- Probability Mass Function (PMF)
+
+    A Bernoulli distribution is a discrete probability distribution where $Y=\left \{0, 1 \right \}$, its PMF is defined by:
+  
+    $$ f(y) = \begin{cases} 1 - p & \text{if } \ \ y = 0 \\ p & \text{if } \ \ y = 1 \\ \end{cases} $$
+    A Bernoulli distribution only has **one parameter**, $p$. It is a special case of the Binomial distribution when the number of trials = 1. 
+
+
+- Cumulative Distribution Function (CDF)
+
+    $$ F(y) = \begin{cases} 0 & \text{if } \ \ y < 0 \\ 1-p & \text{if } \ \ 0 \leq y < 1\\ 1 & \text{if } \ \ x \geq 1 \end{cases} $$
+
+- Expected Value and Variance
+
+    - Expected Value
+    
+      \begin{align*}
+      E(Y) &= \sum_{y \in Y}^{}yf(y) \\
+      &= 1 \times p + 0 \times (1-p)\\
+      &= p
+      \end{align*}
+      
+    - Variance
+    
+      \begin{align*}
+      Var(Y) &= E(Y^2) - (E(Y))^2 \\
+      &= [1^2 \times p + 0^2 \times (1-p)] - p^2\\
+      &= p - p^2 \\
+      &= p(1-p)
+      \end{align*}
+
+- Exercise 1:
+
+    1.1 We’re rolling a die and our random variable takes on the value $X = 1$ if the outcome is strictly greater than 4 and $X = 0$ otherwise. Then, $X \sim Bernoulli(\frac{1}{3})$. Please write out its PMF and CDF.
+    
+    1.2 What are the expected value and variance of rolling the die?
+
+
+#### b. Binomial Distribution
+
+Suppose we repeat a Bernoulli experiment $n$ times independently and we add up the outcomes. That is, suppose that our random variable is $Y = X_1 + X_2 + · · · + X_n$, where $X_i \sim Bernoulli(p)$ and the $X_i$ are
+independent. Then $Y$ is said to have a Binomial distribution with sample size $n$ and probability of success $p$, denoted $Y \sim Binomial(n, p)$. As you can see, a Binomial distribution has **two parameters**, $n$ and $p$.
+
+- Probability Mass Function (PMF)
+
+    $$ f(y) = \begin{cases} \binom{n}{y}p^y(1-p)^{N-y} & \text{if } \ \ y \in  \left \{0, 1, 2, ..., n \right \} \\ 0 & \text{otherwise } \end{cases} $$
+
+    where:
+    - $n$ is the number of trials (occurrences)
+    
+    - $y$ is the number of successful trials
+    
+    - $p$ is the probability of success in a single trial
+    
+    - $\binom{n}{y}$ is the combination of $n$ and $y$. A combination is the number of ways to choose a sample of $y$ elements from a set of $N$ distinct objects where order does not matter, and replacements are not allowed. Note that $\binom{n}{y}$ = \frac{n!}{y!(N-y)!}, where $!$ is factorial (so, $4! = 4 \times 3 \times 2 \times 1$).
+
+
+- Cumulative Distribution Function (CDF)
+
+    $$F(y) = P(Y \leq y) = \sum_{y=0}^{n} \binom{n}{y}p^y(1-p)^{n-y} $$
+    
+
+- Expected Value and Variance
+
+    - Expected Value
+    
+      Recall that expected value is a linear operator, which suggests that:
+    
+      \begin{align*}
+      E(Y) &= E(X_1) + E(X_2) + ... + E(X_n) \\
+      &= p + p + ... + p\\
+      &= np
+      \end{align*} 
+      
+    - Variance
+    
+      Recall that the variance of a sum of independent random variables is the sum of the variances:
+      
+      \begin{align*}
+      Var(Y) &= Var(X_1) + Var(X_2) + ... + Var(X_n) \\
+      &= p(1-p) + p(1-p) + ... + p(1-p)\\
+      &= np(1-p)
+      \end{align*}
+      
+      
+- Exercise 2:
+    
+    2.1 Bob makes 60% of his free-throw attempts and he always shoots 12 free-throws during the class break. What is the PMF and CDF of Bob making free-throws?
+    
+    2.2 What is the probability that Bob makes exact 10 free-throws out of the total 12 free-throws?
+    
+    2.3 What is the probability that Bob makes less than 3 times.
+    
+    2.4 What is the probability that Bob makes more than 3 times.
+    
+    2.5 Theoretically, in the long run, what are the expected value and variance of Bob making free-throws?
+
+      
+- Binomial Distribution in R
+
+    We can also use R to do the calculation for Excercise 2. Here are some base R functions to do it:
+
+    | Function | Description |
+    |------|------|
+    | `dbinom(x, size, prob)` | Find the probability of getting a certain number of successes (`x`) in a certain number of trials (`size`) where the probability of success on each trial is fixed (`prob`).|
+    | `pbinom(q, size, prob)` |Return the value of the cumulative density function (CDF) of the binomial distribution given a certain random variable `q`, number of trials (`size`) and probability of success on each trial (`prob`).|
+    | `qbinom(p, size, prob)` |The inverse of `pbinom()` function. It takes the probability value and gives output which corresponds to the probability value.|
+    | `rbinom(n, size, prob)` |Generate a vector of binomial distributed random variables given a vector length n, number of trials (`size`) and probability of success on each trial (`prob`).|
+
+
+    2.2 What is the probability that Bob makes exact 10 free-throws out of the total 12 free-throws?
+    
+    - number of successes x = 10
+    
+    - number of trials n = 12
+    
+    - prob of success on each trial p = 0.6
+    
+    ```{r, message=F, error=F, warning=F}
+    dbinom(x = 10, size = 12, prob = 0.6)
+    ```
+    
+    The probability that Bob makes exactly 10 shots is 0.0639.
+    
+    We can also plot all the probabilities when Bob makes exactly 0, 1, 2, ..., 12 shots.
+    
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    df <- data.frame(x = c(0:12), y = dbinom(x = c(0:12), size = 12, prob = 0.6))
+    sum(df$y) ## Should be 1
+
+    ggplot(df, aes(x = x, y = y)) +
+      geom_col(color = "black", fill = "gray85") +
+      scale_x_continuous(limits = c(0, 12), breaks = seq(0, 12, 1)) + 
+      scale_y_continuous(breaks = seq(0, 0.25, 0.02), limits = c(0, 0.25)) + 
+      labs(x = "X", y = "Probability") + 
+      theme_bw() + 
+      theme(panel.grid.minor = element_blank())
+```
+
+    2.3 What is the probability that Bob makes less than 3 times.
+    
+    ```{r, message=F, error=F, warning=F}
+    pbinom(q = 2, size = 12, prob = 0.6)
+    ```
+    
+    2.4 What is the probability that Bob makes more than 3 times.
+    
+    ```{r, message=F, error=F, warning=F}
+    1 - pbinom(q = 2, size = 12, prob = 0.6)
+    ```
+    
+    2.5 Theoretically, in the long run, what are the expected value and variance of Bob making free-throws?
+    
+    ```{r, message=F, error=F, warning=F}
+    set.seed(1234)
+    sample.throws <- rbinom(n = 100000, size = 12, prob = 0.6)
+
+    mean(sample.throws) # very close to 12*0.6=7.2
+    var(sample.throws) # very close to 12*0.6*0.4=2.88
+    ```
+    
+#### c. Uniform Distribution
+
+In statistics, uniform distribution is a term used to describe a form of probability distribution where every possible outcome has an equal likelihood of happening. The probability is constant since each variable has equal chances of being the outcome. There are two types of uniform distribution:
+
+1. Discrete uniform distribution
+
+    A discrete uniform distribution is a statistical distribution where the probability of outcomes is equally likely and with **finite values**. A good example of a discrete uniform distribution would be the possible outcomes of rolling a 6-sided die. The possible values would be 1, 2, 3, 4, 5, or 6. In this case, each of the six numbers has an equal chance of appearing. Therefore, each time the 6-sided die is thrown, each side has a chance of $\frac{1}{6}$. The number of values is finite. It is impossible to get a value of 1.3, 4.2, or 5.7 when rolling a fair die.
+
+
+2. Continuous uniform distribution
+
+    Not all uniform distributions are discrete; some are continuous. A continuous uniform distribution (also referred to as rectangular distribution) is a statistical distribution with an **infinite number** of equally likely measurable values. Unlike discrete random variables, a continuous random variable can take any real value within a specified range.
+
+    A continuous uniform distribution usually comes in a rectangular shape. A good example of a continuous uniform distribution is an idealized random number generator. With continuous uniform distribution, just like discrete uniform distribution, every variable has an equal chance of happening. However, there is an infinite number of points that can exist. Today, we will focus on continuous uniform distribution.
+    
+    - Probability Distribution Function (PDF)
+    
+      A continuous random variable $X$ has a uniform distribution, denoted $X \sim Uniform \left [a, b\right ]$, if its probability density function is:
+      
+      $$ f(x) = \begin{cases} \frac{1}{b-a}& \text{if } x \in [a, b] \\ 0 & \text{otherwise} \end{cases} $$
+      
+      for two constants $a$ and $b$, such that $a<x<b$. A graph of the PDF looks like this:
+      
+      <center>
+      ![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/uniform_pdf.png){width=50%}
+      </center>
+      
+      Note that the length of the base of the rectangle is $(b-a)$, while the length of the height of the rectangle is $\frac{1}{b-a}$.Therefore, as should be expected, the area under $f(x)$ and between the endpoints $a$ and $b$ is 1. Additionally, $f(x)>0$ over the support $a<x<b$. Therefore, $f(x)$ is a valid probability density function.
+    
+    
+    - Cumulative Distribution Function (CDF)
+    
+    The cumulative distribution function of a continuous uniform random variable is:
+    
+    $$F(x) = \begin{cases}  0 & \text{if } \ \ x < a \\ \frac{x-a}{b-a}& \text{if } \ \ x \in [a, b] \\ 1 & \text{if } \ \ x < a \\ \end{cases}$$
+     A graph of the CDF looks like this:
+     
+     <center>
+     ![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/uniform_cdf.png){width=50%}
+     </center>
+    
+    As the picture illustrates, $F(x)=0$ when $x$ is less than the lower endpoint of the support ($a$, in this case) and $F(x)=1$ when $x$ is greater than the upper endpoint of the support ($b$, in this case). The slope of the line between $a$ and $b$ is, of course, $\frac{1}{b-a}$.
+    
+    - Expected Value and Variance
+    
+      - Expected Value
+        
+        \begin{align*}
+        E(X) &= \int_{a}^{b}x(\frac{1}{b-a})dx \\
+        &= \frac{1}{b-a}\left[\frac{x^2}{2}\right]^b_a\\
+        &= \frac{1}{2(b-a)}(b^2-a^2) \\
+        &= \frac{1}{2(b-a)}(b+a)(b-a) \\
+        &= \frac{(a+b)}{2}
+        \end{align*} 
+      
+      - Variance
+        
+        \begin{align*}
+        E(X^2) &= \int_{a}^{b}x^2(\frac{1}{b-a})dx \\
+        &= \frac{1}{b-a}\left[\frac{x^3}{2}\right]^b_a\\
+        &= \frac{1}{3(b-a)}(b^3-a^3) \\
+        &= \frac{1}{3(b-a)}(b-a)(b^2+ab+a^2)\\
+        &= \frac{b^2+ab+a^2}{3}
+        \end{align*}
+        
+        \begin{align*}
+        Var(X) &= E(X^2) - (E(X))^2 \\
+        &= \frac{b^2+ab+a^2}{3} - (\frac{(a+b)}{2})^2 \\
+        &= \frac{b^2+ab+a^2}{3} - \frac{b^2+2ab+a^2}{4} \\
+        &= \frac{4b^2+4ab+4a^2-3b^2-6ab-3a^2}{12} \\
+        &= \frac{b^2-2ab+a^2}{12} \\
+        &= \frac{(b-a)^2}{12}
+        \end{align*}
+    
+    - Continuous Uniform Distribution in R
+    
+        | Function | Description |
+        |------|------|
+        | `dunif(x, min, max)` | Return the corresponding uniform probability density function (PDF) values of a certain vector quantile `x`. |
+        | `punif(q, min, max)` |Return the value of the cumulative density function (CDF) of the uniform distribution given a certain random variable q and the interval. |
+        | `qunif(p, min, max)` |The inverse of `punif()` function. It takes the probability value and gives output which corresponds to the probability value.|
+        | `runif(n, min, max)` |Generate `n` number of random numbers within any interval, defined by the min and the max argument.|
+        
+    - Exercise 3:
+    
+      Suppose we have a population distribution looks like this: $X \sim Uniform \left [0, 10\right ]$
+      
+      $$ f(x) = \begin{cases} \frac{1}{10}& \text{if } x \in [0, 10] \\ 0 & \text{otherwise} \end{cases} $$
+      
+      3.1 What does this continuous uniform distribution looks like?
+      
+        ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+          ggplot(data.frame(x = c(-5, 15)), aes(x = x)) + 
+              stat_function(fun = dunif, 
+                            args = list(min= 0, max = 10), 
+                            size = 1) + 
+              scale_y_continuous(name = "density") + 
+              scale_x_continuous(name = "X", 
+                                 breaks = seq(-5, 15, 2)) + 
+              theme_bw() + 
+              theme(panel.grid = element_blank())
+        ```
+          
+      3.2 What is the probability when $X \leq 4$?
+      
+        ```{r, message=F, echo= F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+          cut <- 4
+
+          # Define the function for the shading
+          funcShaded <- function(x, lower_bound) {
+            y = dunif(x, min = 0, max = 10)
+            y[x >= lower_bound] <- NA
+            return(y)
+          }
+
+          ggplot(data.frame(x = c(-5, 15)), aes(x = x)) + 
+            stat_function(fun = dunif, 
+                          args = list(min= 0, max = 10), 
+                          size = 1) + 
+            stat_function(fun = funcShaded, 
+                          args = list(lower_bound = cut),
+                          geom = "area", fill = "blue", 
+                          alpha = 0.3) +
+            scale_y_continuous(name = "density") + 
+            scale_x_continuous(name = "X", 
+                               breaks = seq(-5, 15, 1)) + 
+            theme_bw() + 
+            theme(panel.grid = element_blank()) 
+        ```
+
+        ```{r, message=F, error=F, warning=F}
+        punif(4, min = 0, max = 10)
+        ```
+
+        $P(X \leq 4) = 0.4$
+
+
+      3.3 What is the probability when $X \geq 4$?
+
+        ```{r, message=F, echo= F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+          # Define the function for the shading
+          funcShaded2 <- function(x, lower_bound) {
+              y = dunif(x, min = 0, max = 10)
+              y[x <= lower_bound] <- NA
+              return(y)
+          }
+
+          ggplot(data.frame(x = c(-5, 15)), aes(x = x)) + 
+              stat_function(fun = dunif, 
+                            args = list(min= 0, max = 10), 
+                            size = 1) + 
+              stat_function(fun = funcShaded2, 
+                            args = list(lower_bound = cut),
+                            geom = "area", fill = "red", 
+                            alpha = 0.3) +
+              scale_y_continuous(name = "density") + 
+              scale_x_continuous(name = "X", 
+                                 breaks = seq(-5, 15, 1)) + 
+              theme_bw() + 
+              theme(panel.grid = element_blank())
+        ```
+
+        ```{r, message=F, error=F, warning=F}
+        1- punif(4, min = 0, max = 10)
+        ```
+
+        $P(X \geq 4) = 1 - P(X \leq 4) = 0.6$
+          
+      3.4 What are the expected value and variance of this distribution? Please compute them by hand.
+      
+      
+      
+        ```{r, message=F, error=F, warning=F}
+        set.seed(1234)
+        sample.x <- runif(n = 100000, min = 0, max = 10) ## n is the number of obs I'd like to create; this can be seen as a sample we draw from a DGP under normal distribution
+        sample.x[1:50] 
+
+        mean(sample.x) ## very close to 5 
+        var(sample.x) ## very close to 8.33
+        ```
+
+#### d. Normal Distribution
+
+Normal distribution is the most important probability distribution function used in statistics because of its advantages in real case scenarios. For example, the height of the population, shoe size, IQ level, rolling a dice, and many more. 
+
+- Probability Distribution Function (PDF)
+
+    The continuous random variable $X$ follows a normal distribution if its probability density function is defined as:
+    
+    $$f(x)=\frac{1}{\sigma\sqrt{2\pi}}\left \{ -\frac{1}{2} (\frac{x-\pi}{\sigma})^2\right \}$$
+    
+    for $\infty < x < \infty$, $\infty < \mu < \infty$, and $0 < \sigma < \infty$. The mean of $X$ is $\mu$ and the variance of $X$ is $\sigma^2$. We say $X \sim N(\mu, \sigma^2)$.
+    
+    <center>
+    ![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/normal_pdf.png){width=60%}
+    </center>
+    
+    The probability density function of normal distribution is **bell-shaped** curve graph, which is symmetric. The graph signifies that the peak point is the mean of the data set and half of the values of data set lie on the left side of the mean and other half lies on the right part of the mean telling about the distribution of the values. The shape of any normal curve depends on its mean $\mu$ and standard deviation $\sigma$.
+
+    
+- Cumulative Distribution Function (CDF)
+
+    We won't focus on the CDF of normal distribution as it is ugly, but here it is.
+    
+    $$\Phi (\frac{x-\mu}{\sigma})=\frac{1}{2}\left [ 1+erf(\frac{x-\mu}{\sigma\sqrt{2}}) \right ]$$
+    
+    <center>
+    ![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/normal_cdf.png){width=60%}
+    </center>
+    
+    
+- Expected Value and Variance
+
+    - Expected Value
+    
+      $$E(x)=\int xf(x)dx=\int x\frac{1}{\sigma\sqrt{2\pi}}\left \{ -\frac{1}{2} (\frac{x-\pi}{\sigma})^2\right \}dx=\mu$$
+      
+    - Variance
+      
+      $$Var(x)=\int (x-E(x))^2f(x)dx=\int (x-\mu)^2\frac{1}{\sigma\sqrt{2\pi}}\left \{ -\frac{1}{2} (\frac{x-\pi}{\sigma})^2\right \}dx=\sigma^2$$
+    
+
+- Normal Distribution in R
+
+    | Function | Description |
+    |------|------|
+    | `dnorm(x, mean, sd)` | Probability density function (PDF). |
+    | `pnorm(x, mean, sd)` |Cumulative distribution function (CDF), which measures the probability that a random number $X$ takes a value less than or equal to $x$.|
+    | `qnorm(p, mean, sd)` |The inverse of `pnorm()` function. It takes the probability value and gives output which corresponds to the probability value.|
+    | `rnorm(n, mean, sd)` |Generate a vector of random numbers which are normally distributed.|
+
+
+- Exercise 4:
+
+    Suppose $X$, the grade on a midterm exam, is normally distributed with mean 70 and standard deviation 10, $X \sim N(70, 10^2)$.
+    
+    4.1 What does the grade on midterm exam normal distribution look like?
+    
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    ggplot(data.frame(x = c(30, 110)), aes(x = x)) + 
+      stat_function(fun = dnorm, 
+                    args = list(mean = 70, sd = 10), 
+                    size = 1) + 
+      scale_y_continuous(name = "density") + 
+      scale_x_continuous(name = "X", 
+                         breaks = seq(30, 110, 10)) + 
+      geom_vline(aes(xintercept = 70), lty = 2, 
+                     color = "red", alpha = 0.4) +
+      theme_bw() + 
+      theme(panel.grid = element_blank())
+```
+
+    4.2 What is the probability that a randomly selected student has a grade below 60?
+    
+    4.3 What is the probability that a randomly selected student has a grade above 90?
+    
+    4.4 What is the probability that a randomly selected student has a grade between 75 and 95?
+    
+    4.5 The instructor wants to give 15% of the class an A. What cutoff should the instructor use to determine who gets an A?   
+    
+    4.6 The instructor now wants to give 10% of the class an A−. What cutoff should the instructor use to determine who gets an A−?

@@ -1,0 +1,421 @@
+---
+title: "Problem Set 3"
+author: "Pol211, UC Davis"
+date: "Due by 10/23, 2023 at 11:59 PM"
+output: 
+  pdf_document: default
+---
+
+**Note:** This problem set has an extra credit question (question 6).
+
+# Question 1 (3 points)
+
+Each subquestion in this question assumes new "data", i.e. the quantities listed in (1) are irrelevant for (2), and so on.
+
+## Question 1.1
+
+ Below, you will find a table with values for variables $X$ and $Y$. The mean of $X$ is 1, and the mean of $Y$ is 3. 
+
+| $x_i$ | $y_i$ |
+|-------|-------|
+| 0     | 4     |
+| 0     | 3     |
+| 3     | 2     |
+
+
+Without using R, calculate the sample covariance between $X$ and $Y$. Note that the sample covariance uses $n-1$ in the denominator. Briefly state what the covariance tells us about the relationship between $X$ and $Y$.
+
+**Answer:** $Cov(X,Y) = \frac{1}{2} \sum_{i=1}^3 (x_i - \bar{x})(y_i - \bar{y}) = \frac{1}{2} \left[ (0-1)(4-3) + (0-1)(3-3) + (3-1)(2-3) \right] = -1.5$
+
+The covariance suggests a negative relationship.
+
+## Question 1.2
+
+Next, assume you have two other variables $X$ and $Y$. A colleague tells you that the covariance between $X$ and $Y$ is 2, the variance of $X$ is 9, and the variance of $Y$ is 16. Your colleage argues that the covariance of 2 implies a strong relationship between $X$ and $Y$. Please state if you do or do not agree with your colleague, and explain why. If you do not agree, calculate an alternative measure of the relationship between $X$ and $Y$, which may be more informative.
+
+**Answer:** Incorrect. The covariance is sensitive to the scale of the variables. Instead, we can calculate the scale-invariant correlation coefficient, which is defined as $r_{XY} = \frac{Cov(X,Y)}{\sqrt{Var(X)} \sqrt{Var(Y)}}$. In this case, $r_{XY} = \frac{2}{3\times4} = \frac{2}{12} = \frac{1}{6}$. 
+
+## Question 1.3
+ 
+Assume you run a least squares regression the regresses one variable $Y$ on another variable $X$ and this results in predicted values $\hat{y}_i$, while the observed values are denoted by $y_i$. Which of the following statements is true / not true? Please include a brief explanation for each statement.
+
+a. Running a least squares regression minimizes the sum of the differences between the observed and predicted values, i.e. it minimizes $\sum_{i=1}^n (y_i - \hat{y}_i)$.
+
+b. The intercept $\alpha$ tells us about the value of the dependent variable $Y$ when the independent variable $X$ is at its mean (i.e. when $x_i = \bar{x}$).
+
+**Answer:**  a. False. The least squares regression minimizes the sum of squared residuals, i.e. $\sum_{i=1}^n (y_i - \hat{y}_i)^2$. b. False. The intercept $\alpha$ is the value of $Y$ when $x_i=0$.
+
+# Question 2 (3 points)
+
+This question is similar to the previous one, but uses R. 
+
+You are given two variables $X$ and $Y$ in the code below. In addition, there is some code that calculates the sample mean of each variable. Please also calculate the following quantities in R: 
+
+- The sample standard deviation of $X$ and $Y$
+- The covariance between $X$ and $Y$
+- The correlation between $X$ and $Y$
+
+**Note:** Do not use the built in functions to do this, i.e. you should not use `var`, `sd`, `cov`, `cor` or similar functions. Rather, the goal is to calculate these quantities "by hand", i.e. using the formulas from the lecture. You can of course use functions such as `sum` and `sqrt`. After you are done, you can use `cor` to check if your code produces the same answer as the built-in function.
+
+Also, please remember that the sample standard deviation and sample covariance use $n-1$ in the denominator, but the sample mean uses $n$.
+
+```{r}
+
+x <- c(2, 5, 3, 6, 7, 8, 3, 6, 7, 9)
+y <- c(9, 6, 8, 4, 7, 5, 4, 3, 3, 2)
+
+# Get number of observations
+
+n <- length(x)
+
+# Calculate the mean of each variable
+# "Sum" just takes all elements of X and then adds them up
+
+mean_x <- sum(x) / n
+mean_y <- sum(y) / n
+
+# Your code:
+
+# ...
+
+```
+
+**Answer:**
+
+```{r}
+
+# Variance of X,Y
+
+var_x <- sum((x - mean_x)^2) / (n - 1)
+var_y <- sum((y - mean_y)^2) / (n - 1)
+
+# SD of X,Y
+
+sd_x <- sqrt(var_x)
+sd_y <- sqrt(var_y)
+
+# Covariance between X,Y
+
+cov_xy <- sum((x - mean_x) * (y - mean_y)) / (n - 1)
+
+# Correlation between X,Y
+
+cor_xy <- cov_xy / (sd_x * sd_y)
+cor_xy
+
+
+# We can check if the results are correct by using the built-in functions
+
+cov(x, y)
+cor(x, y)
+
+```
+
+# Question 3 (4 points)
+
+We will use the Chetty data from the last problem set again.\footnote{The paper is here: ![](https://www.nber.org/papers/w23618).}  A policymaker is interested in the relationship between mobility rates and price of attendance for private universities in California, Oregon and Washington.
+
+First, you will need to transform the data, which means (i) subsetting the data set to California, Oregon and Washington and (ii) subsetting the data set to public universities within these states. Next, transform the variable `sticker_price_2013` into a variable that measures the price of attendance in 2013 in thousands of dollars. Then, transform the variable `mr_kq5_pq1` into a variable that measures the mobility rate in percentage points, rather than on a 0--1 scale.
+
+## Question 3.1
+
+Create a scatter plot of the relationship between mobility rates (`mr_kq5_pq1`) and price of attendance (`sticker_price_2013`). For a definition of mobility rates, see here: https://opportunityinsights.org/wp-content/uploads/2018/03/coll\_mrc\_summary.pdf
+
+```{r, warning=FALSE, message=FALSE}
+
+library(tidyverse, quietly = TRUE)
+
+# Read the data
+
+df <- read.csv("~/Dropbox/UCDavis/03_Teaching/02_211_Fall2023/Data/chetty_data.csv")
+
+```
+
+**Answer:**
+
+```{r}
+
+# Subset to the three states 
+
+df_west <- df %>%
+    filter(state %in% c(
+        "CA", "WA", "OR"
+    )) %>%
+    filter(public == "Public") %>%
+    mutate(sticker_price_2013 = sticker_price_2013 / 1000,
+    mr_kq5_pq1 = mr_kq5_pq1 *100)
+    
+# Scatter plot
+
+ggplot(df_west, aes(x = sticker_price_2013, y = mr_kq5_pq1)) +
+    geom_point() +
+    labs(
+        x = "Price of attendance (in thousands of dollars)",
+        y = "Mobility rate (in percentage points)"
+    )
+```
+
+## Question 3.2
+
+Run a linear regression using the `lm` command, where the outcome is mobility rates and the predictor is price of attendance. You should use the same data set as before, i.e. public universities in WA, CA and OR. Interpret the intercept and slope of the regression. You do not have to interpret standard errors or p-values.
+
+**Answer:**
+
+```{r}
+
+mod <- lm(mr_kq5_pq1 ~ sticker_price_2013, data = df_west)
+
+coef(mod)
+
+```
+
+**Answer:** The intercept is the mobility rate for a public college with a price of attendance of 0 (i.e. this number is not very useful). The slope is the change in mobility rate, in percentage points, associated with a 1,000 dollar increase in price of attendance.
+
+## Question 3.3
+
+ Plot the same scatter plot as in subquestion 1, but now add the linear regression line that you just calculated. In `ggplot`, you can do this either manually using the `geom_abline` command, or you can use the `geom_smooth(method = 'lm')` command. Given what you just plotted, do you think the linear regression is a good fit? Please explain why or why not.  
+
+**Answer:**
+
+```{r} 
+
+ggplot(df_west, aes(x = sticker_price_2013, y = mr_kq5_pq1)) +
+    geom_point() +
+    geom_smooth(method = "lm") +
+    labs(
+        x = "Price of attendance (in thousands of dollars)",
+        y = "Mobility rate (in percentage points)"
+    )
+
+# Plot suggests nonlinearity -- linear regression not a good fit! 
+    
+```
+
+## Question 3.4
+
+We can also assess this relationship *non-parametrically*. In the previous question, we used a regression model to model the values of $Y$ given $X$. We can also just calculate the conditional mean of $Y$ given some values of $X$. To implement this, proceed as follows: calculate the average mobility rate separately for 4 groups of the data, defined by their cost of attendance: 
+
+1. Between 5,000 and 8,000 dollars
+2. Between 8,000 and 10,000 dollars 
+3. Between 10,000 and 12,000 dollars 
+4. Between 10,000 and 12,000 dollars 
+
+The quantities you just calculated are called *conditional means*.
+Then, create a plot that has these groups on the x-axis, and the average of each group on the y-axis (e.g. a bar chart).
+
+You will likely find that it is not always possible to calculate the conditional mean of $Y$, particularly when there are no observed outcomes $Y$ for certain values of $X$. Comparing the regression method to the conditional mean method, what is one advantage of the regression method in cases where there is no available data on $Y$ for certain values of $X$?
+
+**Answer:**
+
+```{r}
+
+# Create a new variable that indicates the group
+
+df_west <- df_west %>%
+    mutate(group = case_when(
+        sticker_price_2013 >= 5 & sticker_price_2013 < 8 ~ "Group 1: 5-8",
+        sticker_price_2013 >= 8 & sticker_price_2013 < 10 ~ "Group 2: 8-10",
+        sticker_price_2013 >= 10 & sticker_price_2013 < 12 ~ "Group 3: 10-12",
+        sticker_price_2013 >= 12 ~ "Group 4: 12-14"
+    ))
+
+## Calculate conditional means
+
+df_plot <- df_west %>%
+    group_by(group) %>%
+    summarize(mean_mr = mean(mr_kq5_pq1, na.rm = TRUE))
+
+## Plot as bar chart
+
+df_plot %>%
+    ggplot(aes(x = group, y = mean_mr)) +
+    geom_bar(stat = "identity") +
+    labs(
+        x = "Price of attendance (in thousands of dollars)",
+        y = "Avg. mobility rate (in percentage points)"
+    )
+
+
+```
+
+Note that the third group has no data for $Y$, which leads to a missing value. The advantage of the regression method is that we can still predict values of $Y$ for this group, even though we have no data for this group -- the regression equation will give us predictions of $Y$ for any value of $X$.
+
+
+# Question 4 (2 points)
+
+## Question 4.1
+
+Please interpret the following regression coefficients:
+
+- Gentzkow et al (2011) study the relationship between *number of local newspapers* in a county and *voter turnout* in presidential elections, for all elections between 1868–1928. Turnout ($Y$) ranges from 0--1, with 1 indicating 100\% turnout. The newspaper variable ($X$) is simply the number of newspapers. Based on results in table 2 of the paper, the estimated regression coefficient $\beta$ that stems from the regression of changes in turnout on the number of newspapers is 0.0034. Please interpret this coefficient.\footnote{The actual specification is more complicated, this description is a simplification.}
+
+- Enos (2014) conducts a field experiment to assess the relationship between exposure to Spanish-speaking confederates and attitudes toward immigration policy. He randomly assigns certain train platforms to receive a treatment for 2 weeks, where pairs of Spanish-speaking confederates visit the platforms every day during the morning commute to simulate demographic change. He then surveys commuters before and after the treatment about their attitudes toward immigration policy. One of the dependent variables is support for decreasing the number of immigrants from Mexico, measured on a 0-1 scale where 1 indicates support for decreasing immigration. In the full sample, the estimated regression coefficient $\beta$ stemming from the regression of support for decreasing immigration on exposure to the Spanish-speaking confederates (the treatment) is 0.09. Note that this is an experiment, so there is a treatment group that sees the Spanish-speaking confederates ($x_i = 1$) and a control group that does not get exposed to the conferedates ($x_i=0$). Please interpret the coefficient $\beta$.
+
+**Answer:** 
+
+- Gentzkow et al: One additional local newspapers is associated with a 0.34 percentage point increase in turnout. 
+- Enos: Exposure to Spanish-speaking confederates (compared to the control group) is associated with a 0.09-point increase in support for decreasing the number of immigrants from Mexico, on a scale from 0--1.
+
+## Question 4.2
+
+Let's return to the Chetty data. We will look at the dataset for the whole country and for public as well as private colleges. The dataset has a variable called `mobility_above_average`, which is defined as follows:
+
+$$mobility\_above\_average = \begin{cases} 1 & mobility\_rate_i > \overline{mobility\_rate} \\ 0 & mobility\_rate_i \leq \overline{mobility\_rate} \end{cases}$$
+
+This variable indicates whether the mobility rate for a given college is above or below the average mobility rate across all colleges. It can only take two values -- 1 (greater than the average) or 0 (equal to or below the average).
+
+We now run the following regression:
+
+```{r}
+
+mod <- lm(mobility_above_average ~ public, data = df)
+coef(mod)
+
+```
+
+Interpret the coefficients. 
+
+**Answer:** The intercept is the share of private colleges with above-average mobility rates. The coefficient $\beta$ is the difference in the share of public colleges with above-average mobility rates, compared to private colleges. It is positive, so public colleges are more likely to have above-average mobility rates.
+
+# Question 5 (required for students in the methods subfield, 3 points)
+
+## Question 5.1
+
+In lecture, we said the mean $\bar{x} = \frac{1}{n} \sum_{i=1}^n x_i$ is the best "guess" of $x_i$ in terms of minimizing the mean squared error.
+In statistics, it is common to define some measure of how "good" a guess or an estimate is, and then to show that there is some specific estimate that is "best" in terms of this measure. Recall that the mean squared error is defined as $$MSE = \frac{1}{n} \sum_{i=1}^n (x_i - \hat{x})^2$$ where $\hat{x}$ is our guess of $x_i$. \footnote{Note that $\hat{x}$ is usually some function of the data, i.e. $\hat{x} = f(x_1, x_2, ..., x_n)$. Quantities like the mean, median or mode are all functions of the data.}
+
+- Show that the mean $\bar{x}$ is the best guess in terms of minimizing the mean squared error given above. 
+- To show this, you will use calculus. Recall that we can use derivatives to find mimima / maxima of a function. Commonly, we proceed as follows: (1) we take the derivate of a function with respect to the variable we want to optimize over, (2) we set the derivative equal to zero, and (3) we solve for the variable we want to optimize over. In this case, we want to optimize over $\hat{x}$, so we will take the derivative of the mean squared error with respect to $\hat{x}$, set it equal to zero, and solve for $\hat{x}$. The goal is then to show that $\hat{x} = \bar{x}$ is the solution to this problem.
+
+- **Note 1:** Usually, we would also have to assess whether we found a minimum or maximum by looking at the second derivative. However, you can just assume that you found a minimum here -- looking at the second derivative is not necessary.
+
+- **Note 2:** You can use the fact that $\sum_{i=1}^n a = n a$, since $a$ is just a constant.
+
+
+
+**Answer:**
+
+
+The MSE is defined as follows:
+
+$$MSE = \frac{1}{n} \sum_{i=1}^n (x_i - \hat{x})^2$$
+
+Note that we can also write this as follows:\footnote{
+    We can also use the chain rule instead, which means we do not need this step.
+}
+
+$$MSE = \frac{1}{n} \sum_{i=1}^n (x_i^2 - 2x_i \hat{x}+ \hat{x}^2)$$
+
+Next, we take the derivate of this wrt $\hat{x}$:
+
+$$\frac{\partial MSE}{\partial \hat{x}} = \frac{1}{n} \sum_{i=1}^n (-2x_i + 2\hat{x})$$
+
+Since we take the derivative wrt $\hat{x}$, we can treat all other terms as constants, which is why the $x^2_i$ term disappears. Next, we set this equal to zero and solve for $\hat{x}$:
+
+$$\frac{1}{n} \sum_{i=1}^n (-2x_i + 2\hat{x}) = 0$$
+
+$$\frac{1}{n} \sum_{i=1}^n -2x_i + \frac{1}{n} \sum_{i=1}^n 2\hat{x} = 0$$
+
+The second sum is just the sum of constants, i.e. $\sum_{i=1}^n 2\hat{x} = 2n\hat{x}$.
+
+$$\frac{1}{n} \sum_{i=1}^n -2x_i + \frac{1}{n}2n\hat{x} = 
+\frac{-2}{n} \sum_{i=1}^n x_i + 2\hat{x} = 0$$
+
+
+Note that the first term is negative, so we can just move it to the other side of the equation and divide by 2.
+
+$$2\hat{x} = \frac{2}{n} \sum_{i=1}^n x_i$$
+
+$$\hat{x} = \frac{1}{n} \sum_{i=1}^n x_i$$
+
+Note that the right-hand side is just the definition of the mean, i.e. we have shown that $\hat{x} = \bar{x}$. As stated above, we would now have to look at the second derivative to see if we found a minimum or maximum. However, you can just assume that we found a minimum here.
+
+## Question 5.2
+
+In linear regressions, goodness of fit is usually measured using the $R^2$ statistic. This statistic is defined as follows:
+
+$$R^2 = 1 - \frac{SSR}{SST}$$
+
+where the sum of squared residuals $SSR = \sum_{i=1}^n (y_i - 
+\hat{y}_i)^2$ and the total sum of squares $SST = \sum_{i=1}^n (y_i - \bar{y})^2$. Here, $\hat{y}_i$ are the predicted values of $y_i$ from the regression, and $y_i$ are the observed values of $Y$. 
+
+In R, write a function that calculates $R^2$ for a given regression, based on the definition given above. The function should have two arguments: (1) the observed values $y_i$ and (2) an `lm` object that contains the regression results of a regression of $Y$ on $X$. The function should return the $R^2$ statistic.
+
+```{r}
+
+x <- c(2, 5, 3, 6, 7, 8, 3, 6, 7, 9)
+y <- c(9, 6, 8, 4, 7, 5, 4, 3, 3, 2)
+
+mod <- lm(y ~ x)
+
+get_rsq  <- function(y, lm_object) {
+  
+  # Your code here
+  
+}
+
+```
+
+**Answer:**
+
+```{r}
+
+get_rsq  <- function(y, lm_object) {
+  
+  # Get predicted values
+  
+  y_hat <- predict(lm_object)
+  
+  # Get SSR
+  
+  SSR <- sum((y - y_hat)^2)
+  
+  # Get SST
+  
+  SST <- sum((y - mean(y))^2)
+  
+  # Get R^2
+  
+  R_sq <- 1 - SSR / SST
+  
+  # Return R^2
+  
+  return(R_sq)
+  
+}
+
+get_rsq(y, mod)
+
+
+```
+
+## Question 5.3
+
+If $R^2$ is closer to 1, this is usually considered a better fit. 
+
+1. First, provide an intuitive explanation why $R^2$ is a measure of goodness of fit. For this, it is helpful to consider cases where SSR is small relative to SST, and cases where SSR is large relative to SST. 
+    
+2. Second, please state whether $R^2$ tells us something about the direction of the relationship between $X$ and $Y$.
+
+3. Third, assume we are interested in explaining whether citizens vote for Democrats or Republicans. Many different variables are correlated with voting behavior, such as age, income, gender, race, etc. For many of these variables, we can find a "statistically significant"\footnote{We will cover what this means in more detail later, but I am sure you heard this term before.} relationship with voting behavior. However, the $R^2$ of regressing voting behavior on these variables is usually quite low (e.g. $<0.2$), which indicates that a given $X$ only explains a small part of the variation in $Y$. However, researchers in social science generally do not consider this a problem. Please explain why not.
+
+**Answer:** 
+
+1. SST measures the overall deviation of $Y$ from its sample mean. SSR measures the deviation of the predicted values $\hat{y}_i$ from the actual values. If SSR is small relative to SST, then the difference between the predicted and observed values is small, so our model does well. This will then lead to larger values of $R^2$. If SSR is large relative to SST, then the difference between the predicted and observed values is large, so our model does not do well. This will then lead to smaller values of $R^2$.
+
+2. Note that the definition of $R^2$ does not contain $X$. Therefore, $R^2$ does not tell us anything about the direction of the relationship between $X$ and $Y$. It merely tells us whether $X$ is a good predictor of $Y$.
+
+3. Taken from Gailmard, page 51: "the object of our analysis [...] is typically not to give a complete account of the behavior of $Y$ in a specific sample but rather to identify a set of factors that systematically affect $Y$ and to give reasons behind these effects."
+
+# Question 6 (extra credit, 1 point)
+
+A famous question on StackExchange is as follows (with some edits for clarity):
+
+> "Suppose we have data set $(y_i, x_i)$ with $n$ [observations]. We want to perform a linear regression, but first we sort the $x_i$ values and the $y_i$ values independently of each other, forming data set $(y_j, x_j)$ Is there any meaningful interpretation of the regression on the new data set? Does this have a name? 
+
+> I imagine this is a silly question so I apologize, I'm not formally trained in statistics. [...] [M]y manager says he gets "better regressions most of the time" when he does this (here "better" means more predictive). I have a feeling he is deceiving himself."
+
+What would you respond to this? What could one likely reason be why the manager gets more predictive regressions with this method?
+
+**Answer:** This makes no sense at all, and completely destroys the actual relationship between $X$ and $Y$. By sorting both variables indepedently, the manager creates a meaningless data set where both $X$ and $Y$ become artificially correlated because they are both increasing in value as we go down the list of observations.
+

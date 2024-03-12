@@ -1,0 +1,2512 @@
+---
+title: "211-Solution Keys"
+author: "Yu-Shiuan (Lily) Huang"
+date: "Fall 2023"
+output:
+  html_document: 
+    theme: paper
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      tidy.opts=list(width.cutoff = 80),
+                      tidy = FALSE)
+options(width = 80)
+
+htmltools::tagList(
+  xaringanExtra::use_clipboard(
+    button_text = "<i class=\"fa fa-clipboard\" style=\"color: #4D5656\" ></i>",
+    success_text = "<i class=\"fa fa-check\" style=\"color: #4D5656\"></i>",
+    error_text = "<i class=\"fa fa-times-circle\" style=\"color: #4D5656\"></i>"
+  ),
+  rmarkdown::html_dependency_font_awesome()
+)
+```
+
+```{css, echo=FALSE}
+pre {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 200px;
+}
+```
+
+```{css, echo=FALSE}
+.scroll-100 {
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: inherit;
+}
+```
+
+#  {.tabset .tabset-fade .tabset-fill}
+
+## PS#1
+
+#### Question 1 (4 points)
+
+Load the `dbj.csv` file.
+
+-   What is the unit of observation in the data set?
+
+    **Answer: The unit of analysis in the data set is per judge.**
+
+    You can also double check this answer by using the `unique()` on the `name` variable to see if the number of observations is equal to the number of categories in that variable.
+
+    ```{r, message=F, warning=F, error=F}
+    library(tidyverse)
+
+    dbj <- read_csv("/Users/yu-shiuanhuang/Desktop/method-sequence/data/dbj.csv")  ## you can also use read.csv
+
+    length(unique(dbj$name)) == nrow(dbj)
+    ```
+
+    Doing this helps us confirm that this dataset is structured around the information of individual judges. However, it's worth considering that the dataset might be organized by judicial cases, where one judge could be associated with multiple cases. In such a scenario, the unit of analysis wouldn't be per judge but per case.
+
+-   How many judges are there in the data set, and how many variables does the data set have?
+
+    **Answer: There are 224 judges and 12 variables in the data set.**
+
+    ```{r, message=F, warning=F, error=F}
+    ## Number of judges
+    nrow(dbj) ## this is just the number of observations
+
+    ## Number of variables
+    ncol(dbj)
+    ```
+
+-   How many judges in the data set have children? To answer this, first create a new binary (or "dummy") variable that is equal to 1 if a judge has any children, and 0 otherwise.
+
+    **Answer: Out of the total of 244 judges, 199 have children.**
+
+    ```{r, message=F, warning=F, error=F}
+    ## Judges with children (using a new dummy variable)
+    dbj <- dbj %>% 
+      mutate(has_children = ifelse(child > 0, 1, 0)) 
+
+    dbj_c <- dbj %>%
+      count(has_children)
+
+    knitr::kable(dbj_c, "simple", align = "cc", 
+             col.names = c("Has Children or Not", "Number of Judges"))
+    ```
+
+-   Of the judges that have children, what percentage has female children? To calculate this number, first create a new binary (or "dummy") variable that is equal to 1 if a judge has female children, and 0 otherwise.
+
+    **Answer: Among the judges who have children, approximately 81.41% of them have female children.**
+
+    ```{r, message=F, warning=F, error=F}
+    ## Share of judges with children that have female children
+    ## First, create dummy
+    dbj <- dbj %>% 
+      mutate(has_female_children = ifelse(girls > 0, 1, 0))
+
+    ## We need the average of "has_female_children" conditional on "has_children" equal to 1
+    dbj_with_children <- dbj %>% 
+      filter(has_children == 1)
+
+    mean(dbj_with_children$has_female_children)
+    ```
+
+#### Question 2 (4 points)
+
+Our outcome in this exercise will be the proportion of pro-feminist decisions, `progressive.vote`.
+
+First, calculate the mean, median and standard deviation of this variable (across all judges).
+
+**Answer:**
+
+```{r, message=F, warning=F, error=F}
+## Summary stats for progressive.vote
+mean(dbj$progressive.vote)
+median(dbj$progressive.vote)
+sd(dbj$progressive.vote)
+```
+
+Next, we want to assess differences between groups. Create a new factor variable that takes on separate values for each of the four groups (Republican men/women, Democratic men/women) defined by gender and partisanship. The variable should be a "factor" or "character" type variable in R - you can use string labels such as `Dem_Male`, `Dem_Female`, etc. It should **not** be a numeric variable.
+
+Having created this variable, now create a **boxplot** that summarizes the propensity to decide in a pro-feminist way by group, in one plot. Briefly discuss the results -- what does the boxplot show, and what does this tell us about differences between groups? Are partisan differences larger than gender differences, or the other way around? A brief answer is sufficient here.
+
+**Answer: The plot shows that progressive decisions are more prevalent among Democratic judges than among Republican judges. Gender differences are less pronounced than partisan differences, since within parties, male and female judges have similar average proportions of pro-feminist decisions.**
+
+```{r, message=F, warning=F, error=F, fig.align='center', fig.width=6, fig.height=4}
+## Create new variable
+dbj <- dbj %>% 
+  mutate(group = case_when(republican == 1 & woman == 1 ~ "Rep_Female",
+                           republican == 0 & woman == 1 ~ "Dem_Female",
+                           republican == 1 & woman == 0 ~ "Rep_Male",
+                           republican == 0 & woman == 0 ~ "Dem_Male"))
+
+## Use ggplot to plot the average by group
+ggplot(dbj, aes(x = group, y = progressive.vote)) +
+  geom_boxplot() +
+  theme_bw() 
+```
+
+You can enhance the boxplot by including additional information, such as displaying the median of the progressive vote for each group.
+
+```{r, message=F, warning=F, error=F, fig.align='center', fig.width=6, fig.height=4}
+## Calculate median for each group
+dbj_md <- dbj %>%
+  group_by(group) %>%
+  summarise(MD = median(progressive.vote)) 
+
+## Use ggplot to plot the average by group with median for each group
+ggplot(data = dbj, aes(x = group, y = progressive.vote)) +
+  geom_boxplot() +
+  geom_text(data = dbj_md, aes(group, MD, label = round(MD, 4)),
+            position = position_dodge(width = 0.8), 
+            size = 3, vjust = -0.5) +
+  theme_bw() 
+```
+
+#### Question 3 (2 points)
+
+From before, we have a new binary variable which takes a value of `1` if a judge has *at least* one child (that is, any children at all), and `0` otherwise.
+
+Use this variable to answer the following questions.
+
+-   Are Republicans and Democrats equally likely to be parents (that is, have at least one child)?
+
+    **Answer: Republicans and Democrats are almost equally likely to be parents, with 88% of Republicans and 89% of Democrats having children.**
+
+    ```{r, message=F, warning=F, error=F}
+    ## First question: average likelihood of having kids among D and R
+    df <- dbj %>% 
+      group_by(republican) %>% 
+      summarise(mean(has_children))
+
+    knitr::kable(df, "simple", align = "cc", 
+             col.names = c("Republican", 
+                           "Average Likelihood of Having Kids"))
+    ```
+
+-   Do judges with children vote differently on feminist issues than judges without? If so, how are they different?
+
+    **Answer: It does not appear as if there are large differences in pro-feminist voting when comparing judges with and without children. Among judges without children, 46% voted in favor of pro-feminist issues, slightly higher than the 43% of judges with children who voted for pro-feminist issues.**
+
+    ```{r, message=F, warning=F, error=F}
+    ## Next question: voting behavior conditional on having children
+    df <- dbj %>% 
+      group_by(has_children) %>% 
+      summarise(mean(progressive.vote))
+
+    knitr::kable(df, "simple", align = "cc", 
+             col.names = c("Has Children", 
+                           "Average Likelihood of Voting Pro-feminist Issues"))
+    ```
+
+    ```{r, message=F, warning=F, error=F, fig.align='center', fig.width=6, fig.height=4}
+    ## We can also again use a boxplot for this
+
+    ## Calculate median for each group 
+    dbj_hc_md <- dbj %>%
+      group_by(has_children) %>%
+      summarise(MD = median(progressive.vote)) 
+
+    ggplot(dbj, aes(factor(has_children), progressive.vote)) +
+      geom_boxplot() +
+      geom_text(data = dbj_hc_md, aes(factor(has_children), MD, 
+                                  label = round(MD, 4)),
+            position = position_dodge(width = 0.8), 
+            size = 3, vjust = -0.5) +
+      xlab("Judge has any children (1 = yes)") +
+      ylab("Progressive decisions") +
+      theme_bw()
+    ```
+
+#### Question 4 (2 points)
+
+Please evaluate the following statements. For each statement, indicate whether you believe the statement makes sense or not. If it does not, please provide a short motivation.
+
+1.  The judge's religion can be described as an ordinal variable.
+
+    **Answer: Incorrect: higher values do not indicator higher ranks, since the variable does not measure a concept that is ordered.**
+
+2.  A colleague argues that the judge's religion may be an important predictor of judges' decisions -- more religious judges may decide differently than less religious judges. Therefore, your colleague recommends splitting the `religion` variable (see definition above) into two groups: the set of judges for which `religion` is greater than 10, and the set of judges for which it is 10 or lower. Then, your colleague recommends comparing the mean proportion of pro-feminist decisions in each of the two groups.
+
+    **Answer: This does not make sense - splitting the variable in this way tells us nothing about the whether a judge is more or less religious. The variable (although it is coded as a numeric variable in the data set) is actually categorical, and only tells us which religious denomination a judge belongs to. There is actually no variable in the data that measure whether judges are more or less religious.**
+
+3.  A colleague comments that the data set is ambiguous, since there is no variable that measures whether a judge was appointed by a Democratic president.
+
+    **Answer: This does not make sense. Since judges can only be appointed by Republican or Democratic presidents, having a single binary variable (`republican`) is sufficient.**
+
+#### Additional question (required for students in the methods subfield)
+
+#### Question 5 (3 points)
+
+What is the difference in the proportion of pro-feminist decisions between judges who have at least one daughter and those who do not have any? Compute this difference in two ways; (1) using any judge who has children, (2) separately for judges that have one, two, or three children. For (2), you should end with three estimates: one for the judges with one child, one for the judges with two children, and one for the judges with three children (HINT: you will subset the data quite a few times to achieve this).
+
+-   Compute the difference (1) using any judge who has children.
+
+    **Answer: The difference in the proportion of pro-feminist decisions between judges who have at least one daughter and those who do not have any is about 11%.**
+
+    |                         | **`has_female_children == 1`** | **`has_female_children == 0`** |
+    |---------------------|--------------------------|--------------------------|
+    | **`has_children == 1`** | `mean(progressive.vote)`       | `mean(progressive.vote)`       |
+    | **`has_children == 0`** | `mean(progressive.vote)`       | `mean(progressive.vote)`       |
+
+    ```{r, message=F, warning=F, error=F}
+    dbj %>% 
+      filter(has_children == 1) %>% 
+      group_by(has_female_children) %>% 
+      summarise(mean_prog = mean(progressive.vote)) %>% 
+      summarise(diff = mean_prog[has_female_children == 1] - 
+              mean_prog[has_female_children == 0])
+    ```
+
+-   Compute the difference (2) separately for judges that have one, two, or three children.
+
+    **Answer: Among judges who have at least one child, two children, and three children, the difference in the proportion of pro-feminist decisions between those who have at least one daughter and those who do not have any is about 24%, 8%, and 19%, respectively.**
+
+    |                  | **`has_female_children == 1`** | **`has_female_children == 0`** |
+    |-----------------|---------------------------|---------------------------|
+    | **`child == 1`** | `mean(progressive.vote)`       | `mean(progressive.vote)`       |
+    | **`child == 2`** | `mean(progressive.vote)`       | `mean(progressive.vote)`       |
+    | **`child == 3`** | `mean(progressive.vote)`       | `mean(progressive.vote)`       |
+
+    ```{r, message=F, warning=F, error=F}
+    diff_list <- dbj %>% 
+      filter(child %in% c(1,2,3)) %>%  ## Subset to people w/ 1,2,3 children
+      group_by(has_female_children, child) %>%  
+      summarise(mean_prog = mean(progressive.vote)) %>%  ## Average
+      ungroup() %>% 
+      group_by(child) %>%  ## Calculate differences by no. of children
+      summarise(diff = mean_prog[has_female_children == 1] - 
+              mean_prog[has_female_children == 0])
+
+    knitr::kable(diff_list, "simple", align = "cc", 
+             col.names = c("Has no. Children", "Difference"))
+    ```
+
+## PS#2
+
+#### Question 1 (2 points)
+
+Creating descriptive statistics is a key part of any research project. We will work with data compiled by Raj Chetty and coauthors. The paper is here: https://www.nber.org/papers/w23618. Alternatively, you can also read a summary report here: https://opportunityinsights.org/wp-content/uploads/2018/03/coll_mrc_summary.pdf). The purpose of this data is measure the role of colleges in facilitating upward (economic) mobility.
+
+1. In the report, the authors define a measure called "Mobility Rate", which is defined as the product of "Access" and "Success Rate". Provide brief definitions of "Access" and "Success Rate". Then, provide a brief explanation why using either one of these two measures separately may not be sufficient to measure how much each college contributes to upward mobility.
+
+    **Answer:** 
+    
+    **Access is defined as the fraction of students at a given college who come from families in the bottom 20% of the income distribution. Success rate is defined as the fraction of students at a given college who reach the top 20% of the income distribution. Using either one of these measures separately may not be sufficient to measure how much each college contributes to upward mobility, since colleges with a high access rate may not necessarily have a high success rate, and vice versa.**
+
+2. Recall that studies can be classified as descriptive, causal or measurement. For each of these three categories, please state (i) whether the paper falls in that category and (ii) why or why not it can be grouped in that category. 
+
+    **Answer:**
+    
+    **Descriptive and measurement. The study does not answer the question of whether some characteristic of colleges causes some colleges to be more successful than others. The abstract actually states that "Although our descriptive analysis does not identify colleges' causal effects on students' outcomes, the publicly available statistics constructed here highlight colleges that deserve further study as potential engines of upward mobility."**
+    
+    
+#### Question 2 (4 points)
+
+The next questions focus on the variables `par_median` and `mr_kq5_pq1`, which are the median income of parents of students at a given college and its mobility rate, respectively.
+
+1.  Calculate the mean, median, standard deviation and interquartile range of `par_median`. Briefly interpret the difference between the mean and the median -- what does it tell you about the distribution of `par_median`?
+
+    **Answer:**
+    
+    **The mean, median, standard deviation, and IQR of `par_median` are as follows: 93145.96, 89100, 29085.32, and 29200, respectively. Notably, the mean of `par_median` is higher than the median, indicating that the distribution of `par_median` is right-skewed, and the possibility of outliers existing in the right tail should be considered.**
+
+    ```{r, message=F, error=F, warning=F}
+    ## load packages and import data
+    library(tidyverse)
+    
+    df <- read.csv("/Users/yu-shiuanhuang/Desktop/method-sequence/data/chetty_data.csv")
+    ```
+
+    ```{r, message=F, error=F, warning=F}
+    ## Mean
+    mean(df$par_median)
+    
+    ## Median
+    median(df$par_median)
+    
+    ## SD
+    sd(df$par_median)
+    
+    ## IQR
+    IQR(df$par_median)
+    ```
+
+2. Create two histograms of `par_median`, one with 10 bins, and one with 50 bins. Do you find one of them more informative?
+
+    **Answer:**
+    
+    **The histogram with 50 bins provides more detailed information and is more informative. Having too few bins, as in the histogram with 10 bins, can obscure important patterns in the data. The 50-bin histogram is particularly useful for pinpointing the distribution of outliers in `par_median`, offering a more precise depiction compared to the 10-bin histogram, which may not effectively reveal their locations.**
+
+
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=8, fig.height=4}
+    
+p1 <- ggplot(df, aes(par_median)) +
+      geom_histogram(bins = 10, color = "black", fill = "gray85") +
+      labs(x = "Median Income of Parents", subtitle = "bins = 10") +
+      theme_bw()
+    
+    p2 <- ggplot(df, aes(par_median)) +
+      geom_histogram(bins = 50, color = "black", fill = "gray85") +
+      labs(x = "Median Income of Parents", subtitle = "bins = 10") +
+      theme_bw()
+    
+    ggpubr::ggarrange(p1, p2, ncol = 2, nrow = 1)
+    
+```
+
+3. Next, create two histograms, with any number of bins, for public and private colleges separately. Note that you should do this in one plot. You can use the `facet_wrap` function.
+
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=8, fig.height=4}
+    
+    ggplot(df, aes(par_median)) +
+      geom_histogram(bins = 50, color = "black", fill = "gray85") +
+      labs(x = "Median Income of Parents") +
+      facet_wrap(~ public) +
+      theme_bw()
+    
+    ```
+
+4. Next, an education policymaker is interested in comparing mobility rates (see question 1.1) across states. The variable is called `mr_kq5_pq1`. In particular, the policymaker is interested in the median mobility rates, as well as mobility rates at the 80th percentile, for each state separately. Calculate these quantities by state. Next, you should create two plots. The first, should show the median mobility rate by state. The second should show the mobility rate at the 80th percentile by state. In each plot, you should only provide a single quantity for each state. 
+
+    - Ideally, these would be ranked by mobility rates, such that the order of the points in each plot is either ascending or descending. However, this is not strictly required for this problem set. You can use the `fct_reorder` function to reorder the states by the median mobility rate. 
+    
+    - For readability, it makes the most sense to put the state on the y-axis, and the mobility rate on the x-axis. 
+
+    ```{r, message=F, error=F, warning=F}
+    ## Calculate median and 80th percentile by state
+    df_mobility <- df %>% 
+      group_by(state) %>% 
+      summarise(median_mobility = median(mr_kq5_pq1),
+                p80_mobility = quantile(mr_kq5_pq1, probs = 0.8)) %>% 
+      ungroup()
+    
+    ```
+    
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=8, fig.height=6}
+    ## Plot 1 : median mobility by state
+    ## Arrange by median mobility
+    
+    df_mobility <- df_mobility %>%
+      mutate(state = factor(state),
+             state = fct_reorder(state, median_mobility))
+    
+    p1 <- ggplot(df_mobility, aes(median_mobility, state)) +
+      geom_point(alpha = 0.7) +
+      labs(x = "Median Mobility Rates", y = "State") +
+      theme_bw()
+    
+    ## Plot 2 : 80th percentile mobility by state
+    ## Arrange by 80th percentile mobility
+    
+    df_mobility <- df_mobility %>%
+      mutate(state = factor(state),
+             state = fct_reorder(state, p80_mobility))
+    
+    p2 <- ggplot(df_mobility, aes(p80_mobility, state)) +
+      geom_point(alpha = 0.7) +
+      labs(x = "80th percentile Mobility Rates", y = "State") +
+      theme_bw()
+    
+    ggpubr::ggarrange(p1, p2, ncol = 2, nrow = 1)
+    ```
+
+#### Question 3 (2 points)
+
+As in the previous problem set, evaluate the following statements, and provide explanations if you think the statements do not make sense. Short responses are sufficient. You do not need to calculate anything.
+
+1.  In the definition of the variance, we first square the average deviation from the mean, and then calculate the average of those deviations. A colleague proposes a different way of calculating variability in the data. Instead of squaring the deviations, your colleague recommends just taking the "normal" difference between each observation and the mean of the data, and then taking the average of that (the mathematical representation of this would be $\frac{1}{N}\sum_{i}^N (x_i-\bar{x})$, where $\bar{x}$ is the sample mean). Is this a good approach of summarizing how much the sample varies?
+
+    **Answers:**
+    
+    **This does not make sense, since this way of calculating the dispersion will include negative values, and might result in $\frac{1}{N}\sum_{i}^N (x_i-\bar{x})=0$.**
+
+
+2.  You analyze a variable, and find that the median is significantly larger than the mean. A colleague argues that this suggests outliers in the data. Specifically, your colleague suggests outliers in what is called the "right tail" of the distribution, i.e. values that are much larger than most other values that you observe.
+
+    **Answer**:
+    
+    **This result suggests outliers, but not in the way described here -- rather it suggests outliers that are much *smaller* than the other values of the empirical distribution. Therefore, this statement does not make sense.**
+
+
+3.  You are tasked with providing an estimate of the violent crime rate that the average person on the West Coast is exposed to. West Coast here refers to the states of California, Oregon and Washington. You use this state-level data from 2020 (see below). Your colleague suggests that an informative way of summarizing this data is to average over the three states, which results in an average exposure of 342.5 violent crimes per 100,000 inhabitants. Do you agree with this suggestion?
+
+    | State | Violent crimes / 100,000 people |
+    |-------|---------------------------------|
+    | CA    | 442.0                           |
+    | OR    | 291.9                           |
+    | WA    | 293.7                           |
+
+    **Answer:**
+    
+    **Note that the target quantity here is the violent crime rate that the *average person on the West Coast is exposed to*. California has significantly more inhabitants than Oregon and Washington combined. Using a weighted average, with the population as weights, makes more sense here. Therefore, the proposed approach does not make sense given the target quantity.**
+
+4.  Assume a variable, which takes on these values: (0,3,5,7,8,10,11). The median of the variable is 7. A colleague argues that the median will remain 7 even if we replace the first three values with any value smaller or equal than 7. The median will also remain 7 if we replace the last three values with any value greater or equal than 7.
+
+    **Answer:**
+    
+    **This is correct.**
+    
+#### Question 4 (4 points)
+
+An important concept in R are functions. A function in R is similar to a function takes one more arguments, and then returns the desired output.\footnote{You can learn more about functions at https://r4ds.hadley.nz/functions.html or in chapter 3 of this course: https://www.datacamp.com/courses/intermediate-r} The syntax for functions is as follows:
+
+```{r example, message=F, error=F, warning=F}
+
+my_square <- function(x) {
+  
+  ## Calculate the square of x, save as new object
+  x_sq <- x^2
+  
+  ## Return
+  ## The last line usually just returns the desired output
+  x_sq
+  
+}
+
+## Expected output: 4
+my_square(2)
+
+## Expected output: 16
+my_square(4)
+```
+
+The function takes the input `x` and then returns its square. This works for any `x` that is a number.
+
+Your task is to write a function `my_sd`. It takes a variable as its argument, and then returns the standard deviation of this variable. This involves calculating the mean of `x` (you can use the `mean` function for this), and then implementing the formula for the sample standard deviation that is given below:
+
+$$\sqrt{\frac{1}{N - 1}\sum_{i=1}^N (x_i - \overline{x})^2}$$
+
+In this example, you will implement this function and then use the function you created to calculate the standard deviation of `sat_avg_2013` from the `chetty_data.csv` data set we used above. Please note the following:
+
+-   `sat_avg_2013` contains missing values. For $N$, we only want the number of non-missing observations. The simplest way to deal with this is to remove all missing values in `sat_avg_2013` before the main calculations -- this can be done inside the function.
+-   Do not use the built-in `var` and `sd` functions in your function. You can use `sd` to check if your function returns the correct standard deviation.
+-   This can be achieved using a loop, but a loop is actually not necessary for this problem.
+
+```{r make-function, message=F, error=F, warning=F}
+df <- read.csv("/Users/yu-shiuanhuang/Desktop/method-sequence/data/chetty_data.csv")
+
+x <- df$sat_avg_2013
+
+my_sd <- function(x) {
+  
+  ## Remove missings from x
+  x <- x[!is.na(x)]
+  
+  ## Mean of x, observations
+  m_x <- mean(x)
+  n <- length(x)
+  
+  ## Get sum of squared differences
+  ss <- sum((x - mean(x))^2)
+  
+  ## Divide by n-1 (sample variance)
+  sample_variance <- ss/(n-1)
+  
+  ## Square root to get SD
+  standard_dev <- sqrt(sample_variance)
+  
+  ## return this
+  standard_dev
+}
+
+## Try if this works
+my_sd(df$sat_avg_2013)
+
+## Compare with sd function (with na.rm = T to remove missings
+sd(df$sat_avg_2013, na.rm = T)
+```
+
+#### Additional question (required for students in the methods subfield)
+
+**Note:** You may encounter R commands that you have not seen before. A good source for learning more about these commands is the book "R for Data Science" by Wickham et al, which you can access here https://r4ds.hadley.nz/
+
+#### Question 5
+
+1. Using a for loop, calculate the mean and standard deviation of the following variables in the Chetty data: `sat_avg_2013`, `par_median`, `par_top1pc`. The result should be a data frame with 3 columns: `variable`, `mean` and `sd`, and three rows, one for each variable.
+
+    ```{r, message=F, error=F, warning=F}
+    ## Create empty data frame
+    df_loop <- data.frame(
+      variable = character(),
+      mean = numeric(),
+      sd = numeric()
+    )
+    
+    ## Create vector of variables
+    vars <- c("sat_avg_2013", "par_median", "par_top1pc")
+    
+    ## Loop over vars
+    for (i in vars) {
+      
+      ## Calculate mean and sd
+      mean_i <- mean(df[[i]], na.rm = T)
+      sd_i <- sd(df[[i]], na.rm = T)
+      
+      ## Add to df_loop
+      df_loop <- df_loop %>% 
+        add_row(variable = i,
+                mean = round(mean_i, 4),
+                sd = round(sd_i, 4))
+    }
+    
+    knitr::kable(df_loop, "simple", align = "lll")
+    ```
+      
+
+2. In R, an alternative to for loops are the `apply` family of functions. Repeat subquestion 1 using the `apply` function of your choice (eg., `apply`, `sapply`, `lapply`). The output should be the same as for subquestion 1. 
+
+    Before we discuss the solution to this question, I'd like to share some notes about the `apply` family of functions in R.
+    
+    a. What are `apply` functions?
+    
+       `apply` functions are a family of functions in base R which allow you to repetitively perform an action on multiple chunks of data. An `apply` function is essentially a loop, but run faster than loops and often require less code. There are so many different `apply` functions because they are meant to operate on different types of data (e.g., `lapply`, `sapply`, `tapply`, and `mapply`.)
+       
+    b. The `apply` function
+    
+       First, let’s go over the basic `apply` function. The basic `apply` function looks like this: `apply(X, MARGIN, FUN)`.
+       
+       - X is an **array**, **matrix**, or **data.frame** (this is the data that you will be performing the function on).
+       - Margin specifies whether you want to apply the function across rows (1) or columns (2).
+       - FUN is the function you want to use.
+       
+       Example: 
+       
+       `my.matrx` is a matrix with 1-10 in column 1, 11-20 in column 2, and 21-30 in column 3. `my.matrx` will be used to show some of the basic uses for the `apply` function.
+       
+       ```{r, message=F, error=F, warning=F}
+       my.matrx <- matrix(c(1:10, 11:20, 21:30), nrow = 10, ncol = 3)
+       my.matrx
+       ```
+       
+       Now, let's use the `apply` function to find the row sums of `my.matrx`.
+
+
+       ```{r, message=F, error=F, warning=F}
+       apply(my.matrx, 1, sum) ## bc we are using rows, margin = 1
+       ```    
+
+       The `apply` function returned a vector containing the sums for each row.
+
+       What if I wanted to be able to find how many datapoints (n) are in each column of `my.matrx`? I can use the length function to do this. Because we are using columns, MARGIN = 2.
+
+       ```{r, message=F, error=F, warning=F}
+       apply(my.matrx, 2, length)
+       ```   
+
+       What if instead, I wanted to find n-1 for each column? There isn’t a function in R to do this automatically, so we can create my own function. If the function is simple, you can create it right inside the arguments for apply. In the arguments I created a function that returns `length` - 1.
+      
+       ```{r, message=F, error=F, warning=F}
+       apply(my.matrx, 2, function (x) length(x)-1)
+       ```  
+      
+       The previous examples showed several ways to use the `apply` function on a **matrix**. But what if I wanted to loop through a vector instead? Will the `apply` function work?
+
+       ```{r, message=F, error=F, warning=F}
+       vec <- c(1:10)
+       vec
+       ```      
+      
+       ```{r, message=T, error=T, warning=T}
+       apply(vec, 1, sum)
+       ```    
+       If you run the above line of code, it will return the error. As you can see, this didn’t work because `apply` was expecting the data to have at least two dimensions. If your data is a vector you need to use `lapply`, `sapply`, or `vapply` instead.
+      
+      
+    c. The `lapply` function
+    
+        `lapply`, `sapply`, and `vapply` are all functions that will loop a function through data in a **list** or **vector** and then return a list of the same length as the input or a vector. Today, we will only introduce the `lapply` function. For more information about the `sapply` and `vapply` functions, please see [here](https://ademos.people.uic.edu/Chapter4.html#302_example_2:_sapply).
+      
+        The `lapply` function looks like this: `lapply(X, FUN, ...)`.
+      
+        Example:
+      
+        Consider, for instance, the following list with two elements named A and B.
+      
+        ```{r, message=F, error=F, warning=F}
+        a <- list(A = c(8, 9, 7, 5),
+                  B = data.frame(x = 1:5, y = c(5, 1, 0, 2, 3)))
+        a
+        ```
+      
+        If you apply the function sum to the previous list you will obtain the sum of each of its elements (the sum of the elements of the vector and the sum of the elements of the data frame).
+
+        ```{r, message=F, error=F, warning=F}
+        lapply(a, sum)
+        ```     
+
+        If you have a vector, the lapply function will apply a function to all elements to the vector. As an example, consider the vector b and calculate the square root of each element:
+      
+        ```{r, message=F, error=F, warning=F}
+        lapply(vec, sqrt)
+        ```         
+
+    Now let's get back to the solution key to Question 5.2.
+    
+    ```{r, message=F, error=F, warning=F}
+    ## Create vector of variables
+    vars <- c("sat_avg_2013", "par_median", "par_top1pc")
+    
+    ## Loop over vars
+    list_loop <- lapply(vars, function(x) {
+      
+      ## Calculate mean and sd
+      mean_i <- mean(df[[x]], na.rm = T)
+      sd_i <- sd(df[[x]], na.rm = T)
+      
+      ## Add to list_loop
+      c(x, round(mean_i, 4), round(sd_i, 4))
+    })
+
+    ## Note that this creates a list
+    ## We can then convert this to a data frame
+    df_loop <- list_loop %>%
+      reduce(rbind) ## This "reduces" the list to a data frame
+    
+    ## Name each column
+    colnames(df_loop) <- c("variable", "mean", "sd")
+    
+    knitr::kable(df_loop, "simple", align = "lll")
+    ```
+
+The standard deviation measures dispersion of the data. However, we can also create another measure of the dispersion of the sample mean, called the **standard error of the mean**. It is defined as follows: $s_{\bar{x}} = \frac{s_x}{\sqrt{N}}$, where $s_x$ is the standard deviation of a variable $x$, and $N$ is the number of observations. 
+
+**Some additional notes:**
+- The standard error of the mean measures how much discrepancy is likely in a sample’s mean compared with the population mean.
+- The standard error of the mean will always be smaller than the standard deviation.
+
+3. Write a short function that calculates the SE of the mean, and takes a variable `x` as the argument. Then, calculate the mean and the SE of the mean for `par_median` separately for CA, NY, TX and FL. Finally, create a plot that has the name of each state on the x-axis. It should then show the mean of `par_median` as a point on the y-axis, and also show error bars that visualize the following interval: $[\bar{x}- 1.96s_{\bar{x}},\;\bar{x}+1.96 s_{\bar{x}}]$
+
+- I recommend doing this in `ggplot` using the functions `geom_point` and `geom_errorbar`
+      
+    ```{r, message=F, error=F, warning=F}
+    ## Function to calculate SE of the mean
+    my_se_mean <- function(x) {
+      
+      ## Remove missings from x
+      x <- x[!is.na(x)]
+      
+      ## SE of the mean 
+      sd(x) / sqrt(length(x))
+    }
+
+    ## Calculate mean and SE of mean by state 
+    df_plot <- df %>% 
+      filter(state %in% c("CA", "FL", "TX", "NY")) %>% 
+      group_by(state) %>% 
+      summarise(x_bar = mean(par_median), 
+                x_bar_se = my_se_mean(par_median)) %>% 
+      ungroup()
+    
+    ## Divide by 1000s for better readability
+    df_plot <- df_plot %>% 
+      mutate(across(all_of(c("x_bar", "x_bar_se")), ~./1000))
+      ## across() allows you to apply a function to multiple columns at once. It's used to specify the columns you want to modify.
+      ## '~' is a formula operator. '~./1000' is a simple formula where '.' is a pronoun referring to the column being transformed, and it's divided by 1000.
+    
+    
+    knitr::kable(df_plot, "simple", align = "lll")
+    ```
+
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=6, fig.height=4}
+    ## Plot this
+    ggplot(df_plot, aes(state, x_bar)) +
+      geom_errorbar(aes(ymin = x_bar - 1.96*x_bar_se,
+                        ymax = x_bar + 1.96*x_bar_se),
+                    width = 0) +
+      geom_point(alpha = 0.7) + 
+      geom_text(aes(label = round(x_bar, 2)), 
+                position = position_dodge(0.9),
+                hjust = 1.2) +
+      theme_bw() +
+      ylab("Avg. parental median income (1000 USD)") +
+      xlab("State")
+    ```
+    
+## PS#3
+
+#### Question 1 (3 points)
+
+Each subquestion in this question assumes new "data", i.e. the quantities listed in (1) are irrelevant for (2), and so on.
+
+#### Question 1.1
+
+Below, you will find a table with values for variables $X$ and $Y$. The mean of $X$ is 1, and the mean of $Y$ is 3. 
+
+<center>
+
+| $x_i$ | $y_i$ |
+|:-----:|:-----:|
+|   0   |   4   |
+|   0   |   3   |
+|   3   |   2   |
+
+</center>
+
+
+Without using R, calculate the sample covariance between $X$ and $Y$. Note that the sample covariance uses $n-1$ in the denominator. Briefly state what the covariance tells us about the relationship between $X$ and $Y$.
+
+**Answer:** 
+
+**$Cov(X,Y) = \frac{1}{2} \sum_{i=1}^3 (x_i - \bar{x})(y_i - \bar{y}) = \frac{1}{2} \left[ (0-1)(4-3) + (0-1)(3-3) + (3-1)(2-3) \right] = -1.5$**
+
+**The covariance suggests a negative relationship between $X$ and $Y$.**
+
+#### Question 1.2
+
+Next, assume you have two other variables $X$ and $Y$. A colleague tells you that the covariance between $X$ and $Y$ is 2, the variance of $X$ is 9, and the variance of $Y$ is 16. Your colleage argues that the covariance of 2 implies a strong relationship between $X$ and $Y$. Please state if you do or do not agree with your colleague, and explain why. If you do not agree, calculate an alternative measure of the relationship between $X$ and $Y$, which may be more informative.
+
+**Answer:** 
+
+**Incorrect. The covariance is sensitive to the scale of the variables. Instead, we can calculate the scale-invariant correlation coefficient, which is defined as $r_{XY} = \frac{Cov(X,Y)}{\sqrt{Var(X)} \sqrt{Var(Y)}}$. In this case, $r_{XY} = \frac{2}{3\times4} = \frac{2}{12} = \frac{1}{6}$.**
+
+#### Question 1.3
+ 
+Assume you run a least squares regression the regresses one variable $Y$ on another variable $X$ and this results in predicted values $\hat{y}_i$, while the observed values are denoted by $y_i$. Which of the following statements is true / not true? Please include a brief explanation for each statement.
+
+a. Running a least squares regression minimizes the sum of the differences between the observed and predicted values, i.e. it minimizes $\sum_{i=1}^n (y_i - \hat{y}_i)$.
+
+    **Answer:** 
+    
+    **False. The least squares regression minimizes the sum of squared residuals, i.e. $\sum_{i=1}^n (y_i - \hat{y}_i)^2$.**
+
+
+b. The intercept $\alpha$ tells us about the value of the dependent variable $Y$ when the independent variable $X$ is at its mean (i.e. when $x_i = \bar{x}$).
+
+    **Answer:** 
+    
+    **False. The intercept $\alpha$ is the value of $Y$ when $x_i=0$.**
+
+
+#### Question 2 (3 points)
+
+This question is similar to the previous one, but uses R. 
+
+You are given two variables $X$ and $Y$ in the code below. In addition, there is some code that calculates the sample mean of each variable. Please also calculate the following quantities in R: 
+
+- The sample standard deviation of $X$ and $Y$
+- The covariance between $X$ and $Y$
+- The correlation between $X$ and $Y$
+
+**Note:** Do not use the built in functions to do this, i.e. you should not use `var`, `sd`, `cov`, `cor` or similar functions. Rather, the goal is to calculate these quantities "by hand", i.e. using the formulas from the lecture. You can of course use functions such as `sum` and `sqrt`. After you are done, you can use `cor` to check if your code produces the same answer as the built-in function.
+
+Also, please remember that the sample standard deviation and sample covariance use $n-1$ in the denominator, but the sample mean uses $n$.
+
+```{r, message=F, warning=F, error=F}
+x <- c(2, 5, 3, 6, 7, 8, 3, 6, 7, 9)
+y <- c(9, 6, 8, 4, 7, 5, 4, 3, 3, 2)
+
+# Get number of observations
+n <- length(x)
+
+# Calculate the mean of each variable
+# "Sum" just takes all elements of X and then adds them up
+mean_x <- sum(x) / n
+mean_y <- sum(y) / n
+
+# Your code:
+
+# ...
+
+```
+
+**Answer:**
+
+```{r, message=F, warning=F, error=F}
+# Variance of X,Y
+var_x <- sum((x - mean_x)^2) / (n - 1)
+var_y <- sum((y - mean_y)^2) / (n - 1)
+
+# SD of X,Y
+sd_x <- sqrt(var_x)
+sd_y <- sqrt(var_y)
+
+# Covariance between X,Y
+cov_xy <- sum((x - mean_x) * (y - mean_y)) / (n - 1)
+
+# Correlation between X,Y
+cor_xy <- cov_xy / (sd_x * sd_y)
+cor_xy
+
+
+# We can check if the results are correct by using the built-in functions
+cov(x, y)
+cor(x, y)
+```
+
+#### Question 3 (4 points)
+
+We will use the Chetty data from the last problem set again.\footnote{The paper is [here](https://www.nber.org/papers/w23618).}  A policymaker is interested in the relationship between mobility rates and price of attendance for public universities in California, Oregon and Washington.
+
+First, you will need to transform the data, which means (i) subsetting the data set to California, Oregon and Washington and (ii) subsetting the data set to public universities within these states. Next, transform the variable `sticker_price_2013` into a variable that measures the price of attendance in 2013 in thousands of dollars. Then, transform the variable `mr_kq5_pq1` into a variable that measures the mobility rate in percentage points, rather than on a 0--1 scale.
+
+#### Question 3.1
+
+Create a scatter plot of the relationship between mobility rates (`mr_kq5_pq1`) and price of attendance (`sticker_price_2013`). For a definition of mobility rates, see here: https://opportunityinsights.org/wp-content/uploads/2018/03/coll\_mrc\_summary.pdf
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse, quietly = TRUE)
+
+# Read the data
+df <- read.csv("/Users/yu-shiuanhuang/Desktop/method-sequence/data/chetty_data.csv")
+```
+
+**Answer:**
+
+```{r, message=F, warning=F, error=F, fig.align='center', fig.width=5, fig.height=4}
+# Subset to the three states 
+df_west <- df %>%
+    filter(state %in% c("CA", "WA", "OR")) %>%
+    filter(public == "Public") %>%
+    mutate(sticker_price_2013 = sticker_price_2013/1000,
+           mr_kq5_pq1 = mr_kq5_pq1*100)
+    
+# Scatter plot
+ggplot(df_west, aes(x = sticker_price_2013, y = mr_kq5_pq1)) +
+    geom_point(alpha = 0.7) +
+    labs(x = "Price of attendance (in thousands of dollars)",
+         y = "Mobility rate (in percentage points)") +
+    theme_bw()
+```
+
+#### Question 3.2
+
+Run a linear regression using the `lm` command, where the outcome is mobility rates and the predictor is price of attendance. You should use the same data set as before, i.e. public universities in WA, CA and OR. Interpret the intercept and slope of the regression. You do not have to interpret standard errors or p-values.
+
+**Answer:**
+
+```{r, message=F, warning=F, error=F}
+mod <- lm(mr_kq5_pq1 ~ sticker_price_2013, data = df_west)
+
+stargazer::stargazer(mod, type = "text", digits = 4)
+```
+
+**Answer:** 
+
+**The intercept is the mobility rate for a public college with a price of attendance of 0 (i.e. this number is not very useful). The slope is the change in mobility rate, in percentage points, associated with a 1,000 dollar increase in price of attendance.**
+
+#### Question 3.3
+
+Plot the same scatter plot as in subquestion 1, but now add the linear regression line that you just calculated. In `ggplot`, you can do this either manually using the `geom_abline` command, or you can use the `geom_smooth(method = 'lm')` command. Given what you just plotted, do you think the linear regression is a good fit? Please explain why or why not.  
+
+**Answer:**
+
+**Plot suggests nonlinearity -- linear regression not a good fit!**
+
+```{r, message=F, warning=F, error=F, fig.align='center', fig.width=5, fig.height=4} 
+ggplot(df_west, aes(x = sticker_price_2013, y = mr_kq5_pq1)) +
+    geom_point(alpha = 0.7) +
+    geom_smooth(method = "lm") +
+    labs(x = "Price of attendance (in thousands of dollars)",
+         y = "Mobility rate (in percentage points)") +
+    theme_bw()
+```
+
+#### Question 3.4
+
+We can also assess this relationship *non-parametrically*. In the previous question, we used a regression model to model the values of $Y$ given $X$. We can also just calculate the conditional mean of $Y$ given some values of $X$. To implement this, proceed as follows: calculate the average mobility rate separately for 4 groups of the data, defined by their cost of attendance: 
+
+1. Between 5,000 and 8,000 dollars
+2. Between 8,000 and 10,000 dollars 
+3. Between 10,000 and 12,000 dollars 
+4. Between 12,000 and 14,000 dollars 
+
+The quantities you just calculated are called *conditional means*.
+Then, create a plot that has these groups on the x-axis, and the average of each group on the y-axis (e.g. a bar chart).
+
+You will likely find that it is not always possible to calculate the conditional mean of $Y$, particularly when there are no observed outcomes $Y$ for certain values of $X$. Comparing the regression method to the conditional mean method, what is one advantage of the regression method in cases where there is no available data on $Y$ for certain values of $X$?
+
+**Answer:**
+
+```{r, message=F, warning=F, error=F, fig.align='center', fig.width=5, fig.height=4}
+# Create a new variable that indicates the group
+df_west <- df_west %>%
+    mutate(group = case_when(
+      sticker_price_2013 >= 5 & sticker_price_2013 < 8 ~ "Group 1: 5-8",
+      sticker_price_2013 >= 8 & sticker_price_2013 < 10 ~ "Group 2: 8-10",
+      sticker_price_2013 >= 10 & sticker_price_2013 < 12 ~ "Group 3: 10-12",
+      sticker_price_2013 >= 12 & sticker_price_2013 < 14 ~ "Group 4: 12-14"))
+
+# Calculate conditional means
+df_plot <- df_west %>%
+    group_by(group) %>%
+    summarize(mean_mr = mean(mr_kq5_pq1, na.rm = TRUE))
+
+# Plot as bar chart
+df_plot %>%
+    ggplot(aes(x = group, y = mean_mr)) +
+    geom_bar(stat = "identity", alpha = 0.7) +
+    labs(x = "Price of attendance (in thousands of dollars)",
+         y = "Avg. mobility rate (in percentage points)") +
+    theme_bw()
+```
+
+**Note that the third group has no data for $Y$, which leads to a missing value. The advantage of the regression method is that we can still predict values of $Y$ for this group, even though we have no data for this group -- the regression equation will give us predictions of $Y$ for any value of $X$.**
+
+#### Question 4 (2 points)
+
+#### Question 4.1
+
+Please interpret the following regression coefficients:
+
+- Gentzkow et al (2011) study the relationship between *number of local newspapers* in a county and *voter turnout* in presidential elections, for all elections between 1868–1928. Turnout ($Y$) ranges from 0--1, with 1 indicating 100\% turnout. The newspaper variable ($X$) is simply the number of newspapers. Based on results in table 2 of the paper, the estimated regression coefficient $\beta$ that stems from the regression of changes in turnout on the number of newspapers is 0.0034. Please interpret this coefficient.\footnote{The actual specification is more complicated, this description is a simplification.}
+
+    **Answer:** 
+
+    **One additional local newspapers is associated with a 0.34 percentage point increase in turnout.**
+
+- Enos (2014) conducts a field experiment to assess the relationship between exposure to Spanish-speaking confederates and attitudes toward immigration policy. He randomly assigns certain train platforms to receive a treatment for 2 weeks, where pairs of Spanish-speaking confederates visit the platforms every day during the morning commute to simulate demographic change. He then surveys commuters before and after the treatment about their attitudes toward immigration policy. One of the dependent variables is support for decreasing the number of immigrants from Mexico, measured on a 0-1 scale where 1 indicates support for decreasing immigration. In the full sample, the estimated regression coefficient $\beta$ stemming from the regression of support for decreasing immigration on exposure to the Spanish-speaking confederates (the treatment) is 0.09. Note that this is an experiment, so there is a treatment group that sees the Spanish-speaking confederates ($x_i = 1$) and a control group that does not get exposed to the confederates ($x_i=0$). Please interpret the coefficient $\beta$.
+
+    **Answer:** 
+
+    **Exposure to Spanish-speaking confederates (compared to the control group) is associated with a 0.09-point increase in support for decreasing the number of immigrants from Mexico, on a scale from 0--1.**
+    
+#### Question 4.2
+
+Let's return to the Chetty data. We will look at the dataset for the whole country and for public as well as private colleges. The dataset has a variable called `mobility_above_average`, which is defined as follows:
+
+$$mobility\_above\_average = \begin{cases} 1 & mobility\_rate_i > \overline{mobility\_rate} \\ 0 & mobility\_rate_i \leq \overline{mobility\_rate} \end{cases}$$
+
+This variable indicates whether the mobility rate for a given college is above or below the average mobility rate across all colleges. It can only take two values -- 1 (greater than the average) or 0 (equal to or below the average).
+
+We now run the following regression:
+
+```{r}
+mod <- lm(mobility_above_average ~ public, data = df)
+coef(mod)
+```
+
+Interpret the coefficients. 
+
+**Answer:** 
+
+**The intercept is the share of private colleges with above-average mobility rates. The coefficient $\beta$ is the difference in the share of public colleges with above-average mobility rates, compared to private colleges. It is positive, so public colleges are more likely to have above-average mobility rates.**
+
+#### Question 5 (required for students in the methods subfield, 3 points)
+
+#### Question 5.1
+
+In lecture, we said the mean $\bar{x} = \frac{1}{n} \sum_{i=1}^n x_i$ is the best "guess" of $x_i$ in terms of minimizing the mean squared error.
+In statistics, it is common to define some measure of how "good" a guess or an estimate is, and then to show that there is some specific estimate that is "best" in terms of this measure. Recall that the mean squared error is defined as $$MSE = \frac{1}{n} \sum_{i=1}^n (x_i - \hat{x})^2$$ where $\hat{x}$ is our guess of $x_i$. \footnote{Note that $\hat{x}$ is usually some function of the data, i.e. $\hat{x} = f(x_1, x_2, ..., x_n)$. Quantities like the mean, median or mode are all functions of the data.}
+
+- Show that the mean $\bar{x}$ is the best guess in terms of minimizing the mean squared error given above. 
+- To show this, you will use calculus. Recall that we can use derivatives to find mimima / maxima of a function. Commonly, we proceed as follows: (1) we take the derivate of a function with respect to the variable we want to optimize over, (2) we set the derivative equal to zero, and (3) we solve for the variable we want to optimize over. In this case, we want to optimize over $\hat{x}$, so we will take the derivative of the mean squared error with respect to $\hat{x}$, set it equal to zero, and solve for $\hat{x}$. The goal is then to show that $\hat{x} = \bar{x}$ is the solution to this problem.
+
+- **Note 1:** Usually, we would also have to assess whether we found a minimum or maximum by looking at the second derivative. However, you can just assume that you found a minimum here -- looking at the second derivative is not necessary.
+
+- **Note 2:** You can use the fact that $\sum_{i=1}^n a = n a$, since $a$ is just a constant.
+
+
+**Answer:**
+
+**The MSE is defined as follows:**
+
+**$$MSE = \frac{1}{n} \sum_{i=1}^n (x_i - \hat{x})^2$$**
+
+**Note that we can also write this as follows:\footnote{We can also use the chain rule instead, which means we do not need this step.}**
+
+**$$MSE = \frac{1}{n} \sum_{i=1}^n (x_i^2 - 2x_i \hat{x}+ \hat{x}^2)$$**
+
+**Next, we take the derivate of this wrt $\hat{x}$:**
+
+**$$\frac{\partial MSE}{\partial \hat{x}} = \frac{1}{n} \sum_{i=1}^n (-2x_i + 2\hat{x})$$**
+
+**Since we take the derivative wrt $\hat{x}$, we can treat all other terms as constants, which is why the $x^2_i$ term disappears. Next, we set this equal to zero and solve for $\hat{x}$:**
+
+**$$\frac{1}{n} \sum_{i=1}^n (-2x_i + 2\hat{x}) = 0$$**
+
+**$$\frac{1}{n} \sum_{i=1}^n -2x_i + \frac{1}{n} \sum_{i=1}^n 2\hat{x} = 0$$**
+
+**The second sum is just the sum of constants, i.e. $\sum_{i=1}^n 2\hat{x} = 2n\hat{x}$.**
+
+**$$\frac{1}{n} \sum_{i=1}^n -2x_i + \frac{1}{n}2n\hat{x} = 
+\frac{-2}{n} \sum_{i=1}^n x_i + 2\hat{x} = 0$$**
+
+**Note that the first term is negative, so we can just move it to the other side of the equation and divide by 2.**
+
+**$$2\hat{x} = \frac{2}{n} \sum_{i=1}^n x_i$$**
+
+**$$\hat{x} = \frac{1}{n} \sum_{i=1}^n x_i$$**
+
+**Note that the right-hand side is just the definition of the mean, i.e. we have shown that $\hat{x} = \bar{x}$. As stated above, we would now have to look at the second derivative to see if we found a minimum or maximum. However, you can just assume that we found a minimum here.**
+
+#### Question 5.2
+
+In linear regressions, goodness of fit is usually measured using the $R^2$ statistic. This statistic is defined as follows:
+
+$$R^2 = 1 - \frac{SSR}{SST}$$
+
+where the sum of squared residuals $SSR = \sum_{i=1}^n (y_i - 
+\hat{y}_i)^2$ and the total sum of squares $SST = \sum_{i=1}^n (y_i - \bar{y})^2$. Here, $\hat{y}_i$ are the predicted values of $y_i$ from the regression, and $y_i$ are the observed values of $Y$. 
+
+In R, write a function that calculates $R^2$ for a given regression, based on the definition given above. The function should have two arguments: (1) the observed values $y_i$ and (2) an `lm` object that contains the regression results of a regression of $Y$ on $X$. The function should return the $R^2$ statistic.
+
+```{r}
+x <- c(2, 5, 3, 6, 7, 8, 3, 6, 7, 9)
+y <- c(9, 6, 8, 4, 7, 5, 4, 3, 3, 2)
+
+mod <- lm(y ~ x)
+
+get_rsq  <- function(y, lm_object) {
+  
+  # Your code here
+  
+}
+```
+
+**Answer:**
+
+```{r, message=F, warning=F, error=F}
+get_rsq  <- function(y, lm_object) {
+  
+  # Get predicted values
+  y_hat <- predict(lm_object)
+  
+  # Get SSR
+  SSR <- sum((y - y_hat)^2)
+  
+  # Get SST
+  SST <- sum((y - mean(y))^2)
+  
+  # Get R^2
+  R_sq <- 1 - SSR / SST
+  
+  # Return R^2
+  return(R_sq)
+  
+}
+
+get_rsq(y, mod)
+```
+
+#### Question 5.3
+
+If $R^2$ is closer to 1, this is usually considered a better fit. 
+
+1. First, provide an intuitive explanation why $R^2$ is a measure of goodness of fit. For this, it is helpful to consider cases where SSR is small relative to SST, and cases where SSR is large relative to SST. 
+
+    **Answer:** 
+    
+    **SST measures the overall deviation of $Y$ from its sample mean. SSR measures the deviation of the predicted values $\hat{y}_i$ from the actual values. If SSR is small relative to SST, then the difference between the predicted and observed values is small, so our model does well. This will then lead to larger values of $R^2$. If SSR is large relative to SST, then the difference between the predicted and observed values is large, so our model does not do well. This will then lead to smaller values of $R^2$.**
+
+2. Second, please state whether $R^2$ tells us something about the direction of the relationship between $X$ and $Y$.
+
+    **Answer:** 
+
+    **Note that the definition of $R^2$ does not contain $X$. Therefore, $R^2$ does not tell us anything about the direction of the relationship between $X$ and $Y$. It merely tells us whether $X$ is a good predictor of $Y$.**
+
+3. Third, assume we are interested in explaining whether citizens vote for Democrats or Republicans. Many different variables are correlated with voting behavior, such as age, income, gender, race, etc. For many of these variables, we can find a "statistically significant"\footnote{We will cover what this means in more detail later, but I am sure you heard this term before.} relationship with voting behavior. However, the $R^2$ of regressing voting behavior on these variables is usually quite low (e.g. $<0.2$), which indicates that a given $X$ only explains a small part of the variation in $Y$. However, researchers in social science generally do not consider this a problem. Please explain why not.
+
+    **Answer:** 
+
+    **Taken from Gailmard, page 51: "the object of our analysis [...] is typically not to give a complete account of the behavior of $Y$ in a specific sample but rather to identify a set of factors that systematically affect $Y$ and to give reasons behind these effects."**
+
+#### Question 6 (extra credit, 1 point)
+
+A famous question on StackExchange is as follows (with some edits for clarity):
+
+> "Suppose we have data set $(y_i, x_i)$ with $n$ [observations]. We want to perform a linear regression, but first we sort the $x_i$ values and the $y_i$ values independently of each other, forming data set $(y_j, x_j)$ Is there any meaningful interpretation of the regression on the new data set? Does this have a name? 
+
+> I imagine this is a silly question so I apologize, I'm not formally trained in statistics. [...] [M]y manager says he gets "better regressions most of the time" when he does this (here "better" means more predictive). I have a feeling he is deceiving himself."
+
+What would you respond to this? What could one likely reason be why the manager gets more predictive regressions with this method?
+
+**Answer:** 
+
+**This makes no sense at all, and completely destroys the actual relationship between $X$ and $Y$. By sorting both variables independently, the manager creates a meaningless data set where both $X$ and $Y$ become artificially correlated because they are both increasing in value as we go down the list of observations.**
+
+## PS#4
+
+#### Question 1 (2 points)
+
+Consider the following scenario. There is an ice cream parlor with 10 different flavors of ice cream: 3 are sorbet (vegan) and 7 are milk-based. Since you are indecisive, you ask the shop to pick two scoops for you at random. Note that this could also mean you get two scoops of the same flavor. You can think of this as picking flavors "with replacement" -- the flavor of the first scoop does not affect the flavor of the second scoop. For the purposes of our analysis, we care about whether you each scoop is a sorbet or milk-based.
+
+1. Considering the type of ice cream you sample (sorbet or milk-based), what are the possible outcomes of an experiment like this? Remember that you get two scoops of two randomly selected flavors. (Hint: What is the sample space?)
+
+    **Answers:**
+
+    **The possible outcomes are: (1) both scoops are sorbet, (2) both scoops are milk-based, (3) the first scoop is sorbet and the second scoop is milk-based, (4) the first scoop is milk-based and the second scoop is sorbet. Let's say we denote sorbet by $S$ and milk-based by $M$. Then, the possible outcomes are: (1) $SS$, (2) $MM$, (3) $SM$, (4) $MS$. We can also say that the sample space is $S=\{SS, MM, SM, MS\}$.**
+    **- Note: Alternatively, we could also define 3 outcomes: (1) both scoops are sorbet ($S$), (2) both scoops are milk-based ($M$), (3) the scoops are different ($D$). In this case, the sample space would be $S=\{S, M, D\}$. In this case, we do not care about the order of the scoops. In that case, the answers for 1.2 and 1.3 would be slightly different.**
+
+2. Define a random variable to "translate" the sample space into numbers. Call this random variable $X$. How many possible values can your random variable take, and what are they?
+
+    **Answers:**
+
+    **Here is an example of a random variable. We have simply translated each possible outcome into a number.**
+
+    $$ X = \begin{cases} 0 & \text{if } s=SS \\ 1 & \text{if } s=MM \\ 2 & \text{if } s=SM \\ 3 & \text{if } s=MS \end{cases} $$
+
+3. Define the probability mass function for this random variable. Recall that the probability mass function is a function that assigns a probability to each possible realization of a random variable. 
+
+    **Answers:**
+
+    **Here is the PMF. We get there by simply multiplying the probabilities of each scoop being either $S$ or $M$. The probabilities are $Pr(S) = 3/10$ and $Pr(M) = 7/10$.**
+
+    $$ f(x) = \begin{cases} 0.09 & \text{if } s=SS \\ 0.49 & \text{if } s=MM \\ 0.21 & \text{if } s=SM \\ 0.21 & \text{if } s=MS \end{cases} $$
+
+4. What is the probability that you get "mixed" scoops, i.e. one scoop is sorbet and the other is milk-based?
+
+    **Answers:**
+
+    **The probability of getting mixed scoops is $Pr(SM) + Pr(MS) = 0.21 + 0.21 = 0.42$.**
+
+
+#### Question 2 (2 points)
+
+Assume we have the following discrete random variable, which can take on 4 different values.
+
+$$
+X = \begin{cases}
+1 & \text{with probability } 0.2 \\
+2 & \text{with probability } 0.3 \\
+3 & \text{with probability } 0.25 \\
+4 & \text{with probability } 0.25
+\end{cases}
+$$
+
+This random variable has a probability mass function $f(x)$, where we have, for example, $f(1) = 0.2$. The function tells us that the prbability of $X$ taking on the value 1 is 0.2. We can also write this as $Pr(X = 1) = 0.2$. As is standard, we denote the random variable by $X$ and the possible values it can take on by $x$.
+
+1. For this to be a valid PMF, we need three conditions. For the purposes of this problem set, you can assume that the following condition fulfilled: "For any subset of possible outcomes, the probability that any one of those outcomes arises is the sum of the probabilities of each outcome". What are the other two conditions? State them and check whether the function given above fulfills them.
+
+    **Answers:**
+
+    **The other two conditions are:** 
+        **- $1\geq f(x) \geq 0$ for all $x$. This is fulfilled, since none of the probabilities are negative or larger than 1.**
+        **- $\sum_x f(x) = 1$. We can add up the probabilities to check this: $0.2 + 0.3 + 0.25 + 0.25 = 1$. So this is also fulfilled.**
+
+
+2. What is the probability that $X$ takes on a value smaller or equal than 2?
+
+    **Answers:**
+
+    **We can simply add up the probabilities of $X$ taking on the values 1 and 2: $Pr(X \leq 2) = Pr(X=1) + Pr(X=2) = 0.2 + 0.3 = 0.5$.**
+
+3. Write down the cumulative distribution function (CDF) for $X$. Remember that the definition of the CDF is $F(x) = Pr(X \leq x)$, where $X$ is the random variable and $x$ is a possible value of that random variable.
+
+    **Answers:**
+
+    **The definition of the CDF is $F(x) = Pr(X \leq x)$. We can write this as follows (note that the previous question is helpful here):**
+
+    $$ F(x) = \begin{cases} 0 & \text{if } x < 1 \\ 0.2 & \text{if } 1 \leq x < 2 \\ 0.5 & \text{if } 2 \leq x < 3 \\ 0.75 & \text{if } 3 \leq x < 4 \\ 1 & \text{if } x = 4 \\ \end{cases} $$
+
+4. Draw a graph of the CDF of $X$, with $x$ on the x-axis and $F(x)$ on the y-axis.
+
+    **Answers:** 
+
+    **Here is a graph of the CDF:**
+    
+    <center>
+    ![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/graph.png)
+    </center>
+
+#### Question 3 (2 points)
+
+**Note 1:** You may find section 3.2--3.4 of the Gailmard book helpful for this question.
+
+**Note 2:** Short explanations (1-2 sentences) are sufficient for this question. 
+
+A colleague wants to study the relationship between socialization in college, particularly major choice, and political behavior. Your colleague argues that undergraduates that decide to major in economics rather than political science will become more likely to vote Republican later in life, since standard economic theory often espouses the idea that markets are efficient and that government intervention is counterproductive. Your colleague argues that this may then cause economics majors to be more likely than political science majors to vote Republican later in life, since the Republican party often advocates for free markets and less government intervention. To study this question, your colleague conducts a survey of UC Davis alumni who graduated in the last 5 years.
+
+1. Do you believe the data generating process described here is deterministic or stochastic? Briefly explain your answer.
+
+    **Answers:**
+
+    **Stochastic. There is little reason to believe that choosing either one of the two major always leads to the same outcome. For example, there are many other factors that could influence whether someone votes Republican or not.**
+
+2. One source of uncertainty is sampling uncertainty. Please elaborate on how this could apply in this setting. In particular, please define a "population" that your colleague is sampling from, and explain how uncertainty could arise due to sampling.
+
+    **Answers:**
+
+    **We could define the overall population as all college students who have graduated in the last 5 years, and have majored in PS or Econ. We are just taking a sample from this population. A different sample could lead to different results, i.e. the quantities we estimate depend on the sample we draw.**
+
+#### Question 4 (4 points)
+
+We will now look at the following discrete joint distribution. Here, the rows are values of $X$ and the columns are values of $Y$. The values in the cells are the probabilities of each combination of $X$ and $Y$, which is just the definition of the joint distribution.
+
+$$
+\begin{array}{c|cc}
+X \backslash Y & 1 & 2 \\
+\hline
+1 & 0.2 & 0.1 \\
+2 & 0.1 & 0.2 \\
+3 & 0.1 & 0.3
+\end{array}
+$$
+
+1. What are the marginal distributions of $X$ and $Y$? 
+
+    **Answer:**
+
+    **To get the marginal distribution for say $X=1$, we simply have to find all cells in the joint distribution for which $X=1$ and add up the probabilities. It works the same way for $X=2$ and $X=3$. The marginal distributions of $X$ and $Y$ are:**
+
+    $$ \begin{array}{c|ccc} X & 1 & 2 & 3 \\ \hline Pr(X) & 0.3 & 0.3 & 0.4 \\ \end{array} $$
+
+    $$ \begin{array}{c|cc} Y & 1 & 2 \\ \hline Pr(Y) & 0.4 & 0.6 \\ \end{array} $$
+
+
+2. What is the conditional distribution of $X$ given $Y=1$?
+
+    **Answer:**
+
+    **The conditional distribution of $X$ given $Y=1$ is:**
+
+    $$ \begin{array}{c|cc} X  & Pr(X|Y=1) \\ \hline 1 & 0.5 \\ 2 & 0.25 \\ 3 & 0.25 \end{array} $$
+
+
+3. Calculate the expected value of $X$ and the expected value of $X$ given that $Y=1$ (we call the latter the *conditional expectation* of $X$ given $Y=1$)
+
+    **Answer:**
+
+    $E(X)$ and $E(X|Y=1)$ are:
+
+    \begin{align*}
+    E[X] &= \sum_{i=1}^3 x_i Pr(X=x_i) \\
+    &= 1 \cdot 0.3 + 2 \cdot 0.3 + 3 \cdot 0.4 \\
+    &= 2.1
+    \end{align*}
+
+    \begin{align*}
+    E[X|Y=1] &= \sum_{i=1}^3 x_i Pr(X=x_i|Y=1) \\
+    &= 1 \cdot 0.5 + 2 \cdot 0.25 + 3 \cdot 0.25 \\
+    &= 1.75
+    \end{align*}
+
+4. Assume we have a new random variable $Z$, which is defined as $3+2X$. What is the expected value of $Z$?
+
+    **Answer:**
+
+    **Based on the properties of the expectation:**
+
+    $$E[3+2X] = E(3) + E(2X) = 3 + 2E(X) = 3 + 2 \cdot 2.1 = 7.2$$
+
+#### Question 5 (2 points)
+
+Evaluate the following statements. For each of these statements, please (i) state whether it is true or false and (ii) briefly explain why it is true or false. 
+
+**Note:** Recall that the probability density function / probability mass function of a random variable $X$ is called $f(x)$, and the cumulative distribution function is called $F(x)$.
+
+1. For a discrete random variable $X$ that can take values from 1 to 10, it can be the case that $f(a)>f(b)$ and also $F(a)>F(b)$ for some $a<b$, where both $a$ and $b$ are whole numbers between 1 and 10.
+
+    **Answers:**
+
+    **False. The statement is correct regarding the PMF, but not the CDF. The PMF is a function that assigns probabilities to each possible value of $X$. Therefore, it is possible that $f(a)>f(b)$ for some $a<b$. The CDF, on the other hand, tells us the probability that $X$ is smaller or equal than a certain value. Therefore, it is not possible that $F(a)>F(b)$ if the number $a$ is smaller than $b$. To give an example, if we know that $Pr(X\leq 2)=0.5$ then it is not possible that $Pr(X\leq 1)>0.5$, since $Pr(X\leq 2)=Pr(X\leq 1)+Pr(X=2)$. Since the probabilities are always weakly positive, this means that $Pr(X\leq 1)$ is at most $0.5$ in cases where $Pr(X= 2)=0$, but it can never be greater than that.**
+
+2. To account for theoretical uncertainty, it is always a good idea to specify a more complex theoretical model that ideally captures all possible ways in which the data could have been generated.
+
+    **Answers:**
+
+    **False. In many cases this will make the analyses much more complicated -- we are usually looking for a model that is simple enough for us to be able to analyze / understand it.**
+
+3. Calculating the conditional expectation $E[X|Y=y]$ for different values of $y$ can be useful to understand whether there is an association between $X$ and $Y$.
+
+    **Answers:**
+
+    **True.  To give an example, assume we have a random variable $X$ that is the number of hours a student studies for an exam, and $Y$ is the grade the student gets on the exam. If $E[X|Y=y]$ is increasing in $y$, this means that students who get higher grades tend to study more. This is an example of a positive association between $X$ and $Y$.**
+
+4. Assume we have a continuous random variable with probability density function $f(x)$. $X$ can take on any values between 0 and 1. In this case, the probability $P(X\leq 0.5)$ is the area under the curve of $f(x)$ between 0.5 and 1.
+
+    **Answers:**
+
+    **False. The probability $P(X\leq 0.5)$ is the area under the curve of $f(x)$ between 0 and 0.5. The area under the curve between 0.5 and 1 is $P(X>0.5)$.**
+
+#### Question 6 (required for students in the methods subfield, 3 points)
+
+#### Question 6.1
+
+Assume we have a continuous random variable with the following probability density function (PDF):
+
+$$
+f(x) = \begin{cases}
+ax & \text{if } 0 \leq x \leq 2 \\
+0 & \text{otherwise}
+\end{cases}
+$$
+
+Here, $a$ is a constant (i.e. just a number). One requirement for this to be a proper probability density function is that the integral over all possible values of $X$ is equal to 1. In other words, we need to have:
+
+$$
+\int_{0}^{2} f(x) dx = 1
+$$
+
+Note that the integral has to be over all possible values of $x$, which in this case is $0 \leq x \leq 2$. 
+
+- First, identify which value the constant $a$ has to have to make this a proper probability density function. 
+- Then, calculate the expected value of $X$.
+
+**Answer:** 
+
+**We can first calculate the value of the integral:**
+
+\begin{align*}
+\int_{0}^{2} f(x) dx &= \int_{0}^{2} ax dx \\
+&= \left[\frac{ax^2}{2}\right]^2_0 \\
+&= 2a
+\end{align*}
+
+**We know that the integral above has to be equal to 1, so we can solve for $a$. This simply means that $1=2a$, which implies that $a=1/2$.**
+
+**Now, we can calculate the expected value of $X$, which does not depend on $a$:**
+
+\begin{align*}
+E[X] &= \int_{0}^{2} x f(x) dx \\
+&= \int_{0}^{2} x \frac{1}{2}x dx \\
+&= \left[\frac{1}{2}\frac{x^3}{3}\right]^2_0 \\
+&= \frac{4}{3}
+\end{align*}
+
+
+#### Question 6.2
+
+Assume you have the following continuous joint PDF for the variables $X$ and $Y$ 
+
+$$
+f(x,y) = \begin{cases}
+\frac{3}{2}y^2 & \text{if } 0 \leq x \leq 2 \text{ and } 0 \leq y \leq 1 \\
+0 & \text{otherwise} 
+\end{cases}
+$$
+
+- What are the marginal probability density functions of $X$ and $Y$? 
+
+- Given what you found, are the two variables independent?
+
+**Hint:** When you integrate over one of the two variables in a joint distribution, then the limits of integration should be the range of values that the variable can take on. For example, if you want to integrate over $X$, then the limits of integration should be $0 \leq x \leq 2$.
+
+**Answer:** 
+
+**To get the marginal distribution of $X$, we need to integrate over all values $y$. This gives us:**
+
+\begin{align*}
+f_X(x) &= \int_0^1 \frac{3}{2}y^2 dy \\
+&= \frac{1}{2}\left[y^3\right]^1_0 \\
+&=\frac{1}{2}
+\end{align*}
+
+**We can do the same for $Y$:**
+
+\begin{align*}
+f_Y(y) &= \int_0^2 \frac{3}{2}y^2 dx \\
+&= \left[\frac{3}{2}xy^2\right]^2_0 \\
+&= 3y^2
+\end{align*}
+
+**Note the definition of independence requires that the joint distribution is equal to the product of the marginal distributions. In this case, we have:**
+
+$$
+f(x,y) = \frac{3}{2}y^2 = f_X(x)f_Y(y) = \frac{3}{2}y^2
+$$
+
+**Therefore, we can conclude that $X$ and $Y$ are independent.**
+
+#### Question 6.3 
+
+Now, let's look at the following joint distribution. Note that $c$ is just a constant.
+
+\begin{align*}
+f(x,y) = \begin{cases}
+c(x+y^2) & \text{if } 0 \leq x \leq 1 \text{ and } 0 \leq y \leq 1 \\
+0 & \text{otherwise}
+\end{cases}
+\end{align*}
+
+- Find the conditional distribution of $X$ given $Y$, i.e. $f_{X|Y}(x|y)$.
+- Then, calculate the following quantity: $Pr[X<\frac{1}{2}|Y=\frac{1}{2}]$. 
+
+**Note:** Unlike in 6.1, it is not necessary to find the value of $c$ to answer this question. You can just treat $c$ as a constant throughout the calculations. If you do everything correctly, you will see that $c$ eventually disappears from the final expression.
+
+**Hint:** To calculate the second quantity, you can just plug $Y=1/2$ into the conditional distribution you found, and use integration to find the desired quantity.
+
+**Answer:** 
+
+**For this, we first need to find the marginal distribution of $Y$.** 
+
+\begin{align*}
+f_Y(y) = \int_0^1 c(x+y^2) dx = \left[c\left(\frac{x^2}{2}+xy^2\right)\right]^1_0 = \frac{c}{2} + cy^2
+\end{align*}
+
+**Now to find the conditional distribution of $X$ given $Y$, we need to divide the joint distribution by the marginal distribution of $Y$:**
+
+\begin{align*}
+f_{X|Y}(x|y) &= \frac{f(x,y)}{f_Y(y)} \\
+&= \frac{c(x+y^2)}{\frac{c}{2} + cy^2} \\
+&= \frac{2(x+y^2)}{1 + 2y^2}
+\end{align*}
+
+**Next, we want this quantity: $Pr[X<\frac{1}{2}|Y=\frac{1}{2}]$. We can first plug in $Y=1/2$ into the conditional distribution we found, which gives us:**
+
+\begin{align*}
+f_{X|Y}(x|\frac{1}{2}) &= \frac{2(x+\frac{1}{4})}{1 + \frac{1}{2}} \\
+&= \frac{4(x+\frac{1}{4})}{3}
+\end{align*}
+
+**We now have the distribution we need. The probability we want is then:**
+
+\begin{align*}
+Pr[X<\frac{1}{2}|Y=\frac{1}{2}] &= \int_0^{\frac{1}{2}} \frac{4(x+\frac{1}{4})}{3} dx \\
+&= \left[\frac{4}{3}\left(\frac{x^2}{2}+\frac{x}{4}\right)\right]^{\frac{1}{2}}_0 \\
+&= \frac{1}{3}
+\end{align*}
+
+**Note that this is just the same as the "usual" way of calculating probabilities for continuous distributions, i.e. we evaluate the integral between the minimum of $X$ and the value we are interested in ($\frac{1}{2}$). The only difference is that we use the conditional distribution instead of the marginal distribution.**
+
+**Finally, note that we could also have calculated a more general version of this where we plug in $Y=y$ instead of $Y=1/2$ into the conditional distribution. This would give us:**
+
+\begin{align*}
+Pr[X<\frac{1}{2}|Y=y] &= \int_0^{\frac{1}{2}} \frac{4(x+y^2)}{3} dx \\
+&= \left[\frac{4}{3}\left(\frac{x^2}{2}+xy^2\right)\right]^{\frac{1}{2}}_0 \\
+&= \frac{2}{3}\left(\frac{1}{4}+y^2\right)
+\end{align*}
+
+**The nice thing about this expression is that we can can now plug in any value of $y$ we want. Also, we see that the probability that $X$ is smaller than $\frac{1}{2}$ is increasing in $y$.**
+
+
+#### Question 7 (extra credit, 1 point)
+
+Assume we have a continuous random variable $X$ with the following probability density function (PDF):
+
+$$
+f(x) = \begin{cases}
+3x^2 & \text{if } 0 \leq x \leq 1 \\
+0 & \text{otherwise}
+\end{cases}
+$$
+
+Calculate the expected value of $X$. 
+
+**Answer:**
+
+**We can use the definition of the expected value of continuous random variables to calculate this:**
+
+\begin{align*}
+E[X] &= \int_0^1 x f(x) dx \\
+&= \int_0^1 x 3x^2 dx \\
+&= \left[\frac{3x^4}{4}\right]^1_0 \\
+&= \frac{3}{4}
+\end{align*}
+
+## PS#5
+
+#### Question 1 (2 points, skip if answering question 5)
+
+Your friend loves ice cream. When it's sunny, your friend eats 3 scoops of ice cream per day. When it is not sunny, your friend flips a coin and eats 2 scoops of ice cream if the coin lands on heads, and 1 scoop if the coin lands on tails. You and your friend live in a place where it is sunny 60% of the time.
+
+**a.** Write down the probability mass function of the random variable $X$, which tells you how many scoops of ice cream your friend eats in a day. 
+
+**Answer:**
+
+**Let's first define the random variable $X$, which tells us how many scoops of ice cream your friend eats in a day. We can then write down the probability mass function of $X$:**
+
+$$
+\begin{aligned} 
+Pr(X=1) &= Pr(\text{not sunny})Pr(\text{tails}) = 0.4 \times 0.5 = 0.2 \\ Pr(X=2) &= Pr(\text{not sunny})Pr(\text{heads}) = 0.4 \times 0.5 = 0.2 \\ Pr(X=3) &= Pr(\text{sunny}) = 0.6 
+\end{aligned}
+$$
+
+**b.** What is the expected value of $X$?
+
+**Answer:**
+
+**We can now calculate the expected value of $X$:**
+
+$$
+\begin{aligned} 
+E(X) &= 1 \times 0.2 + 2 \times 0.2 + 3 \times 0.6 \\ 
+&= 0.2 + 0.4 + 1.8 \\ 
+&= 2.4 \end{aligned} 
+$$
+
+**c.** Let's define a new random variable $Y$, which is equal to 1 if you eat 3 scoops of ice cream on a given day, and 0 otherwise. This variable follows a "special" distribution. What is this distribution, and what is its parameter?
+
+**Answer:**
+
+**The distribution is the Bernoulli distribution, and the parameter is the probability of success, which is 0.6. We can write this as $Y \sim Bernoulli(0.6)$.**
+
+**d.** Now, let's define a new random variable $Z$, which is equal to the number of days in year that you eat 3 scoops of ice cream. What is the distribution of $Z$, and what are its parameters? Similar to the distribution of $Y$, it has a specific name. What is the expected value of $Z$?
+
+**Answer:**
+    
+**The distribution is the binomial distribution, and the parameters are the number of trials $N$ and the probability of success $p$. The number of trials is 365 (days in a year), and the probability of success is 0.6 (your friend eats 3 scoops with probability 0.6 on any given day). We can write this as $Z \sim Binomial(365, 0.6)$. We can now calculate the expected value of $Z$:**
+    
+$$
+\begin{aligned} 
+E(Z) &= Np \\ 
+&= 365 \times 0.6 \\ 
+&= 219 
+\end{aligned}
+$$
+
+#### Question 2 (4 points, skip if answering question 5)
+
+During the week, you can either bike, walk or take the bus to campus. On Monday, Tuesday and Wednesday, you don't have early classes, so you don't care about how long it takes you to get to campus. Therefore, on these days, you are equally likely to take the bus, walk or bike. On Thursday and Friday, you have class at 9 AM, so you want to get to campus as quickly as possible. On these days, you are equally likely to bike or take the bus, but you never walk.
+
+Assume you have two random variables: $X$ is the mode of transportation to campus on a given weekday, such that $\mathcal{X} = \{\text{bus}, \text{walk}, \text{bike}\}$, and $Y$ tells you whether you have a class at 9 AM on a given weekday, such that $\mathcal{Y} = \{\text{early class}, \text{no early class}\}$.\footnote{For this problem, we only consider weekdays, i.e. Monday, Tuesday, Wednesday, Thursday and Friday. We ignore the weekend.}
+
+**a.** What is the conditional distribution of $X$ given $Y$? Since X can have 3 values and Y can have 2 values, there are 6 possible combinations of $X$ and $Y$. 
+
+**Answer:**
+
+**We can write down the conditional distribution of $X$ given $Y$:**
+
+$$
+\begin{aligned} 
+Pr(X=\text{bus} | Y=\text{early class}) &= \frac{1}{2} \\ 
+Pr(X=\text{walk} | Y=\text{early class}) &= 0 \\ Pr(X=\text{bike} | Y=\text{early class}) &= \frac{1}{2} \\ 
+Pr(X=\text{bus} | Y=\text{no early class}) &= \frac{1}{3} \\
+Pr(X=\text{walk} | Y=\text{no early class}) &= \frac{1}{3} \\ 
+Pr(X=\text{bike} | Y=\text{no early class}) &= \frac{1}{3} \\ 
+\end{aligned}
+$$
+
+
+**b.** What is the marginal distribution of $Y$?
+
+**Answer:**
+
+**We can write down the marginal distribution of $Y$. This is given in the question.**
+
+$$
+\begin{aligned} 
+Pr(Y=\text{early class}) &= \frac{2}{5} \\ 
+Pr(Y=\text{no early class}) &= \frac{3}{5} \\ 
+\end{aligned} 
+$$
+
+**c.** Based on your answers to the previous questions, what is the joint distribution of $X$ and $Y$?
+
+**Hint:** The joint PMF tells you the probabilities $Pr(X=x, Y=y)$ for all combinations of $X$ and $Y$. Since this must follow the rules of probability, we know that the sum of all probabilities must be 1.
+
+**Answer:**
+
+**We can now write down the joint distribution of $X$ and $Y$. Note that from the definition of the conditional distribution, we know that the joint distribution is the product of the conditional distribution and the marginal distribution. For example, we have:**
+
+$$ 
+\begin{aligned} Pr(X=\text{bus}, Y=\text{early class}) &= Pr(X=\text{bus} | Y=\text{early class}) \times Pr(Y=\text{early class}) \\ 
+&= \frac{1}{2} \times \frac{2}{5} \\ 
+&= \frac{1}{5} 
+\end{aligned} 
+$$
+    
+**We can do this for all possible combinations of $X$ and $Y$, to get the following table:**
+    
+$$
+\begin{array}{c|cc} & Y=\text{early class} & Y=\text{no early class} \\ 
+\hline X=\text{bus} & \frac{1}{5} & \frac{1}{5} \\ 
+X=\text{walk} & 0 & \frac{1}{5} \\ 
+X=\text{bike} & \frac{1}{5} & \frac{1}{5} \\ 
+\end{array}
+$$
+
+**d.** So far, we have not assigned any numerical values $x$ to the random variable $X$. We will now do this -- more specifically, we will assign a speed to each mode of transportation as follows:
+
+$$
+\begin{aligned}
+\text{bus:} & 15 \text{ mph} \\
+\text{walk:} & 3 \text{ mph} \\
+\text{bike:} & 12 \text{ mph} \\
+\end{aligned}
+$$
+
+Instead of the mode of transportation, we will now consider the speed of each mode of transportation. Note that this has the same distribution that we determined before, but now the values of $X$ are numerical. This means that instead of $X=\text{bus}$, we now have $X=15$, and so on. However, $Pr(X=15)$ is still the same as $Pr(X=\text{bus})$.
+
+Calculate the conditional expected values $E(X|Y=\text{early class})$ and $E(X|Y=\text{no early class})$. For this, you will need the conditional distribution of $X$ given $Y$, which you calculated in part **a.**.
+
+**Answer:**
+
+**We can now calculate the conditional expected values $E(X|Y=\text{early class})$ and $E(X|Y=\text{no early class})$:**
+
+$$ 
+\begin{aligned} 
+E(X|Y=\text{early class}) = \frac{1}{2} \times 15 + \frac{1}{2} \times 12 = 13.5 \\ 
+E(X|Y=\text{no early class}) = \frac{1}{3} \times 15 + \frac{1}{3} \times 3 + \frac{1}{3} \times 12 = 10 
+\end{aligned} 
+$$
+
+**e.** Calculate the following quantity. You should have all you need for this from previous questions.
+
+$$E(X|Y=\text{early class})\cdot Pr(Y=\text{early class}) + E(X|Y=\text{no early class})\cdot Pr(Y=\text{no early class})$$
+
+**Answer:**
+
+$$
+\begin{aligned} 
+E(X|Y=\text{early class})\cdot Pr(Y=\text{early class}) + E(X|Y=\text{no early class})\cdot Pr(Y=\text{no early class}) &= 13.5 \times \frac{2}{5} + 10 \times \frac{3}{5} \\ 
+&= 5.4 + 6 \\ 
+&= 11.4 
+\end{aligned} 
+$$
+
+**f.** Find the marginal PMF of $X$ and then calculate the expected value of $X$. You should find the same value as in part **e.**. Briefly explain why the two are the same -- why does this make sense?
+
+**Answer:**
+
+**We now calculate the marginal PMF of $X$ based on the joint distribution of $X$ and $Y$ that we calculated in part **c.**:**
+
+$$ 
+\begin{aligned} 
+Pr(X=\text{bus}) &= \frac{1}{5} + \frac{1}{5} = \frac{2}{5} \\ 
+Pr(X=\text{walk}) &= 0 + \frac{1}{5} = \frac{1}{5} \\ 
+Pr(X=\text{bike}) &= \frac{1}{5} + \frac{1}{5} = \frac{2}{5} \\ 
+\end{aligned} 
+$$
+
+**We can now calculate the expected value of $X$:**
+
+$$
+\begin{aligned} 
+E(X) &= 15 \times \frac{2}{5} + 3 \times \frac{1}{5} + 12 \times \frac{2}{5} \\ 
+&= 6 + 0.6 + 4.8 \\ 
+&= 11.4 
+\end{aligned} 
+$$
+
+**This is the same as the answer to part **e.**. This makes sense, since the expected value of $X$ is the weighted average of the expected values of $X$ given $Y=\text{early class}$ and $Y=\text{no early class}$, where the weights are the probabilities of $Y=\text{early class}$ and $Y=\text{no early class}$ respectively. This is exactly what we calculated in part **e.**.**
+
+**Using the expression given in **e.** to calculate $E(X)$ is also called the law of total expectation, or the law of iterated expectation.**
+    
+#### Question 3 (3 points)
+
+Assume that you have two continuous uniform variables $X$ and $Y$ on the the following intervals:
+
+$$
+\begin{aligned}
+X &\sim U(3,9) \\
+Y &\sim U(2,4) \\
+\end{aligned}
+$$
+
+The two random variables are independent. From each distribution, you obtain values $x$ and $y$ respectively. You then want to draw a rectangle where the sides have lengths $x$ and $y$ respectively. 
+
+**a.** What is the expected value of the area of the rectangle?
+
+**Hint:** The expected value of a uniform distribution on the interval $[a,b]$ is $\frac{a+b}{2}$.
+
+**Answer:**
+
+**The area of the rectangle is given by $A = XY$. We can now calculate the expected value of the area of the rectangle:**
+
+$$
+\begin{aligned} 
+E(A) &= E\left(XY\right) \\ 
+&= E(X)E(Y) \\ 
+&=   \frac{3+9}{2} \frac{2+4}{2} \\ 
+&= \frac{12}{2} \frac{6}{2} \\ 
+&= 18 
+\end{aligned}
+$$
+**b.** One way to check analytical answers is to simulate the problem and see if the simulated answer is close to the analytical answer. You will now do this for the to the previous question. The general approach is as follows: Write code that simulates the problem. For example, you would write code that draws 1,000 values $x$ from a uniform distribution on the interval $[3,9]$, and 1,000 values $y$ from a uniform distribution on the interval $[2,4]$. You would then calculate the desired quantity, and assess the mean of the desired quantity across all draws (in this case, the mean of the area of the rectangle). You can then compare this to the analytical answer. Below is some code that provides a starting point for the simulation.
+
+```{r}
+# Set seed
+set.seed(3)
+
+# Draw 1000 values from a uniform distribution on the interval [3,9]
+x <- runif(1000, min = 3, max = 9)
+
+# Draw 1000 values from a uniform distribution on the interval [2,4]
+y <- runif(1000, min = 2, max = 4)
+
+# Your code here
+
+# ...
+
+```
+
+**Answer:**
+
+```{r}
+# Set seed
+set.seed(3)
+
+# Draw 1000 values from a uniform distribution on the interval [3,9]
+x <- runif(1000, min = 3, max = 9)
+
+# Draw 1000 values from a uniform distribution on the interval [2,4]
+y <- runif(1000, min = 2, max = 4)
+
+# Calculate the area of the rectangle
+area <- x * y
+
+# Calculate the mean of the area of the rectangle
+mean(area)
+```
+
+
+**c.** Use the simulation above to approximate the following quantities:
+
+  - The probability that the area of the rectangle is greater than 20.
+  - The probability that the area of the rectangle is greater than 20, given that the area of the rectangle is greater than 10.
+  - The variance of the area of the rectangle.
+
+**Note:** "approximate" means that you should use the simulated areas to calculate the probabilities and the variance. 
+
+**Answer:**
+
+```{r}
+# Assuming we have already run the code above
+# The probability that the area of the rectangle is greater than 20
+mean(area > 20)
+
+# The probability that the area of the rectangle is greater than 20, given that the area of the rectangle is greater than 10
+mean(area[area > 10] > 20)
+
+# The variance of the area of the rectangle
+var(area)
+```
+
+#### Question 4 (3 points)
+
+Evaluate the following statements. For each of them, indicate whether it is true or false, and explain why.
+
+1. For a discrete RV $X$, the marginal PMF must be a function such that $\sum_{x \in \mathcal{X}}Pr(X=x)=1$. However, this does not need to hold for the conditional PMF $f_{X|Y}(x|y)$, since values of $Y$ do not need to occur with the same probability.
+
+    **Hint:** $\sum_{x \in \mathcal{X}}$  means we sum over all possible values of the random variable $X$. The statement asks you whether $\sum_{x \in \mathcal{X}}Pr(X=x|Y=y)$ is necessarily equal to one or not. 
+
+    **Answer:**
+
+    **False. The marginal PMF must be a function such that $\sum_{x \in \mathcal{X}}Pr(X=x)=1$. However, this also needs to hold for the conditional PMF $f_{X|Y}(x|y)$, since the conditional PMF needs to follow the properties of all PMFs.**
+    
+    
+2. The expected value of a random variable is the value that the random variable takes most often.
+
+    **Answer:**
+
+    **False. The expected value is defined as the sum of each value multiplied by the probability of that value. The value that the random variable takes most often is the mode (in the discrete case).**
+
+3. In the discrete case, the joint PMF of two random variables $X$ and $Y$  tells you the probability that $X$ takes for a certain value $x$ and $Y$ takes for a certain value $y$. The marginal distribution then tells you the probability that $X$ takes for a certain value $x$, given some value of $Y$.
+
+    **Answer:**
+
+    **False. The joint PMF of two random variables $X$ and $Y$ tells you the probability that $X$ takes for a certain value $x$ and $Y$ takes for a certain value $y$. The marginal distribution then tells you the probability that $X$ takes for a certain value $x$, regardless of the value of $Y$.**
+
+4. If variables $Y$ and $X$ are independent, this implies that the expectation of $X$ given $Y$ does **not** differ across values of $Y$.
+
+    **Answer:**
+
+    **True. If $Y$ and $X$ are independent, this implies that $E(X|Y) = E(X)$, which means that the expectation of $X$ given $Y$ does not differ across values of $Y$.**
+
+5. A Bernoulli random variable is a binomial random variable with $N=2$.
+
+    **Answer:**
+
+    **False. A Bernoulli random variable is a binomial variable with $N=1$, i.e. it is a binomial variable with only one trial.**
+
+
+6. For a random variable $X$ with a normal distribution $X\sim N(0, \sigma^2)$, it is possible that $Pr(X<a)>Pr(X>(-a))$ for some $a\leq0$.
+
+    **Answer:**
+
+    **False. The normal distribution is symmetric around 0, so $Pr(X<a)=Pr(X>(-a))$ for any $a\leq0$.**
+
+#### Question 5 (required for students in the methods subfield, 3 points)
+
+#### 5.1 (1 point)
+
+Assume that we have a simple linear regression of the form $E(Y|X) = \alpha + \beta X$. The linear regression gives us an estimate of the expected value of $Y$ given $X$. 
+
+Note that the coefficients $\alpha$ and $\beta$ are chosen to minimize the following expression:
+
+$$
+E[(Y - \alpha - \beta X)^2]
+$$
+
+In other words, the coefficients are chosen to minimize the expectation of the squared difference between the expectation of $Y$ given $X$ and the actual value of $Y$. We can use the last expression to derive the following expression for $\beta$ and $\alpha$:
+
+$$
+\begin{aligned}
+\beta = \frac{Cov(X,Y)}{Var(X)} \\ 
+\alpha = E(Y) - \beta E(X) 
+\end{aligned}
+$$
+
+Show that the expressions of $\beta$ and $\alpha$ given above minimize the expression $E[(Y - \alpha - \beta X)^2]$. To do this, you can take the derivatives of the expression in (1) with respect to $\alpha$ and $\beta$, and set the derivatives to 0. You can then solve for $\alpha$ and $\beta$.\footnote{As in a previous problem set, we will ignore the second derivative, i.e. we will assume we found a minimum.}
+
+**Note:** For this question, you can assume the following:
+
+$$
+\frac{\partial E[f(x,y)]}{\partial(x)} = E\left[\frac{\partial f(x,y)}{\partial x}\right]
+$$
+
+Where $\frac{\partial f(x,y)}{\partial x}$ is the partial derivative of some function $f(x,y)$ with respect to $x$.
+
+**Hint 1:** For some constant $a$ and RVs $X$ and $Y$:
+ 
+  - $E(aX)=aE(X)$ 
+  - $E(a)=a$ 
+  - $E(Y+X) = E(Y) + E(X)$
+
+**Hint 2:** $Var(X) = E(X^2) - E(X)^2$
+
+**Hint 3:** $Cov(X) = E(XY) - E(X)E(Y)$
+
+**Answer**:
+
+**Let's first define that $e=E[(Y - \alpha - \beta X)^2]$. We then take the derivative of $e$ with respect to $\alpha$ and $\beta$.**
+
+$$
+\begin{aligned}
+\frac{\partial e}{\partial \alpha} = E[-2(Y-\alpha-\beta X)] \\
+\frac{\partial e}{\partial \beta} = E[-2X(Y-\alpha -\beta X)]
+\end{aligned}
+$$
+
+**We can now set these to 0. Note that we can take the -2 out of the expectation, since $E(aX)=aE(X)$. Let's start with the partial derivative wrt $\alpha$:**
+
+$$
+\begin{aligned}
+-2E[(Y-\alpha-\beta X)] &= 0 \\
+E(Y) - \alpha - \beta E(X) &= 0 \\
+E(Y) - \beta E(X) &=  \alpha \\
+\end{aligned}
+$$
+
+**Note that $\alpha$ and $\beta$ are constants, which is why we can do the last two steps.**
+
+**Next, let's look at the derivative of $e$ wrt $\beta$:**
+
+$$
+\begin{aligned}
+0 &= E[-2X(Y-\alpha -\beta X)] \\
+0 &= -2E[X(Y-\alpha -\beta X)] \\
+0 &= E(XY)-\alpha E(X) -\beta E(X^2)
+\end{aligned}
+$$ 
+
+**We also have a definition of $\alpha$ from above, which we can plug into the equation:**
+
+$$
+\begin{aligned}
+0 &= E(XY)-[E(Y) - \beta E(X)]E(X) -\beta E(X^2) \\
+0 &= E(XY) - E(X)E(Y) + \beta [E(X)^2 - E(X^2)] \\ 
+\beta [E(X^2) - E(X)^2] &= E(XY) - E(X)E(Y) \\ 
+\beta &= \frac{E(XY) - E(X)E(Y)}{E(X^2) - E(X)^2}
+\end{aligned}
+$$
+
+**Given what is stated in the hints, the last expression is equal to:**
+
+$$
+\begin{aligned}
+\beta &= \frac{Cov(X,Y)}{Var(X)} 
+\end{aligned}
+$$ 
+
+**In addition, we previously showed that:**
+
+$$
+\begin{aligned}
+\alpha &= E(Y) - \beta E(X) & \\
+\end{aligned}
+$$
+
+#### 5.2 (0.5 points)
+
+Next, recall that the definition of the correlation coefficient is:
+
+$$
+\rho(X,Y) = \frac{Cov(X,Y)}{\sqrt{Var(X)Var(Y)}}
+$$
+
+- Mathematically, what is the relationship between the correlation coefficient and the slope of the bivariate linear regression? 
+- When are the two the same?
+- Can you provide a brief intuition / explanation for the condition under which the two are the same?
+
+**Answer:**
+
+**From the definition of the correlation coefficient, we know that:**
+
+$$
+\begin{aligned}
+Cov(Y,Y) = \rho(X,Y) \sqrt{Var(X)Var(Y)}
+\end{aligned}
+$$
+
+**We can now substitute this into the expression for $\beta$:**
+
+$$
+\begin{aligned}
+\beta &= \frac{Cov(X,Y)}{Var(X)} \\
+&= \frac{\rho(X,Y) \sqrt{Var(X)Var(Y)}}{Var(X)} \\
+&= \rho(X,Y) \frac{\sqrt{Var(X)Var(Y)}}{Var(X)} \\
+&= \rho(X,Y) \sqrt{\frac{Var(Y)}{Var(X)}} \\
+\end{aligned}
+$$
+
+- **The two are the same when $\sqrt{\frac{Var(Y)}{Var(X)}} = 1$, which is the case when $Var(Y) = Var(X)$.**
+
+- **Intuitively, the condition $Var(Y) = Var(X)$ implies that the dispersion of the variables is the same, which can be interpreted as the two variables being on the same scale.**
+
+#### 5.3 (0.5 points)
+
+Consider the following PDF:
+
+$$
+f(x) = \begin{cases}
+\frac{3}{2}x^2 & \text{if } -1 \leq x \leq 1 \\
+0 & \text{otherwise} \\
+\end{cases}
+$$
+
+**a.** What is $E(X)$? Please do not use the integrals here, but rather come up with an intuitive explanation based on the shape of the distribution.
+
+**Answer:**
+
+**We can see that the PDF is symmetric around 0. This means that that the area under the PDF to the left of 0 is the same as the area under the PDF to the right of 0. As a result, the expected value of $X$ is 0.**
+
+
+**b.** What is the expected value of the new random variable $Y$, which is defined as the absolute value of $X$, i.e. $Y=|X|$?
+
+**Answer:**
+
+**We can now calculate the expected value of $Y$. First, note that $Y$ is a function of $X$, so we can use LOTUS to calculate the expected value of $Y$. So we can just use the PDF of $X$ to calculate the expected value of $Y$.** 
+
+**Next, note that $Y=|X|$ is a function that is defined as follows:**
+
+$$
+\begin{aligned} 
+Y &= \begin{cases} -X & \text{if } X < 0 \\ 
+X & \text{if } X \geq 0 \\ 
+\end{cases} 
+\end{aligned} 
+$$
+
+**Note, since $Y=|X|$, $Y$ takes the same value for both negative and positive values pf $X$ (e.g. for $X=-0.5$ and also for $X=0.5$, $Y=0.5$). Since the PDF of $X$ is symetric, we also know that $f(x) = f(-x)$ for some $x$ between 0 and 1. Therefore, expectation $Y$ for the "positive half" of $X$ should be the same as the expectation for the "negative half" of $X$. We therefore just calculate the expectation for the "positive half" of $X$ and multiply it by 2:**
+
+$$
+\begin{aligned} 
+E(Y) &= 2\int_0^1 x \cdot f(x) dx \\ 
+&= 2\int_0^1 x \cdot \frac{3}{2}x^2 dx \\ 
+&= 3 \int_0^1 x^3 dx \\ 
+&= 3 \left[\frac{x^4}{4}\right]_0^1 \\ 
+&= 3 \left[\frac{1}{4} - \frac{0}{4}\right] \\ 
+&= \frac{3}{4} 
+\end{aligned}
+$$
+
+
+#### 5.4 (0.5 points)
+
+Suppose that a point is chosen at random on a stick of length 1 and that the stick is broken into two pieces at that point. Find the expected value of the length of the longer piece.
+
+**Answer:**
+
+**The breakpoint is a uniform random variable:**
+
+$$
+\begin{aligned}
+X &\sim U(0,1) \\
+\end{aligned}
+$$
+
+**If $X \leq 0.5$, the longer piece is $1-X$. If $X > 0.5$, the longer piece is $X$. Note that, by the definition of the uniform distribution, the two cases are equally likely. We can define a new random variable $Y$ that tells us the length of the longer piece:**
+
+$$
+\begin{aligned}
+Y &= \begin{cases}
+1-X & \text{if } X \leq 0.5 \\
+X & \text{if } X > 0.5 \\
+\end{cases}
+\end{aligned}
+$$
+
+**Note that $Y$ is a function of $X$. We can therefore use LOTUS to calculate the expected value of $Y$:**
+
+$$
+\begin{aligned}
+&= \int_0^{0.5} (1-x) \cdot 1 dx + \int_{0.5}^1 x \cdot  1 dx \\
+&= \left[x - \frac{x^2}{2}\right]_0^{0.5} + \left[\frac{x^2}{2}\right]_{0.5}^1 \\
+&= \left[0.5 - \frac{0.5^2}{2}\right] + \left[\frac{1^2}{2} - \frac{0.5^2}{2}\right] \\
+&= 0.5 - \frac{0.5^2}{2} + \frac{1^2}{2} - \frac{0.5^2}{2} = 0.75\\
+\end{aligned}
+$$
+
+**Note that we use LOTUS since $Y=g(X)$, so we can just use the PDF $f(x)=1$ even though we don't consider $X$ directly (however, for the case $X>0.5$, $g(X)$ is simply $X$).**
+
+**Alternatively, this can also be deduced without integration as follows:**
+
+- **If $X>0.5$, then $Y$ is a uniform RV on the interval $[0.5,1]$. The expected value of a uniform RV on the interval $[a,b]$ is $\frac{a+b}{2}$. Therefore, $E(Y|X>0.5) = \frac{0.5+1}{2} = 0.75$.**
+- **If $X \leq 0.5$, then $Y$ is also a uniform RV on the interval $[0.5,1]$. Since $X$ can be at most 0.5, $Y$ can only range from 0.5 to 1. Therefore, $E(Y|X \leq 0.5) = \frac{0.5+1}{2} = 0.75$.**
+
+**So for both $X>0.5$ and $X \leq 0.5$, $E(Y|X) = 0.75$. As a result, the expected value of $Y$ is also 0.75.**
+
+#### 5.5 (0.5 points)
+
+Use a simulation to check your answer to question 5.4. 
+
+- First, simulate 1,000 draws to verify whether you answer from the previous question is correct. 
+- Then, write code that simulates $\bar{Y}_n$, which is the mean of $Y$ as a function of the number of draws $n$ from the uniform RV $X$. Here, $n\in\{10, 20, 30,\dots, 500\}$. What do you notice about the relation between $\bar{Y}_n$ and $n$, in particular with respect to $E(Y)$, which you derived in question 5.4?
+
+**Answer:** 
+
+**For question 5.4, we can do the following:**
+
+```{r, fig.align='center', fig.width=5, fig.height=4}
+# Set seed
+set.seed(3)
+
+# Draw 1000 values from a uniform distribution on the interval [0,1]
+x <- runif(1000, min = 0, max = 1)
+
+# Calculate the length of the longer piece
+y <- ifelse(x <= 0.5, 1 - x, x)
+
+# Calculate the mean of the length of the longer piece across all draws
+mean(y)
+
+## Next, do this for n = 10, 20, 30, ..., 500
+
+# Set seed
+set.seed(3)
+
+## Function to simulate E(Y_n) given n
+simulate <- function(n) {
+  
+  # Draw n values from a uniform distribution on the interval [0,1]
+  x <- runif(n, min = 0, max = 1)
+  
+  # Calculate the length of the longer piece
+  y <- ifelse(x <= 0.5, 1 - x, x)
+  
+  # Calculate the mean of the length of the longer piece across all draws
+  mean(y)
+  
+}
+
+## List of n
+n <- seq(10, 500, by = 10)
+
+## Simulate E(Y_n) for each n
+y_bar <- sapply(n, simulate)
+
+## To df
+df <- data.frame(n, y_bar)
+df$diff = abs(df$y_bar - 0.75)
+
+## Difference between E and 0.75 as a function of n
+plot(df$n, df$diff, type = "l", xlab = "n", 
+     ylab = "Abs. difference between mean(Y) and 0.75")
+
+```
+
+**The first simulation shows that the simulated answer is very close to the analytical answer. The second simulation shows that the mean of $Y_n$ converges to 0.75 as $n$ gets larger.**
+
+## PS#6
+
+#### Question 1 (3 points)
+
+**a.** For continuous distributions, please provide the defintion of the cumulative distribution function (CDF). Very briefly, in your own words, describe what it tells us. Finally, how can we calculate the CDF for a normal distribution in R?
+
+For the rest of the question, assume you have a normal distribution as follows:
+
+$$X \sim N(\mu = -1, \sigma^2 = 4)$$
+
+**b.** What is the probability of observing a value of $X$ that is greater than 0? Use R for this.
+
+**c.** Determine $x$ such that $P(X \leq x) = 0.25$. Use R for this.
+
+**d.** Given what we know about the distribution of $X$, what is the standard deviation of the mean of a random sample of size 100 from this distribution? Do not use R to answer this question.
+
+**e.** In R, generate a random sample of size 100 from this distribution and calculate the sample mean and sample variance. How do these values compare to the population parameters $\mu = -1$ and $\sigma^2 = 4$?
+
+**f.** Use the `dnorm` function in R to plot the probability density function of this distribution. 
+
+**Answer:**
+
+**a.** The CDF of a continuous random variable $X$ is defined as $F(x) = P(X \leq x)$ or $F(x) = P(X<x)$, with the two being equivalent in the continuous case . The CDF tells us the probability that $X$ is less than or equal to a particular value $x$. In R for a normal distribution, we can use the `pnorm()` function to calculate the CDF.
+
+**b.** We can use the `pnorm()` function to calculate the probability of observing a value of $X$ that is greater than 0. `pnorm` gives you the CDF of the normal distribution. Since we want the probability of observing a value of $X$ that is greater than 0, we need to calculate $1 - P(X \leq 0)$. 
+
+```{r}
+1 - pnorm(0, mean = -1, sd = 2)
+```
+
+**c.** We can use the `qnorm()` function to calculate the value of $x$ such that $P(X \leq x) = 0.25$. 
+
+```{r}
+qnorm(0.25, mean = -1, sd = 2)
+```
+
+**d.** The standard deviation of the mean of a random sample of size 100 from this distribution is equal to $\frac{\sigma}{\sqrt{N}} = \frac{2}{\sqrt{100}} = 0.2$. This follows from the fact that the variance of the sample mean is equal to $\frac{\sigma^2}{N}$, where $\sigma^2$ is the variance of the original distribution.
+
+**e.** We can use the `rnorm()` function to generate a random sample of size 100 from this distribution. 
+
+```{r}
+set.seed(1)
+
+x <- rnorm(100, mean = -1, sd = 2)
+
+mean(x)
+
+var(x)
+```
+
+The exact values of the sample mean and sample SD depend on the seed used, but shoud generally be close to the population parameters $\mu = -1$ and $\sigma^2 = 4$.
+
+**f.** We can use the `dnorm()` function to plot the probability density function of this distribution. 
+
+```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+x <- seq(-10, 10, by = 0.01)
+
+y <- dnorm(x, mean = -1, sd = 2)
+
+plot(x, y, type = "l")
+```
+
+
+#### Question 2 (2 points)
+
+Suppose you have a random variable $X$ with a uniform distribution on the interval $[0, 1]$:
+
+$$X \sim \text{Unif}(0, 1)$$
+
+**a.** What real life concept might you statistically model with a DGP that has a distribution like this?
+
+**b.** Draw two samples from this distribution, one with $N=20$ and one with $N=1,000$. For each of the two samples, calculate the sample mean and the standard error of the sample mean. 
+
+**c.** Now, you will simulate the sampling distributions of $\bar{X}$ for the two sample sizes given above. To do this, you will draw 1,000 samples of size $N=20$ and 1,000 samples of size $N=1,000$ from the distribution of $X$. For each of the two sample sizes, calculate the sample mean for each of the 1,000 samples. Then, use histograms to plot the distribution of 1,000 values of $\bar{X}$ for the two sample sizes.
+
+**d.** You will notice that the two distributions look like distributions we know. Briefly comment on why this is, i.e. why the distributions of the sample means follow a specific distribution. Finally, why is one of the two distributions "wider" than the other one? 
+
+**Answer:**
+
+**a.** One example is any variable that measures a proportion, e.g. the proportion of people who vote for a particular candidate in an election.
+
+**b.** We can use the `runif()` function to draw random samples from a uniform distribution. 
+
+```{r}
+set.seed(1)
+
+x1 <- runif(20, min = 0, max = 1)
+
+x2 <- runif(1000, min = 0, max = 1)
+
+mean(x1)
+
+sd(x1) / sqrt(20)
+
+mean(x2)
+
+sd(x2) / sqrt(1000)
+```
+
+**c.** We can use the `replicate()` function to draw 1,000 samples of size $N=20$ and 1,000 samples of size $N=1,000$ from the distribution of $X$. 
+
+```{r}
+set.seed(1)
+
+x1 <- replicate(1000, mean(runif(20, min = 0, max = 1)))
+
+x2 <- replicate(1000, mean(runif(1000, min = 0, max = 1)))
+
+```
+
+We can then plot the sampling distributions of $\bar{X}$ for the two sample sizes.
+
+```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+hist(x1, breaks = 20, freq = FALSE, main = "Sampling Distribution of X1")
+
+hist(x2, breaks = 20, freq = FALSE, main = "Sampling Distribution of X2")
+```
+
+**d.** The sampling distributions of $\bar{X}$ for the two sample sizes follow a normal distribution. This is because the sample mean is a linear combination of random variables, and the central limit theorem tells us that the distribution of the sample mean converges to a normal distribution as the sample size goes to infinity.
+
+The sampling distribution of $\bar{X}$ for $N=20$ is wider than the sampling distribution of $\bar{X}$ for $N=1,000$ because the variance of the sample mean decreases with the size of the sample $N$. 
+
+
+#### Question 3 (0.5 points)
+
+ A colleague analyses a 2023 survey of 778 high schools seniors who intend to attend college. Among them, about 25% ruled out colleges solely due to the politics, policies, or legal situation in the state where the school was located.\footnote{Based on this survey: https://indd.adobe.com/view/f7cb9b98-22ad-433e-bd68-ef225093ab27}
+
+Your colleague wonders why it makes sense to think about the variance of this proportion. She argues that she has only one dataset, and can therefore only calculate one proportion, so why would she care about whether this proportion varies. In simple terms, provide a brief explanation why it makes sense to think about the variance of this proportion.
+
+**Answer:** 
+
+In frequentist statistics, the sample mean is a random variable, since the mean will be different for every sample that we draw. If your colleague were to draw a different sample of high school seniors, she would get a different proportion of students who ruled out colleges solely due to the politics, policies, or legal situation in the state where the school was located. To characterize how much the sample mean varies across samples, we can calculate the variance (or standard error) of the sample mean. Note that the variance of the sample mean can be calculated even if we only have one sample.
+
+
+#### Question 4 (1 point)
+
+Assume you want to conduct an opinion poll to estimate the **proportion of voters** in the US who support presidential candidates Kang or Kodos, ranging from 0 (none of them) to 1 (all of them). Assuming that the true population proportion of people who support Kang over Kodos is 0.5. We already know that, in expectation, the estimated share of people who vote Kang in your poll should be 0.5. However, you will always get slightly different values since each poll is a sample from the set of all voters. 
+
+**a.** What is the minimum sample size you need to make sure that the standard error of your estimate is at most one percentage point (i.e. such that the standard error $SE(\bar{X})\leq0.01$)?\footnote{Here, we can think of this "standard error" as something similar to the "margin of error" that you commonly see in opinion polls.}
+
+**Note:** The sample mean $\bar{X}$ is the proportion of people who support candidate Kang. It is *not* the number of people. 
+
+**b.** Use a simulation to verify your answer to the previous question. To do this, you will need to simulate many samples of the sample size you calculated in the previous question. You can then obtain the distribution of the sample mean across all samples. Then, you can calculate the standard error of the sample mean. How does this compare to the standard error you calculated in the previous question?
+
+**Note:** you should not use R to answer the first question. Instead, you should use the definitions we discussed in lecture. The second question requires R.
+
+**Answer:**
+
+**a.** We know that the variance of the sample mean is given by $\frac{\sigma^2}{N}$. In this case, we know that $$\sigma^2 = 0.5 \times 0.5 = 0.25$$ since we are dealing with a Bernoulli distribution. For a Bernoulli distribution, the variance is equal to $p(1-p)$, where $p$ is the probability of success. We can think of a success as supporting Kang, although in this case it does not matter whether we define success as supporting Kang or Kodos, since $p=0.5$.
+
+We want to find the minimum sample size $N$ such that $\sqrt{\frac{0.25}{N}} \leq 0.01$, so we have to solve for $N$:
+
+$$
+\begin{aligned}
+\sqrt{\frac{0.25}{N}} & \leq 0.01 \\
+\frac{0.25}{N} & \leq 0.0001 \\
+\frac{0.25}{0.0001} & \leq N \\
+2500 & \leq N
+\end{aligned}
+$$
+
+This says that $N$ needs to be at least 2500 for the SE of the mean to be equal to 0.01. 
+
+**b.** We can use a simulation to verify this result. We can use the `rbinom()` function to simulate a sample of size $N$ from a Bernoulli distribution with $p=0.5$. We can then calculate the sample mean for each of the samples. We can then calculate the standard error of the sample mean across all samples. 
+
+```{r}
+set.seed(1)
+
+N <- 2500
+
+x <- replicate(1000, mean(rbinom(N, size = 1, prob = 0.5)))
+
+sd(x)
+
+```
+
+Looks the estimated SE of the mean for $N=2500$ is about $0.01$, which is what we expected given the previous question.
+
+
+#### Question 5 (1.5 points)
+
+**Note:** this question is a continuation of the previous question.
+
+Let's now assume a different DGP which states that the population probability of any given person voting for Kang is 0.6. Let's define the population as all voters for a certain election. Therefore, Kang will eventually win, since 60% of all voters will vote for Kang.
+
+You are a pollster who is trying to predict the election. Your method is very simple -- you randomly sample 101 voters and ask them who they will vote for. You then identify the candidate who has the most votes in your sample and predict that this candidate will win the election.\footnote{We assume all voters either vote for Kang or Kodos, i.e. no one abstains from voting.}
+
+**a.** Let's think of each voter in your sample as a draw from a Bernoulli distribution. By the central limit theorem, we know what the distribution of the sample mean will be. What is this distribution, and what is its mean and variance?
+
+**Hint 1:** The sample mean $\bar{X}$ of Bernoulli draws $X_1,X_2,\dots,X_N$ is just the proportion of draws that are equal to one. In class, we derived the expectation and standard error of the sample mean $\bar{X}$.
+
+**b.** Since you sample 101 voters, every sample is going to look different. Assuming you draw many samples, what is the share of samples for which you (correctly) predict that Kang will win the election?
+
+**Note:** Rounding answers is fine for both **a.** and **b.**. You should not use a simulation of the samples to answer this question. You can, however, use R.
+
+**c.** Assume the central limit theorem does not hold. In this case, would it be possible to give an answer to **b.**? Briefly explain why or why not.
+
+**Answer:**
+
+**a.** The distribution of the sample mean is a normal distribution with mean equal to the population mean ($\mu = 0.6$) and variance equal to $\frac{p(1-p)}{N}$, where $p$ is the population probability of success. In this case, $p=0.6$, and $N=101$. The variance of the sample mean is equal to $\frac{0.6 \times 0.4}{101} \approx 0.0024$.
+
+**b.** Based on the previous answers, we now the distribution of the sample mean. We also know that our prediction is correct if the sample mean is greater than 0.5. This is because we predict Kang to win if the sample mean is greater than 0.5, and Kodos to win if the sample mean is less than 0.5. 
+
+As a result, we simply need to know the probability that the sample mean is greater than 0.5. We can use the `pnorm()` function, which gives us the CDF, to calculate this probability, since we know the distribution of the sample mean. We calculate the following quantity: 
+
+$$P(\bar{X} > 0.5) = 1 - P(\bar{X} \leq 0.5)=1- F(0.5)$$
+
+where $\bar{X}\sim N(\mu = 0.6, \sigma^2 = 0.0024)$, and $F$ is the CDF of the normal distribution.:
+
+```{r} 
+1 - pnorm(0.5, mean = 0.6, sd = sqrt(0.0024))
+```
+
+The probability that we correctly predict that Kang will win the election is about 0.98 (alternatively, the share of samples in which we correctly predict that Kang will win the election is about 98%).
+
+This is a very high rate of correct predictions even though we only sample 101 voters ! 
+
+**c.** If the central limit theorem does not hold, we cannot give an answer to **b.**. This is because we do not know the distribution of the sample mean. In that case, we would need to know the distribution of the sample mean to calculate the probability that we correctly predict that Kang will win the election.
+
+
+#### Question 6 (2 points)
+
+Please evaluate the following statements. If the statement is true, explain why. If the statement is false, explain why.
+
+**a.** Assume you have $X\sim \text{Unif}(a,b)$. For a sample $X_1, X_2, ..., X_n$, the expectation of the sample mean is $E(\bar{X}) = \frac{a+b}{2}$, and the variance of the sample mean is $Var(\bar{X}) = \frac{(b-a)^2}{12}$.
+
+**b.** Any quantity that is a function of random variables (like the sum of random variables or the random variable multiplied by a constant) is a random variable.
+
+**c.** The distribution of the sample mean $\bar{X}$ for random variable $X$ converges to a normal distribution if (i) the sample size $N$ is large and (ii) the distribution of $X$ is continuous.
+
+**d.** The following code will always produce different results, since we are sampling values of a random variable:
+
+```{r}
+set.seed(1)
+
+x <- rnorm(5, mean = 0, sd = 1)
+x
+```
+
+**e.** An unbiased estimator can result in an estimate that is very different from the population parameter that it is supposed to estimate.
+
+**f.** For the regression coefficient $\hat{\beta}$ to be an unbiased estimate of the true population coefficient $\beta$, the error term $\varepsilon$ has to be equal to zero for all observations.
+
+**g.** The only way to gain information about the variance of an estimator, like the sample mean or the regression coefficient, is to draw many samples and then calculate the variance of the estimator across all samples.
+
+**h.** The following code uses simulation to approximate $P(Y<3)$ for $Y\sim N(\mu = 2, \sigma^2 = 5)$:
+
+```{r}
+set.seed(1)
+
+x <- rnorm(1000, mean = 0, sd = 1)
+y <- 3*x + 2
+
+mean(y < 3)
+```
+
+
+**Answers:**
+
+**a.** False. The statement is correct about the expectation, but the variance of the sample mean is equal to $\frac{(b-a)^2}{12N}$, where $N$ is the sample size. The variance of the sample mean always depends on the sample size.
+
+**b.** True. Any quantity that is a function of random variables is a random variable. This is because the value of the quantity will be different for every sample that we draw.
+
+**c.** False. The distribution of the sample mean $\bar{X}$ converges to a normal distribution no matter whether the distribution of $X$ is continuous or discrete.
+
+**d.** False. The code will always produce the same results, since we are setting the seed to 1. This means that the random number generator will always produce the same sequence of random numbers.
+
+**e.** True. An unbiased estimator can result in an estimate that is very different from the population parameter that it is supposed to estimate. For small sample sizes, estimators can have high variance. Since estimators like the sample mean are random variables, high variance means that our estimates can be very different from the population parameter that we are trying to estimate.
+
+**f.** False. For the regression coefficient $\hat{\beta}$ to be an unbiased estimate of the true population coefficient $\beta$, the covariance between the independent variable $X$ and the error term $\varepsilon$ has to be equal to zero. 
+
+**g.** False. We have a formula for a the variance of the sample mean, which is equal to $\frac{\sigma^2}{N}$, where $\sigma^2$ is the variance of the original RV. We do not need to draw many samples to calculate the variance of the sample mean. 
+
+**h.** False. Here, we sample from $X$ and then create a new RV that is equal to $Y = 3X + 2$. Therefore, the expectation of $Y$ is $E(Y) = 3E(X) + 2 = 2$. The variance of $Y$ is equal to $Var(Y) = Var(3X + 2) = 9Var(X) = 9$. Therefore, $Y\sim N(\mu = 2, \sigma^2 = 9)$. We can use the `pnorm()` function to calculate $P(Y<3)$:
+
+```{r}
+pnorm(3, mean = 2, sd = 3)
+```
+
+This value should be very close to what we get from the code above.
+
+
+#### Question 7 (required for students in the methods subfield, 3 points)
+
+#### 7.1 (1 point)
+
+An important result in statistics is the weak large of large numbers (WLLN), which we will now prove. It states the following:
+
+$$\lim_{n \to \infty} P(|\bar{X}_N - \mu| > \epsilon) = 0$$
+
+where $\bar{X}_N$ is the sample mean of a sample with $N$ iid draws from an RV $X$ with population mean $\mu$. The WLLN say that the probability that the sample mean is more than $\epsilon$ away from the population mean goes to zero as the sample size goes to infinity. This is called convergence in probability. 
+
+
+**a.** As a first step, prove the following, where $\bar{X}_N$ is the sample mean of a sample with $N$ draws from an RV $X$ with population mean $\mu$ and finite variance $\sigma^2$:
+
+$$\lim_{n \to \infty} E[(\bar{X}_N - \mu)^2] = 0$$
+
+**Hint 1:** You can use the fact that $E(\bar{X}_N)=\mu$
+
+**Hint 2:** The proof is short.
+
+**b.** An important inequality in probability theory is Chebyshev's inequality. It states the following:
+
+$$P(|Y|\geq \epsilon) \leq \frac{E(Y^2)}{\epsilon^2}$$
+
+Here, $Y$ is  a random variable and $\epsilon$ is a positive number.
+
+Use Chebyshev's inequality and the result from **a.** to prove the weak law of large numbers, which is stated above.
+
+Finally, briefly explain why the variance of the original RV has to be finite for the weak law of large numbers to hold.
+
+**Answer:**
+
+**a.** We can use the fact that $Var(\bar{X}) = E[(\bar{X}_N - E(\bar{X}_N))^2]= E[(\bar{X} - \mu)^2]$. We know that $Var(\bar{X}) = \frac{\sigma^2}{N}$. So the limit is equal to $\lim_{n \to \infty} \frac{\sigma^2}{N}$. As $N$ goes to infinity, this limit goes to zero, since $\sigma^2$ is a constant.
+
+**b.** To recap, we want to show the following:
+
+$$\lim_{n \to \infty} P(|\bar{X}_N - \mu| > \epsilon) = 0$$
+
+Aka we want to show that the probability that the sample mean is more than $\epsilon$ away from the population mean goes to zero as the sample size goes to infinity.
+
+Now, $|\bar{X}_N - \mu|$ is a random variable, so we can apply the Chebyshev inequality to it. We get:
+
+$$P(|\bar{X}_N - \mu| > \epsilon) \leq \frac{E[(\bar{X}_N - \mu)^2]}{\epsilon^2}$$
+
+Now, assume that $N$ is large. In that case, the RHS is going to converge to zero. This is because the numerator of the RHS is equal to $\frac{\sigma^2}{N}$, which goes to zero as $N$ goes to infinity, and the denominator is a constant. 
+
+Since the RHS converges to zero, and the RHS is an upper bound for the LHS, the LHS also has to converge to zero. This proves the WLLN.
+
+Note that the variance of the original RV has to be finite because otherwise the variance of the sample mean would not converge to zero as $N$ goes to infinity. This is because the variance of the sample mean is equal to $\frac{\sigma^2}{N}$, where $\sigma^2$ is the variance of the original RV. 
+
+#### 7.2 (1 point)
+
+Assume you have two independent uniform RVs distributed as follows:
+
+$$Y \sim \text{Unif}(0, 1)$$
+$$X \sim \text{Unif}(1, 2)$$
+
+Assume we draw a sample from each, where the sample size of each sample is $N$. We are now interested in $\bar{X}-\bar{Y}$. 
+
+**a.** If you want to ensure that, in 95\% of the cases, your estimate of $\bar{X}-\bar{Y}$ is within 0.1 of the population difference (i.e. $E(X) - E(Y)$), what is the minimum required sample size $N$ to achieve this? 
+
+**b.** Verify your answer using a simulation in R.
+
+**Answer:**
+
+**a.**: The expected value of $\bar{X}-\bar{Y}$ is equal to $E(X) - E(Y) = 1.5 - 0.5 = 1$. The variance of the two sample means is the same: $$Var(\bar{X}) = Var(\bar{Y}) = \frac{1}{12N}$$This follows since we know that the variance of the sample mean is the variance of the RV divided by the sample size.
+
+Now, for independent RV, the variance of the sum is equal to the sum of the variances. Therefore, the variance of $\bar{X}-\bar{Y}$ is equal to $\frac{2}{12N}$. We therefore know that the difference between the sample means follows a normal distribution with mean 1 and variance $\frac{2}{12N}$.
+
+For a normal distribution, we know that 95\% of the probability mass is within (approx.) 1.96 standard deviations of the mean. As a result, the square root of the variance of $\bar{X}-\bar{Y}$ has to be less than 0.1/1.96. This gives us the following inequality:
+
+$$\sqrt{\frac{2}{12N}} \leq \frac{0.1}{1.96}$$
+
+We can now solve this for $N$:
+
+$$
+\begin{aligned}
+\sqrt{\frac{2}{12N}} &\leq \frac{0.1}{1.96} \\
+\frac{2}{12N} &\leq \frac{0.1^2}{1.96^2} \\
+\frac{2}{12} &\leq \frac{0.1^2}{1.96^2} \times N \\
+\frac{2}{12} \times \frac{1.96^2}{0.1^2} &\leq N \\
+N &\geq 64.02667
+\end{aligned}
+$$
+
+**b.**
+
+```{r}
+set.seed(123)
+
+## Function to calculate the difference between the sample means of two uniform RVs
+
+get_diff <- function() {
+  x <- runif(64, 0, 1)
+  y <- runif(64, 1, 2)
+
+  mean(y) - mean(x)
+}
+
+## Simulate 10,000 draws from the distribution of the difference between the sample means
+
+out <- replicate(10000, get_diff())
+
+## Calculate the share of draws that are *not* within 0.1 of the population difference
+
+mean(out < 0.9)
+mean(out > 1.1)
+
+## We expected these to be about 2.5% each, which is the case 
+```
+
+#### 7.3 (1 point)
+
+For a linear regression model with observed values $x_i$ and $y_i$, the least squares estimator for the slope $\beta$ is given by:
+
+$$\hat{\beta} = \frac{\sum_{i=1}^N (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^N (x_i - \bar{x})^2}$$
+
+where $\bar{x}$ and $\bar{y}$ are the sample means of $x_i$ and $y_i$, respectively. Let's define $S^2_X = \sum_{i=1}^N (x_i - \bar{x})^2$. In addition, the variance of the RV $Y$ is $sigma^2$, and the draws $y_i$ are iid. Note that we can also write the above equation as:
+
+$$\hat{\beta} = \frac{\sum_{i=1}^N (x_i - \bar{x})y_i}{S_X^2}$$
+
+Find the variance of the least squares estimator $\hat{\beta}$. Note that for the purposes of this problem, we can treat the values $x_i$ as constants, i.e. not as random variables.\footnote{This is a convention that is often used in statistics -- we consider $\beta$ to be a function of the RV $Y$, but not of the RV $X$.}
+
+**Answer:**
+
+We can use the fact that $Var(a y_1 + b y_2) = a^2Var(y_1) + b^2Var(y_2)$ for any two independent RVs $y_1$ and $y_2$ (we assume those to be independent) and constants $a$ and $b$. Then:
+
+$$
+\begin{aligned}
+Var(\hat{\beta}) &= Var\left(\frac{\sum_{i=1}^N (x_i - \bar{x})y_i}{S_X^2}\right) \\
+&= \frac{1}{S_X^4} Var\left(\sum_{i=1}^N (x_i - \bar{x})y_i\right) \\
+& = \frac{1}{S_X^4} \sum_{i=1}^N Var\left[(x_i - \bar{x})y_i\right)] \\
+& = \frac{1}{S_X^4} \sum_{i=1}^N (x_i - \bar{x})^2 Var(y_i) \\
+& = \frac{1}{S_X^4} \sum_{i=1}^N (x_i - \bar{x})^2 \sigma^2 \\
+& = \frac{\sigma^2}{S_X^4} \sum_{i=1}^N (x_i - \bar{x})^2 \\
+& = \frac{\sigma^2}{S_X^4}S_X^2 \\
+& = \frac{\sigma^2}{S_X^2}
+\end{aligned}
+$$

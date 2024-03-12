@@ -1,0 +1,332 @@
+---
+title: "211-Discussion II"
+author: "Yu-Shiuan (Lily) Huang"
+date: "Fall 2023"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      tidy.opts=list(width.cutoff = 80),
+                      tidy = TRUE)
+options(width = 80)
+
+colorize <- function(x, color) {
+  if (knitr::is_latex_output()) {
+    sprintf("\\textcolor{%s}{%s}", color, x)
+  } else if (knitr::is_html_output()) {
+    sprintf("<span style='color: %s;'>%s</span>", color,
+      x)
+  } else x
+}
+```
+
+#### 2. Exploring a New Dataset using R (Part II)
+
+For today, we are using `USDC-DATASET-JOP.csv`. You can download this csv file from Canvas or from [here](https://dataverse.harvard.edu/file.xhtml?fileId=4306747&version=1.0.)
+
+```{r, message=F, warning=F, error=F}
+## Load packages
+library(tidyverse)
+
+## Import data
+df <- read_csv("/Users/yu-shiuanhuang/Desktop/method-sequence/data/USDC-DATASET-JOP.csv") 
+```
+
+##### a. Summary Statistics
+
+In the following, we will compute summary statistics for the univariate distribution of the variable that quantifies the number of defendants named in each court case (it's named `def_count`).
+
+1.  Calculate the mean
+
+    ```{r, message=F, warning=F, error=F}
+    ## This is the easy way to calculate the mean:
+    mean(df$def_count, na.rm = TRUE)
+    ```
+
+    ```{r}
+    ## How to calculate it in the long/manual way?
+
+
+
+
+    ## Try out!
+    ```
+
+    Recall the sample mean equation from the lecturer slide:
+
+    $$\bar{x} = \frac{1}{N}\sum_{i=1}^{N}x_{i}=\frac{x_{1}+x_{2}+...+x_{N}}{N}$$
+
+2.  Calculate the median
+
+    ```{r, message=F, warning=F, error=F}
+    ## This is the easy way to calculate the median:
+    median(df$def_count, na.rm = TRUE)
+    ```
+
+    ```{r}
+    ## How to calculate it in the long/manual way?
+    ## First, sort the distribution from smallest to largest values
+
+
+
+    ## Next, identify the "middle" value, which is (N+1)/2  
+
+
+
+    ## Try out!
+    ```
+
+    Since the distribution of `def_count` has an odd number, we have one median. If instead we had an even number, notice that R will automatically take **the average of the two middle values**. Technically, as Gailmard (2014) points out, any number weakly between the two middle values is a median.
+
+    ```{r, message=F, warning=F, error=F}
+    fake.data <- c(3, 0, 2, 10, 7, 1) ## notice: even number of values!
+
+    sort(fake.data)
+    median(fake.data) 
+    ```
+
+    R tells us the median is 2.5 but technically it's any number on interval $[2, 3]$.
+
+3.  Calculate the variance and standard deviation
+
+    ```{r, message=F, warning=F, error=F}
+    ## This is the easy way to calculate the variance and std. dev.:
+    var(df$def_count, na.rm = TRUE)
+    sd(df$def_count, na.rm = TRUE)
+    ```
+
+    ```{r}
+    ## How to calculate them in the long/manual way?
+    ## Sample variance
+
+
+
+    ## Sample standard deviation
+
+
+
+    ## Try out!
+    ```
+
+    Recall the sample variance equation from the lecturer slide:
+
+    $$s^2_{x}=\frac{1}{N-1}\sum_{i=1}^{N}(x_i-\bar{x})^2$$
+
+Now that you know how to manually compute the sample mean, median, variance, and standard deviation in R, let's create a custom `function` that can calculate these four descriptive statistics all at once, without relying on the built-in R functions like `mean()`, `median()`, `var()`, or `sd()`.
+
+Please manually create a function named `des_stat` by using `function()`:
+
+```{r}
+## Create your own function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Try out!
+```
+
+4.  Calculate the interquartile range (IQR)
+
+    The $n$th percentile is the value in a distribution where $n$ percent of the values are equal to or below that value. IQR is defined by the difference between the first and the third quartile.
+
+    $$ IQR = P^{75} - P^{25} $$
+
+    ```{r, message=F, warning=F, error=F}
+    ## This is the easy way to find the first and the third quartile:
+    quantile(df$def_count, 0.25) ## First quartile
+    quantile(df$def_count, 0.75) ## Third quartile
+    ```
+
+    ```{r, message=F, warning=F, error=F}
+    ## You can also use quantile function to find an arbitrary percentile
+    quantile(df$def_count, 0.87) ## the 87th percentile
+    ```
+
+    ```{r, message=F, warning=F, error=F}
+    ## Notice: R names the values it returns. That's helpful, but sometimes annoying.
+    ## Remove the name this way:
+    unname(quantile(df$def_count, 0.25))
+    unname(quantile(df$def_count, 0.75))
+    ```
+
+    ```{r, message=F, warning=F, error=F}
+    ## This is the easy way to calculate IQR:
+    IQR(df$def_count)
+
+    ## This is a longer way:
+    unname(quantile(df$def_count, 0.75)) - unname(quantile(df$def_count, 0.25))
+    ```
+
+    ```{r}
+    ## How to calculate IQR in the long/manual way (similar to the median)?
+
+    ## First, sort the distribution from smallest to largest values
+    sorted.def_count <- sort(df$def_count)
+
+
+    ## Next, identify the value at the 25th percentile: 0.25 * N (round this up to nearest integer using ceiling function)
+    sorted.def_count[ceiling(0.25*nrow(df))]
+    sorted.def_count[ceiling(0.75*nrow(df))]
+    ```
+
+5.  Find outliers
+
+    An arbitrary (but widely used) definition of an outlier is that any value in a distribution that is at least $1.5×IQR$ above the third quartile or below the first quartile.
+
+    How many outliers are there in the distribution of `def_count`?
+
+    ```{r, message=F, warning=F, error=F}
+    ## First, what is the lowest and highest threshold for outliers?
+    iqr.d <- IQR(df$def_count)
+    min.threshold <- quantile(df$def_count, 0.25) - (1.5 * iqr.d)
+    min.threshold ## -2.5
+    max.threshold <- quantile(df$def_count, 0.75) + (1.5 * iqr.d)
+    max.threshold ## 9.5
+    ```
+
+    Any data point that is smaller than -2.5 or larger than 9.5 is an outlier.
+
+    ```{r}
+    ## Please count how many outliers are there in the distribution of def_count?
+    
+    
+    
+    
+    ## Try out!
+    ```
+
+
+##### b. Plot distribution (histograms)
+
+To better observe the distribution of a variable, plot histograms! Histograms visualize quantitative data or numerical data (cardinal variables).
+
+```{r, message=F, warning=F, error=F}
+## First, we would like to define the bins that will be used later
+my.min.value <- min(df$def_count) ## Find the minimum of the variable
+my.max.value <- max(df$def_count) ## Find the maximum of the variable
+
+my.bins <- seq(my.min.value, my.max.value, 1) 
+## Generate a sequence of number that the values are from the minimum to the maximum while the increment of the sequence is 1
+```
+
+```{r, message=F, warning=F, error=F, fig.align='center', fig.width=6, fig.height=4}
+# Now, let's build a plot layer by layer:
+ggplot(df) + 
+  geom_histogram(aes(x = def_count), breaks = my.bins)
+```
+
+This histogram sucks! Why? Because it's not easy to see the most important part of the distribution (the low values). In other words: we're plotting a lot of outliers.
+
+Let's try to focus in on the part of the plot that's the most interesting. To do this, we need to exclude outliers from the data and only plot any values that are not outliers!
+
+```{r, message=F, warning=F, error=F}
+## Remember: we already figured out what the outliers are:
+outliers <- df$def_count[df$def_count < min.threshold | df$def_count > max.threshold]
+unique(sort(outliers))
+```
+
+Looks like any number 10 or above is an outlier.
+
+```{r, message=F, warning=F, error=F, fig.align='center', fig.width=6, fig.height=4}
+## So, let's tell R to only plot a histogram for values 9 and lower.
+my.max.value <- 9
+
+## Let's make the x axis numbers correspond to the bins. 
+## To do this, let's define what we want our labels to be:
+my.labs <- seq(my.min.value, my.max.value, 1)
+```
+
+```{r, message=F, warning=F, error=F, fig.align='center', fig.width=6, fig.height=4}
+ggplot2::ggplot(data = df, aes(x = def_count)) + 
+  geom_histogram(breaks = my.bins, color = "black", fill = "gray85") + 
+  scale_x_continuous(limits = c(my.min.value, my.max.value), breaks = my.labs) +
+  scale_y_continuous(breaks = seq(0,30000,2500), limits = c(0,30000)) +
+  labs(x = "Number of Defendants In Each Case", y = "Frequency") + 
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+```
+
+When using `ggplot2` to plot histograms, the frequency of each bar is calculated as only including the upper but not the lower bound. For example, for the bar 0-1, the frequency is $0<$`def_count`$<=1$.
+
+We can also manually check the exact frequency of each bar to see if 0 is excluded from the 0-1 bar.
+
+```{r, message=F, warning=F, error=F}
+df %>% count(def_count)
+```
+
+We can also add vertical lines that specify mean and median of the variable.
+
+```{r, message=F, warning=F, error=F, fig.align='center', fig.width=6, fig.height=4}
+# Let's save the mean and median as objects that we can use later.
+my.mean <- mean(df$def_count)
+my.median <- median(df$def_count)
+
+ggplot(df, aes(x = def_count)) + 
+  geom_histogram(breaks = my.bins, color = "black", fill = "gray85") + 
+  scale_x_continuous(limits = c(my.min.value, my.max.value), breaks = my.labs) + 
+  scale_y_continuous(breaks = seq(0,30000,2500), limits = c(0,30000)) + 
+  geom_vline(aes(xintercept = my.mean), size = 0.8, linetype = 2, color = "blue") +  
+  ## add the line of mean   
+  geom_vline(aes(xintercept = my.median), size = 0.8, linetype = 2, color = "red") + 
+  ## add the line of median
+  labs(x = "Number of Defendants In Each Case", y = "Frequency") + 
+  theme_bw() + 
+  theme(panel.grid.minor = element_blank())
+```
+
+We can see that the distribution of `def_count` is **right skewed**, which is also referred to positively skewed. What does this mean?
+
+A skewed distribution occurs when one tail is longer than the other. Skewness defines the asymmetry of a distribution. Unlike the familiar normal distribution with its bell-shaped curve, these distributions are asymmetric. The two halves of the distribution are not mirror images because the data are not distributed equally on both sides of the distribution's peak.
+
+How to Tell if a Distribution is Left Skewed or Right Skewed?
+
+-   **Right skewed** distributions occur when the long tail is on the right side of the distribution. Analysts also refer to them as positively skewed. This condition occurs because probabilities taper off more slowly for higher values. Consequently, you'll find extreme values far from the peak on the high end more frequently than on the low. When the distribution of data is skewed to the right, *the mean is often larger than the median*.
+
+-   **Left skewed** distributions occur when the long tail is on the left side of the distribution. Statisticians also refer to them as negatively skewed. This condition occurs because probabilities taper off more slowly for lower values. Therefore, you'll find extreme values far from the peak on the low side more frequently than the high side. When the distribution of data is skewed to the right, *the median is often greater than the mean*.
+
+How you plot frequency is important!
+
+What if I wanted to use different bin sizes?
+
+```{r, message=F, warning=F, error=F, fig.align='center', fig.width=6, fig.height=4}
+my.bins2 <- c(0,1,2.5,3.5,10)
+
+ggplot(df, aes(x = def_count)) + 
+  geom_histogram(breaks = my.bins2, color = "black", fill = "gray85") + 
+  scale_x_continuous(breaks = my.labs) + 
+  scale_y_continuous(breaks = seq(0,30000,2500), limits = c(0,30000)) +
+  labs(x = "Number of Defendants In Each Case", y = "Frequency") + 
+  theme_bw() + 
+  theme(panel.grid.minor = element_blank())
+```
+
+This feels like it's misleading, because it is!
+
+Let's fix it by using density on the y axis. Density is relative frequency per unit on the x axis. The density of each bin is calculated by dividing its relative frequency by its width in terms of units of the x variable (i.e., you divide the frequency of a group by the width of it).
+
+```{r, message=F, warning=F, error=F, fig.align='center', fig.width=6, fig.height=4}
+ggplot(df) + 
+  geom_histogram(aes(y = ..density.., x = def_count), breaks = my.bins2,
+                 color = "black", fill = "gray85") + 
+  scale_x_continuous(breaks = my.labs) + 
+  scale_y_continuous(breaks = seq(0,0.3,0.05), limits = c(0,0.3)) +
+  labs(x = "Number of Defendants In Each Case", y = "Density") + 
+  theme_bw() + 
+  theme(panel.grid.minor = element_blank())
+```

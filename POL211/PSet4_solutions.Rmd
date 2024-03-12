@@ -1,0 +1,412 @@
+---
+title: "Problem Set 4"
+author: "Pol211, UC Davis"
+date: "Due by 10/30, 2023 at 11:59 PM"
+output: 
+  pdf_document: default
+---
+
+**Note:** This problem set does not involve coding. Please write your responses by hand, or use a word processor that allows for nice math formatting (e.g., LaTeX, Word or Rmarkdown). Regardless of how you write them up, please submit your answers as a PDF file.
+
+# Question 1 (2 points)
+
+Consider the following scenario. There is an ice cream parlor with 10 different flavors of ice cream: 3 are sorbet (vegan) and 7 are milk-based. Since you are indecisive, you ask the shop to pick two scoops for you at random. Note that this could also mean you get two scoops of the same flavor. You can think of this as picking flavors "with replacement" -- the flavor of the first scoop does not affect the flavor of the second scoop. For the purposes of our analysis, we care about whether you each scoop is a sorbet or milk-based.
+
+1. Considering the type of ice cream you sample (sorbet or milk-based), what are the possible outcomes of an experiment like this? Remember that you get two scoops of two randomly selected flavors. (Hint: What is the sample space?)
+
+2. Define a random variable to "translate" the sample space into numbers. Call this random variable $X$. How many possible values can your random variable take, and what are they?
+
+3. Define the probability mass function for this random variable. Recall that the probability mass function is a function that assigns a probability to each possible realization of a random variable. 
+
+4. What is the probability that you get "mixed" scoops, i.e. one scoop is sorbet and the other is milk-based?
+
+**Answers:**
+
+1. The possible outcomes are: (1) both scoops are sorbet, (2) both scoops are milk-based, (3) the first scoop is sorbet and the second scoop is milk-based, (4) the first scoop is milk-based and the second scoop is sorbet. Let's say we denote sorbet by $S$ and milk-based by $M$. Then, the possible outcomes are: (1) $SS$, (2) $MM$, (3) $SM$, (4) $MS$. We can also say that the sample space is $S=\{SS, MM, SM, MS\}$.
+    - **Note:** Alternatively, we could also define 3 outcomes: (1) both scoops are sorbet ($S$), (2) both scoops are milk-based ($M$), (3) the scoops are different ($D$). In this case, the sample space would be $S=\{S, M, D\}$. In this case, we do not care about the order of the scoops. In that case, the answers for 1.2 and 1.3 would be slightly different.
+
+2. Here is an example of a random variable. We have simply translated each possible outcome into a number.
+
+$$
+X = \begin{cases}
+0 & \text{if } s=SS \\
+1 & \text{if } s=MM \\
+2 & \text{if } s=SM \\
+3 & \text{if } s=MS
+\end{cases}
+$$ 
+
+3. Here is the PMF. We get there by simply multiplying the probabilities of each scoop being either $S$ or $M$. The probabilities are $Pr(S) = 3/10$ and $Pr(M) = 7/10$.
+
+$$
+f(x) = \begin{cases}
+0.09 & \text{if } s=SS \\
+0.49 & \text{if } s=MM \\
+0.21 & \text{if } s=SM \\
+0.21 & \text{if } s=MS
+\end{cases}
+$$
+
+4. The probability of getting mixed scoops is $Pr(SM) + Pr(MS) = 0.21 + 0.21 = 0.42$.
+
+
+# Question 2 (2 points)
+
+Assume we have the following discrete random variable, which can take on 4 different values.
+
+$$
+X = \begin{cases}
+1 & \text{with probability } 0.2 \\
+2 & \text{with probability } 0.3 \\
+3 & \text{with probability } 0.25 \\
+4 & \text{with probability } 0.25
+\end{cases}
+$$
+
+This random variable has a probability mass function $f(x)$, where we have, for example, $f(1) = 0.2$. The function tells us that the prbability of $X$ taking on the value 1 is 0.2. We can also write this as $Pr(X = 1) = 0.2$. As is standard, we denote the random variable by $X$ and the possible values it can take on by $x$.
+
+1. For this to be a valid PMF, we need three conditions. For the purposes of this problem set, you can assume that the following condition fulfilled: "For any subset of possible outcomes, the probability that any one of those outcomes arises is the sum of the probabilities of each outcome". What are the other two conditions? State them and check whether the function given above fulfills them.
+
+2. What is the probability that $X$ takes on a value smaller or equal than 2?
+
+3. Write down the cumulative distribution function (CDF) for $X$. Remember that the definition of the CDF is $F(x) = Pr(X \leq x)$, where $X$ is the random variable and $x$ is a possible value of that random variable.
+
+4. Draw a graph of the CDF of $X$, with $x$ on the x-axis and $F(x)$ on the y-axis.
+
+**Answers:** 
+
+1. The other two conditions are: 
+    - $1\geq f(x) \geq 0$ for all $x$. This is fulfilled, since none of the probabilities are negative or larger than 1.
+    - $\sum_x f(x) = 1$. We can add up the probabilities to check this: $0.2 + 0.3 + 0.25 + 0.25 = 1$. So this is also fulfilled.
+
+2. We can simply add up the probabilities of $X$ taking on the values 1 and 2: $Pr(X \leq 2) = Pr(X=1) + Pr(X=2) = 0.2 + 0.3 = 0.5$.
+
+3. The definition of the CDF is $F(x) = Pr(X \leq x)$. We can write this as follows (note that the previous question is helpful here):
+
+$$
+F(x) = \begin{cases}
+0 & \text{if } x < 1 \\
+0.2 & \text{if } 1 \leq x < 2 \\
+0.5 & \text{if } 2 \leq x < 3 \\
+0.75 & \text{if } 3 \leq x < 4 \\
+1 & \text{if } x = 4 \\
+\end{cases}
+$$
+
+4. Here is a graph of the CDF:
+
+![](graph.pdf)
+
+
+
+
+
+
+
+
+
+# Question 3 (2 points)
+
+**Note 1:** You may find section 3.2--3.4 of the Gailmard book helpful for this question.
+
+**Note 2:** Short explanations (1-2 sentences) are sufficient for this question. 
+
+A colleague wants to study the relationship between socialization in college, particularly major choice, and political behavior. Your colleague argues that undergraduates that decide to major in economics rather than political science will become more likely to vote Republican later in life, since standard economic theory often espouses the idea that markets are efficient and that government intervention is counterproductive. Your colleague argues that this may then cause economics majors to be more likely than political science majors to vote Republican later in life, since the Republican party often advocates for free markets and less government intervention. To study this question, your colleague conducts a survey of UC Davis alumni who graduated in the last 5 years.
+
+1. Do you believe the data generating process described here is deterministic or stochastic? Briefly explain your answer.
+
+2. One source of uncertainty is sampling uncertainty. Please elaborate on how this could apply in this setting. In particular, please define a "population" that your colleague is sampling from, and explain how uncertainty could arise due to sampling.
+
+**Answers:**
+
+1. Stochastic. There is little reason to believe that choosing either one of the two major always leads to the same outcome. For example, there are many other factors that could influence whether someone votes Republican or not.
+
+2. We could define the overall population as all college students who have graduated in the last 5 years, and have majored in PS or Econ. We are just taking a sample from this population. A different sample could lead to different results, i.e. the quantities we estimate depend on the sample we draw. 
+
+# Question 4 (4 points)
+
+We will now look at the following discrete joint distribution. Here, the rows are values of $X$ and the columns are values of $Y$. The values in the cells are the probabilities of each combination of $X$ and $Y$, which is just the definition of the joint distribution.
+
+$$
+\begin{array}{c|cc}
+X \backslash Y & 1 & 2 \\
+\hline
+1 & 0.2 & 0.1 \\
+2 & 0.1 & 0.2 \\
+3 & 0.1 & 0.3
+\end{array}
+$$
+
+1. What are the marginal distributions of $X$ and $Y$? 
+
+2. What is the conditional distribution of $X$ given $Y=1$?
+
+3. Calculate the expected value of $X$ and the expected value of $X$ given that $Y=1$ (we call the latter the *conditional expectation* of $X$ given $Y=1$)
+
+4. Assume we have a new random variable $Z$, which is defined as $3+2X$. What is the expected value of $Z$?
+
+**Hint 1:** You will need the marginal distribution of $X$ as well as the conditional distribution from question 2 to answer question 3.
+
+**Answer:**
+
+1. To get the marginal distribution for say $X=1$, we simply have to find all cells in the joint distribution for which $X=1$ and add up the probabilities. It works the same way for $X=2$ and $X=3$. The marginal distributions of $X$ and $Y$ are:
+
+$$
+\begin{array}{c|ccc}
+X & 1 & 2 & 3 \\
+\hline
+Pr(X) & 0.3 & 0.3 & 0.4 \\
+\end{array}
+$$
+
+$$
+\begin{array}{c|cc}
+Y & 1 & 2 \\
+\hline
+Pr(Y) & 0.4 & 0.6 \\
+\end{array}
+$$
+
+2. The conditional distribution of $X$ given $Y=1$ is:
+
+$$
+\begin{array}{c|cc}
+X  & Pr(X|Y=1) \\
+\hline
+1 & 0.5 \\
+2 & 0.25 \\
+3 & 0.25
+\end{array}
+$$
+
+3. $E(X)$ and $E(X|Y=1)$ are:
+
+\begin{align*}
+E[X] &= \sum_{i=1}^3 x_i Pr(X=x_i) \\
+&= 1 \cdot 0.3 + 2 \cdot 0.3 + 3 \cdot 0.4 \\
+&= 2.1
+\end{align*}
+
+
+\begin{align*}
+E[X|Y=1] &= \sum_{i=1}^3 x_i Pr(X=x_i|Y=1) \\
+&= 1 \cdot 0.5 + 2 \cdot 0.25 + 3 \cdot 0.25 \\
+&= 1.75
+\end{align*}
+
+4. Based on the properties of the expectation:
+
+$$
+E[3+2X] = E(3) + E(2X) = 3 + 2E(X) = 3 + 2 \cdot 2.1 = 7.2
+$$
+
+
+
+
+## Question 5 (2 points)
+
+Evaluate the following statements. For each of these statements, please (i) state whether it is true or false and (ii) briefly explain why it is true or false. 
+
+**Note:** Recall that the probability density function / probability mass function of a random variable $X$ is called $f(x)$, and the cumulative distribution function is called $F(x)$.
+
+1. For a discrete random variable $X$ that can take values from 1 to 10, it can be the case that $f(a)>f(b)$ and also $F(a)>F(b)$ for some $a<b$, where both $a$ and $b$ are whole numbers between 1 and 10.
+
+2. To account for theoretical uncertainty, it is always a good idea to specify a more complex theoretical model that ideally captures all possible ways in which the data could have been generated.
+
+3. Calculating the conditional expectation $E[X|Y=y]$ for different values of $y$ can be useful to understand whether there is an association between $X$ and $Y$.
+
+4. Assume we have a continuous random variable with probability density function $f(x)$. $X$ can take on any values between 0 and 1. In this case, the probability $P(X\leq 0.5)$ is the area under the curve of $f(x)$ between 0.5 and 1.
+
+
+**Answers:**
+
+1. False. The statement is correct regarding the PMF, but not the CDF. The PMF is a function that assigns probabilities to each possible value of $X$. Therefore, it is possible that $f(a)>f(b)$ for some $a<b$. The CDF, on the other hand, tells us the probability that $X$ is smaller or equal than a certain value. Therefore, it is not possible that $F(a)>F(b)$ if the number $a$ is smaller than $b$. To give an example, if we know that $Pr(X\leq 2)=0.5$ then it is not possible that $Pr(X\leq 1)>0.5$, since $Pr(X\leq 2)=Pr(X\leq 1)+Pr(X=2)$. Since the probabilities are always weakly positive, this means that $Pr(X\leq 1)$ is at most $0.5$ in cases where $Pr(X= 2)=0$, but it can never be greater than that.
+
+2. False. In many cases this will make the analyses much more complicated -- we are usually looking for a model that is simple enough for us to be able to analyze / understand it.
+
+3. True.  To give an example, assume we have a random variable $X$ that is the number of hours a student studies for an exam, and $Y$ is the grade the student gets on the exam. If $E[X|Y=y]$ is increasing in $y$, this means that students who get higher grades tend to study more. This is an example of a positive association between $X$ and $Y$.
+
+4. False. The probability $P(X\leq 0.5)$ is the area under the curve of $f(x)$ between 0 and 0.5. The area under the curve between 0.5 and 1 is $P(X>0.5)$.
+
+# Question 6 (required for students in the methods subfield, 3 points)
+
+## 6.1
+
+Assume we have a continuous random variable with the following probability density function (PDF):
+
+$$
+f(x) = \begin{cases}
+ax & \text{if } 0 \leq x \leq 2 \\
+0 & \text{otherwise}
+\end{cases}
+$$
+
+Here, $a$ is a constant (i.e. just a number). One requirement for this to be a proper probability density function is that the integral over all possible values of $X$ is equal to 1. In other words, we need to have:
+
+$$
+\int_{0}^{2} f(x) dx = 1
+$$
+
+Note that the integral has to be over all possible values of $x$, which in this case is $0 \leq x \leq 2$. 
+
+- First, identify which value the constant $a$ has to have to make this a proper probability density function. 
+- Then, calculate the expected value of $X$.
+
+**Answer:** We can first calculate the value of the integral:
+
+\begin{align*}
+\int_{0}^{2} f(x) dx &= \int_{0}^{2} ax dx \\
+&= \left[\frac{ax^2}{2}\right]^2_0 \\
+&= 2a
+\end{align*}
+
+We know that the integral above has to be equal to 1, so we can solve for $a$. This simply means that $1=2a$, which implies that $a=1/2$.
+
+Now, we can calculate the expected value of $X$, which does not depend on $a$:
+
+\begin{align*}
+E[X] &= \int_{0}^{2} x f(x) dx \\
+&= \int_{0}^{2} x \frac{1}{2}x dx \\
+&= \left[\frac{1}{2}\frac{x^3}{3}\right]^2_0 \\
+&= \frac{4}{3}
+\end{align*}
+
+
+## 6.2
+
+Assume you have the following continuous joint PDF for the variables $X$ and $Y$ 
+
+$$
+f(x,y) = \begin{cases}
+\frac{3}{2}y^2 & \text{if } 0 \leq x \leq 2 \text{ and } 0 \leq y \leq 1 \\
+0 & \text{otherwise} 
+\end{cases}
+$$
+
+- What are the marginal probability density functions of $X$ and $Y$? 
+
+- Given what you found, are the two variables independent?
+
+**Hint:** When you integrate over one of the two variables in a joint distribution, then the limits of integration should be the range of values that the variable can take on. For example, if you want to integrate over $X$, then the limits of integration should be $0 \leq x \leq 2$.
+
+**Answer:** 
+
+To get the marginal distribution of $X$, we need to integrate over all values $y$. This gives us:
+
+\begin{align*}
+f_X(x) &= \int_0^1 \frac{3}{2}y^2 dy \\
+&= \left[\frac{1}{2}y^3\right]^1_0 \\
+&=\frac{1}{2}
+\end{align*}
+
+We can do the same for $Y$:
+
+\begin{align*}
+f_Y(y) &= \int_0^2 \frac{3}{2}y^2 dx \\
+&= \left[\frac{3}{2}xy^2\right]^2_0 \\
+&= 3y^2
+\end{align*}
+
+Note the definition of independence requires that the joint distribution is equal to the product of the marginal distributions. In this case, we have:
+
+$$
+f(x,y) = \frac{3}{2}y^2 \neq f_X(x)f_Y(y) = \frac{3}{2}y^2
+$$
+
+Therefore, we can conclude that $X$ and $Y$ are independent.
+
+## 6.3 
+
+Now, let's look at the following joint distribution. Note that $c$ is just a constant.
+
+\begin{align*}
+f(x,y) = \begin{cases}
+c(x+y^2) & \text{if } 0 \leq x \leq 1 \text{ and } 0 \leq y \leq 1 \\
+0 & \text{otherwise}
+\end{cases}
+\end{align*}
+
+- Find the conditional distribution of $X$ given $Y$, i.e. $f_{X|Y}(x|y)$.
+- Then, calculate the following quantity: $Pr[X<\frac{1}{2}|Y=\frac{1}{2}]$. 
+
+**Note:** Unlike in 6.1, it is not necessary to find the value of $c$ to answer this question. You can just treat $c$ as a constant throughout the calculations. If you do everything correctly, you will see that $c$ eventually disappears from the final expression.
+
+**Hint:** To calculate the second quantity, you can just plug $Y=1/2$ into the conditional distribution you found, and use integration to find the desired quantity.
+
+**Answer:** For this, we first need to find the marginal distribution of $Y$. 
+
+\begin{align*}
+f_Y(y) = \int_0^1 c(x+y^2) dx = \left[c\left(\frac{x^2}{2}+xy^2\right)\right]^1_0 = \frac{c}{2} + cy^2
+\end{align*}
+
+Now to find the conditional distribution of $X$ given $Y$, we need to divide the joint distribution by the marginal distribution of $Y$:
+
+\begin{align*}
+f_{X|Y}(x|y) &= \frac{f(x,y)}{f_Y(y)} \\
+&= \frac{c(x+y^2)}{\frac{c}{2} + cy^2} \\
+&= \frac{2(x+y^2)}{1 + 2y^2}
+\end{align*}
+
+Next, we want this quantity: $Pr[X<\frac{1}{2}|Y=\frac{1}{2}]$. We can first plug in $Y=1/2$ into the conditional distribution we found, which gives us:
+
+\begin{align*}
+f_{X|Y}(x|\frac{1}{2}) &= \frac{2(x+\frac{1}{4})}{1 + \frac{1}{2}} \\
+&= \frac{4(x+\frac{1}{4})}{3}
+\end{align*}
+
+We now have the distribution we need. The probability we want is then:
+
+\begin{align*}
+Pr[X<\frac{1}{2}|Y=\frac{1}{2}] &= \int_0^{\frac{1}{2}} \frac{4(x+\frac{1}{4})}{3} dx \\
+&= \left[\frac{4}{3}\left(\frac{x^2}{2}+\frac{x}{4}\right)\right]^{\frac{1}{2}}_0 \\
+&= \frac{1}{3}
+\end{align*}
+
+Note that this is just the same as the "usual" way of calculating probabilities for continuous distributions, i.e. we evaluate the integral between the minimum of $X$ and the value we are interested in ($\frac{1}{2}$). The only difference is that we use the conditional distribution instead of the marginal distribution.
+
+Finally, note that we could also have calculated a more general version of this where we plug in $Y=y$ instead of $Y=1/2$ into the conditional distribution. This would give us:
+
+\begin{align*}
+Pr[X<\frac{1}{2}|Y=y] &= \int_0^{\frac{1}{2}} \frac{4(x+y^2)}{3} dx \\
+&= \left[\frac{4}{3}\left(\frac{x^2}{2}+xy^2\right)\right]^{\frac{1}{2}}_0 \\
+&= \frac{2}{3}\left(\frac{1}{4}+y^2\right)
+\end{align*}
+
+The nice thing about this expression is that we can can now plug in any value of $y$ we want. Also, we see that the probability that $X$ is smaller than $\frac{1}{2}$ is increasing in $y$.
+
+
+# Question 7 (extra credit, 1 point)
+
+Assume we have a continuous random variable $X$ with the following probability density function (PDF):
+
+$$
+f(x) = \begin{cases}
+3x^2 & \text{if } 0 \leq x \leq 1 \\
+0 & \text{otherwise}
+\end{cases}
+$$
+
+Calculate the expected value of $X$. 
+
+**Answer:**
+
+We can use the definition of the expected value of continuous random variables to calculate this:
+
+\begin{align*}
+E[X] &= \int_0^1 x f(x) dx \\
+&= \int_0^1 x 3x^2 dx \\
+&= \left[\frac{3x^4}{4}\right]^1_0 \\
+&= \frac{3}{4}
+\end{align*}
+
+
+
+
+
+
+
+
+
+
+
+

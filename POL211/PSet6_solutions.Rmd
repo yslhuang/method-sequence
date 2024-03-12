@@ -1,0 +1,452 @@
+---
+title: "Problem Set 6"
+author: "Pol211, UC Davis"
+date: "Due by 11/13, 2023 at 11:59 PM"
+output: 
+  pdf_document: default
+---
+
+**Note:** You can skip questions 1--4 if you decide to answer question 7. However, this requires that you seriously attempt to answer all parts of question 7, i.e. you cannot skip questions 1--4 and then just provide minimal answers to question 7.
+
+# Question 1 (3 points)
+
+**a.** For continuous distributions, please provide the defintion of the cumulative distribution function (CDF). Very briefly, in your own words, describe what it tells us. Finally, how can we calculate the CDF for a normal distribution in R?
+
+For the rest of the question, assume you have a normal distribution as follows:
+
+$$X \sim N(\mu = -1, \sigma^2 = 4)$$
+
+**b.** What is the probability of observing a value of $X$ that is greater than 0? Use R for this.
+
+**c.** Determine $x$ such that $P(X \leq x) = 0.25$. Use R for this.
+
+**d.** Given what we know about the distribution of $X$, what is the standard deviation of the mean of a random sample of size 100 from this distribution? Do not use R to answer this question.
+
+**e.** In R, generate a random sample of size 100 from this distribution and calculate the sample mean and sample variance. How do these values compare to the population parameters $\mu = -1$ and $\sigma^2 = 4$?
+
+**f.** Use the `dnorm` function in R to plot the probability density function of this distribution. 
+
+**Answer:**
+
+**a.** The CDF of a continuous random variable $X$ is defined as $F(x) = P(X \leq x)$ or $F(x) = P(X<x)$, with the two being equivalent in the continuous case . The CDF tells us the probability that $X$ is less than or equal to a particular value $x$. In R for a normal distribution, we can use the `pnorm()` function to calculate the CDF.
+
+**b.** We can use the `pnorm()` function to calculate the probability of observing a value of $X$ that is greater than 0. `pnorm` gives you the CDF of the normal distribution. Since we want the probability of observing a value of $X$ that is greater than 0, we need to calculate $1 - P(X \leq 0)$. 
+
+```{r}
+1 - pnorm(0, mean = -1, sd = 2)
+```
+
+**c.** We can use the `qnorm()` function to calculate the value of $x$ such that $P(X \leq x) = 0.25$. 
+
+```{r}
+qnorm(0.25, mean = -1, sd = 2)
+```
+
+**d.** The standard deviation of the mean of a random sample of size 100 from this distribution is equal to $\frac{\sigma}{\sqrt{N}} = \frac{2}{\sqrt{100}} = 0.2$. This follows from the fact that the variance of the sample mean is equal to $\frac{\sigma^2}{N}$, where $\sigma^2$ is the variance of the original distribution.
+
+**e.** We can use the `rnorm()` function to generate a random sample of size 100 from this distribution. 
+
+```{r}
+set.seed(1)
+
+x <- rnorm(100, mean = -1, sd = 2)
+
+mean(x)
+
+var(x)
+```
+
+The exact values of the sample mean and sample SD depend on the seed used, but shoud generally be close to the population parameters $\mu = -1$ and $\sigma^2 = 4$.
+
+**f.** We can use the `dnorm()` function to plot the probability density function of this distribution. 
+
+```{r}
+x <- seq(-10, 10, by = 0.01)
+
+y <- dnorm(x, mean = -1, sd = 2)
+
+plot(x, y, type = "l")
+```
+
+\clearpage
+
+## Question 2 (2 points)
+
+Suppose you have a random variable $X$ with a uniform distribution on the interval $[0, 1]$:
+
+$$X \sim \text{Unif}(0, 1)$$
+
+**a.** What real life concept might you statistically model with a DGP that has a distribution like this?
+
+**b.** Draw two samples from this distribution, one with $N=20$ and one with $N=1,000$. For each of the two samples, calculate the sample mean and the standard error of the sample mean. 
+
+**c.** Now, you will simulate the sampling distributions of $\bar{X}$ for the two sample sizes given above. To do this, you will draw 1,000 samples of size $N=20$ and 1,000 samples of size $N=1,000$ from the distribution of $X$. For each of the two sample sizes, calculate the sample mean for each of the 1,000 samples. Then, use histograms to plot the distribution of 1,000 values of $\bar{X}$ for the two sample sizes.
+
+**d.** You will notice that the two distributions look like distributions we know. Briefly comment on why this is, i.e. why the distributions of the sample means follow a specific distribution. Finally, why is one of the two distributions "wider" than the other one? 
+
+**Answer:**
+
+**a.** One example is any variable that measures a proportion, e.g. the proportion of people who vote for a particular candidate in an election.
+
+**b.** We can use the `runif()` function to draw random samples from a uniform distribution. 
+
+```{r}
+
+set.seed(1)
+
+x1 <- runif(20, min = 0, max = 1)
+
+x2 <- runif(1000, min = 0, max = 1)
+
+mean(x1)
+
+sd(x1) / sqrt(20)
+
+mean(x2)
+
+sd(x2) / sqrt(1000)
+```
+
+**c.** We can use the `replicate()` function to draw 1,000 samples of size $N=20$ and 1,000 samples of size $N=1,000$ from the distribution of $X$. 
+
+```{r}
+
+set.seed(1)
+
+x1 <- replicate(1000, mean(runif(20, min = 0, max = 1)))
+
+x2 <- replicate(1000, mean(runif(1000, min = 0, max = 1)))
+
+```
+
+We can then plot the sampling distributions of $\bar{X}$ for the two sample sizes.
+
+```{r}
+
+hist(x1, breaks = 20, freq = FALSE, main = "Sampling Distribution of X1")
+
+hist(x2, breaks = 20, freq = FALSE, main = "Sampling Distribution of X2")
+```
+
+**d.** The sampling distributions of $\bar{X}$ for the two sample sizes follow a normal distribution. This is because the sample mean is a linear combination of random variables, and the central limit theorem tells us that the distribution of the sample mean converges to a normal distribution as the sample size goes to infinity.
+
+The sampling distribution of $\bar{X}$ for $N=20$ is wider than the sampling distribution of $\bar{X}$ for $N=1,000$ because the variance of the sample mean decreases with the size of the sample $N$. 
+
+\clearpage
+
+## Question 3 (0.5 points)
+
+ A colleague analyses a 2023 survey of 778 high schools seniors who intend to attend college. Among them, about 25% ruled out colleges solely due to the politics, policies, or legal situation in the state where the school was located.\footnote{Based on this survey: https://indd.adobe.com/view/f7cb9b98-22ad-433e-bd68-ef225093ab27}
+
+Your colleague wonders why it makes sense to think about the variance of this proportion. She argues that she has only one dataset, and can therefore only calculate one proportion, so why would she care about whether this proportion varies. In simple terms, provide a brief explanation why it makes sense to think about the variance of this proportion.
+
+**Answer:** 
+
+In frequentist statistics, the sample mean is a random variable, since the mean will be different for every sample that we draw. If your colleague were to draw a different sample of high school seniors, she would get a different proportion of students who ruled out colleges solely due to the politics, policies, or legal situation in the state where the school was located. To characterize how much the sample mean varies across samples, we can calculate the variance (or standard error) of the sample mean. Note that the variance of the sample mean can be calculated even if we only have one sample.
+
+\clearpage
+
+## Question 4 (1 point)
+
+Assume you want to conduct an opinion poll to estimate the **proportion of voters** in the US who support presidential candidates Kang or Kodos, ranging from 0 (none of them) to 1 (all of them). Assuming that the true population proportion of people who support Kang over Kodos is 0.5. We already know that, in expectation, the estimated share of people who vote Kang in your poll should be 0.5. However, you will always get slightly different values since each poll is a sample from the set of all voters. 
+
+**a.** What is the minimum sample size you need to make sure that the standard error of your estimate is at most one percentage point (i.e. such that the standard error $SE(\bar{X})\leq0.01$)?\footnote{Here, we can think of this "standard error" as something similar to the "margin of error" that you commonly see in opinion polls.}
+
+**Note:** The sample mean $\bar{X}$ is the proportion of people who support candidate Kang. It is *not* the number of people. 
+
+**b.** Use a simulation to verify your answer to the previous question. To do this, you will need to simulate many samples of the sample size you calculated in the previous question. You can then obtain the distribution of the sample mean across all samples. Then, you can calculate the standard error of the sample mean. How does this compare to the standard error you calculated in the previous question?
+
+**Note:** you should not use R to answer the first question. Instead, you should use the definitions we discussed in lecture. The second question requires R.
+
+**Answer:**
+
+**a.** We know that the variance of the sample mean is given by $\frac{\sigma^2}{N}$. In this case, we know that $$\sigma^2 = 0.5 \times 0.5 = 0.25$$ since we are dealing with a Bernoulli distribution. For a Bernoulli distribution, the variance is equal to $p(1-p)$, where $p$ is the probability of success. We can think of a success as supporting Kang, although in this case it does not matter whether we define success as supporting Kang or Kodos, since $p=0.5$.
+
+We want to find the minimum sample size $N$ such that $\sqrt{\frac{0.25}{N}} \leq 0.01$, so we have to solve for $N$:
+
+$$
+\begin{aligned}
+\sqrt{\frac{0.25}{N}} & \leq 0.01 \\
+\frac{0.25}{N} & \leq 0.0001 \\
+\frac{0.25}{0.0001} & \leq N \\
+2500 & \leq N
+\end{aligned}
+$$
+
+This says that $N$ needs to be at least 2500 for the SE of the mean to be equal to 0.01. 
+
+**b.** We can use a simulation to verify this result. We can use the `rbinom()` function to simulate a sample of size $N$ from a Bernoulli distribution with $p=0.5$. We can then calculate the sample mean for each of the samples. We can then calculate the standard error of the sample mean across all samples. 
+
+```{r}
+
+set.seed(1)
+
+N <- 2500
+
+x <- replicate(1000, mean(rbinom(N, size = 1, prob = 0.5)))
+
+sd(x)
+
+```
+
+Looks the estimated SE of the mean for $N=2500$ is about $0.01$, which is what we expected given the previous question.
+
+\clearpage
+
+# Question 5 (1.5 points)
+
+**Note:** this question is a continuation of the previous question.
+
+Let's now assume a different DGP which states that the population probability of any given person voting for Kang is 0.6. Let's define the population as all voters for a certain election. Therefore, Kang will eventually win, since 60% of all voters will vote for Kang.
+
+You are a pollster who is trying to predict the election. Your method is very simple -- you randomly sample 101 voters and ask them who they will vote for. You then identify the candidate who has the most votes in your sample and predict that this candidate will win the election.\footnote{We assume all voters either vote for Kang or Kodos, i.e. no one abstains from voting.}
+
+**a.** Let's think of each voter in your sample as a draw from a Bernoulli distribution. By the central limit theorem, we know what the distribution of the sample mean will be. What is this distribution, and what is its mean and variance?
+
+**Hint 1:** The sample mean $\bar{X}$ of Bernoulli draws $X_1,X_2,\dots,X_N$ is just the proportion of draws that are equal to one. In class, we derived the expectation and standard error of the sample mean $\bar{X}$.
+
+**b.** Since you sample 101 voters, every sample is going to look different. Assuming you draw many samples, what is the share of samples for which you (correctly) predict that Kang will win the election?
+
+**Note:** Rounding answers is fine for both **a.** and **b.**. You should not use a simulation of the samples to answer this question. You can, however, use R.
+
+**c.** Assume the central limit theorem does not hold. In this case, would it be possible to give an answer to **b.**? Briefly explain why or why not.
+
+**Answer:**
+
+**a.** The distribution of the sample mean is a normal distribution with mean equal to the population mean ($\mu = 0.6$) and variance equal to $\frac{p(1-p)}{N}$, where $p$ is the population probability of success. In this case, $p=0.6$, and $N=101$. The variance of the sample mean is equal to $\frac{0.6 \times 0.4}{101} \approx 0.0024$.
+
+**b.** Based on the previous answers, we now the distribution of the sample mean. We also know that our prediction is correct if the sample mean is greater than 0.5. This is because we predict Kang to win if the sample mean is greater than 0.5, and Kodos to win if the sample mean is less than 0.5. 
+
+As a result, we simply need to know the probability that the sample mean is greater than 0.5. We can use the `pnorm()` function, which gives us the CDF, to calculate this probability, since we know the distribution of the sample mean. We calculate the following quantity: 
+
+$$P(\bar{X} > 0.5) = 1 - P(\bar{X} \leq 0.5)=1- F(0.5)$$
+
+where $\bar{X}\sim N(\mu = 0.6, \sigma^2 = 0.0024)$, and $F$ is the CDF of the normal distribution.:
+
+```{r} 
+
+1 - pnorm(0.5, mean = 0.6, sd = sqrt(0.0024))
+
+```
+
+The probability that we correctly predict that Kang will win the election is about 0.98 (alternatively, the share of samples in which we correctly predict that Kang will win the election is about 98%).
+
+This is a very high rate of correct predictions even though we only sample 101 voters ! 
+
+**c.** If the central limit theorem does not hold, we cannot give an answer to **b.**. This is because we do not know the distribution of the sample mean. In that case, we would need to know the distribution of the sample mean to calculate the probability that we correctly predict that Kang will win the election.
+
+\clearpage
+
+# Question 6 (2 points)
+
+Please evaluate the following statements. If the statement is true, explain why. If the statement is false, explain why.
+
+**a.** Assume you have $X\sim \text{Unif}(a,b)$. For a sample $X_1, X_2, ..., X_n$, the expectation of the sample mean is $E(\bar{X}) = \frac{a+b}{2}$, and the variance of the sample mean is $Var(\bar{X}) = \frac{(b-a)^2}{12}$.
+
+**b.** Any quantity that is a function of random variables (like the sum of random variables or the random variable multiplied by a constant) is a random variable.
+
+**c.** The distribution of the sample mean $\bar{X}$ for random variable $X$ converges to a normal distribution if (i) the sample size $N$ is large and (ii) the distribution of $X$ is continuous.
+
+**d.** The following code will always produce different results, since we are sampling values of a random variable:
+
+```{r}
+
+set.seed(1)
+
+x <- rnorm(5, mean = 0, sd = 1)
+x
+```
+
+**e.** An unbiased estimator can result in an estimate that is very different from the population parameter that it is supposed to estimate.
+
+**f.** For the regression coefficient $\hat{\beta}$ to be an unbiased estimate of the true population coefficient $\beta$, the error term $\varepsilon$ has to be equal to zero for all observations.
+
+**g.** The only way to gain information about the variance of an estimator, like the sample mean or the regression coefficient, is to draw many samples and then calculate the variance of the estimator across all samples.
+
+**h.** The following code uses simulation to approximate $P(Y<3)$ for $Y\sim N(\mu = 2, \sigma^2 = 5)$:
+
+```{r}
+
+set.seed(1)
+
+x <- rnorm(1000, mean = 0, sd = 1)
+y <- 3*x + 2
+
+mean(y < 3)
+```
+
+
+**Answers:**
+
+**a.** False. The statement is correct about the expectation, but the variance of the sample mean is equal to $\frac{(b-a)^2}{12N}$, where $N$ is the sample size. The variance of the sample mean always depends on the sample size.
+
+**b.** True. Any quantity that is a function of random variables is a random variable. This is because the value of the quantity will be different for every sample that we draw.
+
+**c.** False. The distribution of the sample mean $\bar{X}$ converges to a normal distribution no matter whether the distribution of $X$ is continuous or discrete.
+
+**d.** False. The code will always produce the same results, since we are setting the seed to 1. This means that the random number generator will always produce the same sequence of random numbers.
+
+**e.** True. An unbiased estimator can result in an estimate that is very different from the population parameter that it is supposed to estimate. For small sample sizes, estimators can have high variance. Since estimators like the sample mean are random variables, high variance means that our estimates can be very different from the population parameter that we are trying to estimate.
+
+**f.** False. For the regression coefficient $\hat{\beta}$ to be an unbiased estimate of the true population coefficient $\beta$, the covariance between the independent variable $X$ and the error term $\varepsilon$ has to be equal to zero. 
+
+**g.** False. We have a formula for a the variance of the sample mean, which is equal to $\frac{\sigma^2}{N}$, where $\sigma^2$ is the variance of the original RV. We do not need to draw many samples to calculate the variance of the sample mean. 
+
+**h.** False. Here, we sample from $X$ and then create a new RV that is equal to $Y = 3X + 2$. Therefore, the expectation of $Y$ is $E(Y) = 3E(X) + 2 = 2$. The variance of $Y$ is equal to $Var(Y) = Var(3X + 2) = 9Var(X) = 9$. Therefore, $Y\sim N(\mu = 2, \sigma^2 = 9)$. We can use the `pnorm()` function to calculate $P(Y<3)$:
+
+```{r}
+
+pnorm(3, mean = 2, sd = 3)
+
+```
+
+This value should be very close to what we get from the code above.
+
+\clearpage
+
+# Question 7 (required for students in the methods subfield, 3 points)
+
+## 7.1 (1 point)
+
+An important result in statistics is the weak large of large numbers (WLLN), which we will now prove. It states the following:
+
+$$\lim_{n \to \infty} P(|\bar{X}_N - \mu| > \epsilon) = 0$$
+
+where $\bar{X}_N$ is the sample mean of a sample with $N$ iid draws from an RV $X$ with population mean $\mu$. The WLLN say that the probability that the sample mean is more than $\epsilon$ away from the population mean goes to zero as the sample size goes to infinity. This is called convergence in probability. 
+
+
+**a.** As a first step, prove the following, where $\bar{X}_N$ is the sample mean of a sample with $N$ draws from an RV $X$ with population mean $\mu$ and finite variance $\sigma^2$:
+
+$$\lim_{n \to \infty} E[(\bar{X}_N - \mu)^2] = 0$$
+
+**Hint 1:** You can use the fact that $E(\bar{X}_N)=\mu$
+
+**Hint 2:** The proof is short.
+
+**b.** An important inequality in probability theory is Chebyshev's inequality. It states the following:
+
+$$P(|Y|\geq \epsilon) \leq \frac{E(Y^2)}{\epsilon^2}$$
+
+Here, $Y$ is  a random variable and $\epsilon$ is a positive number.
+
+Use Chebyshev's inequality and the result from **a.** to prove the weak law of large numbers, which is stated above.
+
+Finally, briefly explain why the variance of the original RV has to be finite for the weak law of large numbers to hold.
+
+**Answer:**
+
+**a.** We can use the fact that $Var(\bar{X}) = E[(\bar{X}_N - E(\bar{X}_N))^2]= E[(\bar{X} - \mu)^2]$. We know that $Var(\bar{X}) = \frac{\sigma^2}{N}$. So the limit is equal to $\lim_{n \to \infty} \frac{\sigma^2}{N}$. As $N$ goes to infinity, this limit goes to zero, since $\sigma^2$ is a constant.
+
+**b.** To recap, we want to show the following:
+
+$$\lim_{n \to \infty} P(|\bar{X}_N - \mu| > \epsilon) = 0$$
+
+Aka we want to show that the probability that the sample mean is more than $\epsilon$ away from the population mean goes to zero as the sample size goes to infinity.
+
+Now, $|\bar{X}_N - \mu|$ is a random variable, so we can apply the Chebyshev inequality to it. We get:
+
+$$P(|\bar{X}_N - \mu| > \epsilon) \leq \frac{E[(\bar{X}_N - \mu)^2]}{\epsilon^2}$$
+
+Now, assume that $N$ is large. In that case, the RHS is going to converge to zero. This is because the numerator of the RHS is equal to $\frac{\sigma^2}{N}$, which goes to zero as $N$ goes to infinity, and the denominator is a constant. 
+
+Since the RHS converges to zero, and the RHS is an upper bound for the LHS, the LHS also has to converge to zero. This proves the WLLN.
+
+Note that the variance of the original RV has to be finite because otherwise the variance of the sample mean would not converge to zero as $N$ goes to infinity. This is because the variance of the sample mean is equal to $\frac{\sigma^2}{N}$, where $\sigma^2$ is the variance of the original RV. 
+
+## 7.2 (1 point)
+
+Assume you have two independent uniform RVs distributed as follows:
+
+$$Y \sim \text{Unif}(0, 1)$$
+$$X \sim \text{Unif}(1, 2)$$
+
+Assume we draw a sample from each, where the sample size of each sample is $N$. We are now interested in $\bar{X}-\bar{Y}$. 
+
+**a.** If you want to ensure that, in 95\% of the cases, your estimate of $\bar{X}-\bar{Y}$ is within 0.1 of the population difference (i.e. $E(X) - E(Y)$), what is the minimum required sample size $N$ to achieve this? 
+
+**b.** Verify your answer using a simulation in R.
+
+**Answer:**
+
+**a.**: The expected value of $\bar{X}-\bar{Y}$ is equal to $E(X) - E(Y) = 1.5 - 0.5 = 1$. The variance of the two sample means is the same: $$Var(\bar{X}) = Var(\bar{Y}) = \frac{1}{12N}$$This follows since we know that the variance of the sample mean is the variance of the RV divided by the sample size.
+
+Now, for independent RV, the variance of the sum is equal to the sum of the variances. Therefore, the variance of $\bar{X}-\bar{Y}$ is equal to $\frac{2}{12N}$. We therefore know that the difference between the sample means follows a normal distribution with mean 1 and variance $\frac{2}{12N}$.
+
+For a normal distribution, we know that 95\% of the probability mass is within (approx.) 1.96 standard deviations of the mean. As a result, the square root of the variance of $\bar{X}-\bar{Y}$ has to be less than 0.1/1.96. This gives us the following inequality:
+
+$$\sqrt{\frac{2}{12N}} \leq \frac{0.1}{1.96}$$
+
+We can now solve this for $N$:
+
+$$
+\begin{aligned}
+\sqrt{\frac{2}{12N}} &\leq \frac{0.1}{1.96} \\
+\frac{2}{12N} &\leq \frac{0.1^2}{1.96^2} \\
+\frac{2}{12} &\leq \frac{0.1^2}{1.96^2} \times N \\
+\frac{2}{12} \times \frac{1.96^2}{0.1^2} &\leq N \\
+N &\geq 64.02667
+\end{aligned}
+$$
+
+**b.**
+
+```{r}
+
+set.seed(123)
+
+## Function to calculate the difference between the sample means of two uniform RVs
+
+get_diff <- function() {
+  x <- runif(64, 0, 1)
+  y <- runif(64, 1, 2)
+
+  mean(y) - mean(x)
+}
+
+## Simulate 10,000 draws from the distribution of the difference between the sample means
+
+out <- replicate(10000, get_diff())
+
+## Calculate the share of draws that are *not* within 0.1 of the population difference
+
+mean(out < 0.9)
+mean(out > 1.1)
+
+## We expected these to be about 2.5% each, which is the case 
+
+```
+
+## 7.3 (1 point)
+
+For a linear regression model with observed values $x_i$ and $y_i$, the least squares estimator for the slope $\beta$ is given by:
+
+$$\hat{\beta} = \frac{\sum_{i=1}^N (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^N (x_i - \bar{x})^2}$$
+
+where $\bar{x}$ and $\bar{y}$ are the sample means of $x_i$ and $y_i$, respectively. Let's define $S^2_X = \sum_{i=1}^N (x_i - \bar{x})^2$. In addition, the variance of the RV $Y$ is $sigma^2$, and the draws $y_i$ are iid. Note that we can also write the above equation as:
+
+$$\hat{\beta} = \frac{\sum_{i=1}^N (x_i - \bar{x})y_i}{S_X^2}$$
+
+Find the variance of the least squares estimator $\hat{\beta}$. Note that for the purposes of this problem, we can treat the values $x_i$ as constants, i.e. not as random variables.\footnote{This is a convention that is often used in statistics -- we consider $\beta$ to be a function of the RV $Y$, but not of the RV $X$.}
+
+**Answer:**
+
+We can use the fact that $Var(a y_1 + b y_2) = a^2Var(y_1) + b^2Var(y_2)$ for any two independent RVs $y_1$ and $y_2$ (we assume those to be independent) and constants $a$ and $b$. Then:
+
+$$
+\begin{aligned}
+Var(\hat{\beta}) &= Var\left(\frac{\sum_{i=1}^N (x_i - \bar{x})y_i}{S_X^2}\right) \\
+&= \frac{1}{S_X^4} Var\left(\sum_{i=1}^N (x_i - \bar{x})y_i\right) \\
+& = \frac{1}{S_X^4} \sum_{i=1}^N Var\left[(x_i - \bar{x})y_i\right)] \\
+& = \frac{1}{S_X^4} \sum_{i=1}^N (x_i - \bar{x})^2 Var(y_i) \\
+& = \frac{1}{S_X^4} \sum_{i=1}^N (x_i - \bar{x})^2 \sigma^2 \\
+& = \frac{\sigma^2}{S_X^4} \sum_{i=1}^N (x_i - \bar{x})^2 \\
+& = \frac{\sigma^2}{S_X^4}S_X^2 \\
+& = \frac{\sigma^2}{S_X^2}
+\end{aligned}
+$$
+
+
+
+
+
+

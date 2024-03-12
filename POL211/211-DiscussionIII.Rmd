@@ -1,0 +1,338 @@
+---
+title: "211-Discussion III"
+author: "Yu-Shiuan (Lily) Huang"
+date: "Fall 2023"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      tidy.opts=list(width.cutoff = 80),
+                      tidy = FALSE)
+options(width = 80)
+```
+
+#### 2. Relationships in Data
+
+When we want to describe the relationship between two sets of data, we can plot the data sets in a scatter plot and look at four characteristics:
+
+- Direction: Are the data points sloping upwards or downwards?
+- Form: Do the data points form a straight line or a curved line?
+- Strength: Are the data points tightly clustered or spread out?
+- Outliers: Are there data points far away from the main body of data?
+
+Today, our focus will be on the first three characteristics. We will delve into covariance, the correlation coefficient, and linear regression. These are three fundamental statistics that allow us to describe the relationships between the variables of interest.
+
+##### a. Visualizing Relationships -- Scatter Plot
+
+For today, we are using `Covid19.csv`. You can download this csv file from Canvas or from [here](https://drive.google.com/file/d/1CTjNdylGuBT5gMVgvNFla9YhuEhq_Yt7/view?usp=sharing).
+
+```{r, message=F, error=F, warning=F}
+## load packages and import data
+library(tidyverse)
+  
+cf <- read.csv("/Users/yu-shiuanhuang/Desktop/method-sequence/data/Covid19.csv")
+```
+
+Let's visualize the relationship between the politics of a county (`dem16vs`) and the share of people who say they always wear a mask (`mask_always`) in a scatter plot.
+
+-   `dem16vs`: Democratic vote share in 2016 presidential election.
+-   `mask_always`: The estimated share of people in a county who would say they always wear a mask in public when they expect to be within six feet of another person.
+
+```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+ggplot(cf, aes(x = dem16vs, y = mask_always)) + 
+  geom_point(color = "black", fill = "white", 
+             stroke = 1, shape = 1) + 
+             ## Use the stroke aesthetic to modify the width of the border
+             ## The shape of points can be adjusted by specifying the shape argument
+  xlab("Democratic Vote Share, 2016 Presidential") + 
+  ylab("% Reporting Always Wearing Mask") + 
+  ylim(0,1) + 
+  xlim(0,1) + 
+  labs(title = "NY Times Covid-19 Survey", 
+       subtitle = "All Counties") + 
+  theme_bw()
+```
+
+The plot above is hard to see since all the dots are on top of each other. So instead of plotting all the datapoints, let's draw a random sample of 500 of the rows of the dataset and plot them.
+
+```{r, message=F, error=F, warning=F}
+set.seed(110) ## this allows us to draw the *same* random sample every time.
+    
+samp <- sample(1:nrow(cf), 500) 
+## This means randomly taking a sample of 500 from the elements of the total rows of cf 
+glimpse(samp)
+```
+
+`samp` is the rows we randomly sample from all the rows in `cf`. For example, the first element in `samp` is 2008, which means we're going to draw the 2008th row out of the original dataset.
+
+Now let's replot the scatter plot again with only 500 datapoints we randomly drew from the whole dataset.
+
+```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+ggplot(cf[samp,], aes(x = dem16vs, y = mask_always)) + 
+  ## Specify the random sample within the bracket of cf and remember to put it on the row position!
+  geom_point(color = "black", fill = "white", 
+             stroke = 1, shape = 1) + 
+  xlab("Democratic Vote Share, 2016 Presidential") + 
+  ylab("% Reporting Always Wearing Mask") + 
+  ylim(0,1) + 
+  xlim(0,1) + 
+  labs(title = "NY Times Covid-19 Survey", 
+       subtitle = "500 Randomly Selected Counties") + 
+  theme_bw()
+```
+
+Be cautious about the axis scaling! Choosing how you scale the x and y axis doesn't change the distribution or correlation, but it can mislead people!
+
+```{r, message=F, error=F, warning=F, fig.align='center', fig.width=8, fig.height=4}
+p1 <- ggplot(cf[samp,], aes(x = dem16vs, y = mask_always)) + 
+  geom_point(color = "black", fill = "white", 
+             stroke = 1, shape = 1) + 
+  xlab("Democratic Vote Share, 2016 Presidential") + 
+  ylab("% Reporting Always Wearing Mask") + 
+  ylim(-10,10) + ## change the scale of y axis
+  xlim(0,1) + 
+  labs(title = "NY Times Covid-19 Survey", 
+       subtitle = "500 Randomly Selected Counties") + 
+  theme_bw()
+
+p2 <- ggplot(cf[samp,], aes(x = dem16vs, y = mask_always)) + 
+  geom_point(color = "black", fill = "white", 
+             stroke = 1, shape = 1) + 
+  xlab("Democratic Vote Share, 2016 Presidential") + 
+  ylab("% Reporting Always Wearing Mask") + 
+  xlim(-2,2) + ## change the scale of x-axis
+  ylim(0,1) + 
+  labs(title = "NY Times Covid-19 Survey", 
+       subtitle = "500 Randomly Selected Counties") + 
+  theme_bw()
+
+ggpubr::ggarrange(p1, p2, ncol = 2, nrow = 1)
+```
+
+##### b. Visualizing Relationships -- Crosstab/Contingency Table
+
+A crosstab or contingency table is also a way to observe the relationship between two variables.
+
+Let's look at the relationship between Covid-19 deaths and political breakdown of counties (whether the county voted for Trump or Clinton in 2016 presidential election). The goal is to replicate the same table as the one in the lecture slide (counties by vote choice and deaths/capita).
+
+First, let's create some new variables.
+
+1.  Looking at the variable on Covid-19 deaths, some of these counties are bigger, so will have more deaths. To account for this, we have to rescale the deaths data to be per capita.
+
+    ```{r, message=F, error=F, warning=F}
+    cf <- cf %>%
+      mutate(deaths.percap = c19deaths/population)
+
+    cf %>% 
+      select(county_name, c19deaths, population, deaths.percap) %>%
+      head()
+    ```
+
+2.  Generate a dummy variable indicating whether the county voted for Trump
+
+    ```{r, message=F, error=F, warning=F}
+    cf <- cf %>%
+      mutate(trump = ifelse(dem16vs < 0.5, "Voted Trump", "Voted Clinton"))
+
+    cf %>% 
+      select(county_name, dem16vs, trump) %>% 
+      head() ## check the new var to see if we create it correctly
+    ```
+
+3.  Generate a categorical variable indicating which deaths per capita quartile a county is in.
+
+    ```{r, message=F, error=F, warning=F}
+    n25 <- ceiling(nrow(cf) * 0.25) ## The first quartile is in the 778th row 
+    n50 <- ceiling(nrow(cf) * 0.50) ## The second quartile is in the 1555th row
+    n75 <- ceiling(nrow(cf) * 0.75) ## The third quartile is in the 2333rd row
+
+    cf <- cf %>%
+      arrange(deaths.percap) %>% ## Arrange the data based on the order of values in deaths.percap
+      mutate(case_id = row_number()) %>%
+      mutate(deaths.quartile = case_when(
+        case_id >= 1 & case_id <= n25 ~ "1st Quartile Deaths/Capita",
+        case_id > n25 & case_id <= n50 ~ "2nd Quartile Deaths/Capita",
+        case_id > n50 & case_id <= n75 ~ "3rd Quartile Deaths/Capita",
+        case_id > n75 ~ "4th Quartile Deaths/Capita",
+      ))
+    ```
+
+4.  Now, let's create the crosstab: count the number of counties under different quartile deaths/capita and which candidate they voted for (Trump or Clinton).
+
+    ```{r, message=F, error=F, warning=F}
+    crosstab <- cf %>%
+      count(deaths.quartile, trump) %>%
+      spread(trump, n) %>% ## After the count operation, this spreads the trump variable into separate columns, one for each unique value in the trump variable. It places the counts (n) for each trump value into their respective columns. 
+      mutate(Total = `Voted Clinton` + `Voted Trump`) ## Generate a column for the row total
+    
+    Total <- c("Total", unname(colSums(crosstab[, 2:4]))) ## Generate a row for the column total
+    
+    crosstab <- crosstab %>% rbind(Total)
+    
+    knitr::kable(crosstab, "simple", align = "llll")
+    ```
+
+    A crosstab does not make it easier to see the relationship. Usually, when the two variables you are interested in are cardinal ones (both `dem16vs` and `deaths.percap` are continuous variables), plotting a scatter plot is more straightforward to see the relationship. In general, crosstab/contingency table is more useful when the two variables you are interested in are both **categorical variables**.
+
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    ggplot(cf[samp,], aes(x = dem16vs, y = deaths.percap)) + 
+      geom_point(color = "black", fill = "white", 
+                 stroke = 1, shape = 1) +     
+      xlab("Democratic Vote Share, 2016 Presidential") + 
+      ylab("Deaths Per Capita") +
+      xlim(0,1) + 
+      labs(title = "NY Times Covid-19 Survey", 
+           subtitle = "500 Randomly Selected Counties") + 
+      theme_bw()
+    ```
+
+##### c. Covariance, Correlation Coefficient, Linear Regression
+
+In addition to visualizing data using scatter plots or contingency tables to grasp relationships, how can we employ statistical methods to describe these relationships more formally?
+
+1. Covariance
+
+    Covariance is a useful measure for describing the **direction** of the linear association between two quantitative variables.
+
+    $$Cov(x, y) = \frac{1}{N-1}\sum_{i=1}^{N}(x_i-\bar{x})(y_i-\bar{y})$$
+    As we can see from the equation, the covariance sums the term $(x_i-\bar{x})(y_i-\bar{y})$ for each data point, where $\bar{x}$ is the average $x$ value, and $\bar{y}$ is the average $y$ value. The term becomes more positive if both $x$ and $y$ are larger than the average values in the data set, and becomes more negative if smaller. As the covariance accounts for every data point in the set, a positive covariance must mean that most, if not all, data points are in sync with respect to $x$ and $y$ (small $y$ when $x$ is small or large $y$ when $x$ is large). Conversely, a negative covariance must mean that most, if not all, data points are out of sync with respect to $x$ and $y$ (small $y$ when $x$ is large or large $y$ when $x$ is small). 
+
+    Let's start by using a fake dataset to practice how to compute covariance.
+
+    ```{r, message=F, error=F, warning=F}
+    tf <- data.frame(x = c(3, 2, 1, 7, -1), 
+                     y = c(8, 10, 13, 2, 8))
+    
+    knitr::kable(tf, "simple", align = "cc")
+    ```
+
+    ```{r}
+    ## Covariance
+    
+    
+    
+    ## Try out!
+    ```
+
+    You can use the canned function `cov()` to double check your answer.
+
+    ```{r, message=F, error=F, warning=F}
+    ## Covariance
+    cov(tf$x, tf$y)
+    ```
+
+    Covariance is a useful measure at describing the direction of the linear association between two quantitative variables, but it has two weaknesses: a larger covariance does not always mean a stronger relationship, and we cannot compare the covariances across different sets of relationships. For example, if we find that the covariance between variables $x$ and $y$ is larger than the covariance between $x$ and $z$, we can only conclude that both $y$ and $z$ are positively associated with $x$. However, we cannot determine whether the relationship between $x$ and $y$ is stronger than the relationship between $x$ and $z based solely on their covariances.
+
+2. Correlation Coefficient
+
+    To account for the weakness, we normalize the covariance by the standard deviation of the $x$ values and $y$ values, to get the correlation coefficient. The correlation coefficient is a value between -1 and 1, and measures both the direction and the strength of the linear association. One important distinction to note is that correlation does not measure the slope of the relationship — a large correlation only speaks to the strength of the relationship. Some key points on correlation are:
+
+    - Correlation measures the direction and strength of the linear association between two quantitative variables.
+    - Positive and negative indicates direction, large and small indicates the strength.
+    - Correlation has symmetry: correlation of x and y is the same as correlation of y and x.
+    - Correlation is unitless and normalized.
+
+    $$r_{xy}=\frac{Cov(x, y)}{s_xs_y}$$
+
+    Please compute the correlation coefficient between $x$ and $y$ using the formula above with the fake dataset
+
+    ```{r}
+    ## Correlation
+
+
+
+
+    ## Try out!
+    ```
+
+    You can also used the canned function `cor()` to double check your answers.
+    ```{r, message=F, error=F, warning=F}
+    ## Correlation
+    cor(tf$x, tf$y)
+    ```
+
+3. Linear Regression
+
+    Correlation and covariance are quantitative measures of the strength and direction of the relationship between two variables, but they do not account for the slope of the relationship. In other words, we do not know **how a change in one variable could impact the other variable**. Regression is the technique that fills this void — it allows us to make the best guess at how one variable affects the other variables. The simplest linear regression, which is usually measured by ordinary least square (OLS) method, allows us to fit a "line of best fit" to the scatter plot, and use that line (or model) to describe the relationship between the two variables. The OLS approach aims to fit a line that minimizes squared residuals. The equation for that line is:
+
+    $$\hat{y} = a + bx$$ 
+    The equations of $a$ and $b$ are:
+
+    $$b = \frac{r_{xy}s_{y}}{s_{x}}=\frac{Cov(x, y)}{s^2_{x}}$$
+
+    $$a = \bar{y}-b\bar{x}$$
+    **Note**: A more detailed introduction regarding linear regression will be discussed in POL 212 and 213. 
+    
+    What are the intercept ($a$) and slope ($b$) between $x$ and $y$ in the fake dataset? Please compute in a manual way!
+
+    ```{r, message=F, error=F, warning=F}
+    ## Slope
+    
+    
+
+
+    ## Intercept
+
+
+
+
+    ## Try out!
+    ```
+
+    You can also use the canned function `lm` to check your answer.
+    ```{r, message=F, error=F, warning=F}
+    reg <- lm(y ~ x, data = tf)
+    stargazer::stargazer(reg, type = "text", digits = 4)
+    ```
+
+##### d. Practice
+
+Now that you know how to use covariance, correlation coefficients, and linear regression to describe relationships in data, let's apply what you've learned to the `Covid19.csv` dataset to compute the covariance, correlation coefficient, and regression line between `dem16vs` and `mask_always`.
+
+1. What is the covariance and correlation coefficient between `dem16vs` and `mask_always`? Please compute them in a manual way.
+
+    ```{r}
+    ## Covariance
+
+    
+
+
+    ## Correlation
+
+
+
+  
+    ## Try out!
+    ```
+
+2. What are the intercepts and slopes for the regression line between `dem16vs` and `mask_always`? Note that in this practice, we are calculating the regression line based on the 500 randomly selected counties!
+
+    ```{r}
+    ## Please find a and b! 
+
+    
+
+
+
+    ## Try out!
+    ```
+
+3. Now you have the regression line, please add the line on the scatter plot using `geom_abline()`!
+
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    ## Add the regression line! 
+
+
+
+
+
+
+
+
+    ## Try out!
+    ```
+
+

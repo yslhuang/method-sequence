@@ -1,0 +1,2929 @@
+---
+title: "211-Discussion"
+author: "Yu-Shiuan (Lily) Huang"
+date: "Fall 2023"
+output:
+  html_document: 
+    theme: paper
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      tidy.opts=list(width.cutoff = 80),
+                      tidy = FALSE)
+options(width = 80)
+
+htmltools::tagList(
+  xaringanExtra::use_clipboard(
+    button_text = "<i class=\"fa fa-clipboard\" style=\"color: #4D5656\" ></i>",
+    success_text = "<i class=\"fa fa-check\" style=\"color: #4D5656\"></i>",
+    error_text = "<i class=\"fa fa-times-circle\" style=\"color: #4D5656\"></i>"
+  ),
+  rmarkdown::html_dependency_font_awesome()
+)
+```
+
+```{css, echo=FALSE}
+pre {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 200px;
+}
+```
+
+```{css, echo=FALSE}
+.scroll-100 {
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: inherit;
+}
+```
+
+#  {.tabset .tabset-fade .tabset-fill}
+
+## Discussion I
+
+For today's discussion, we'll first introduce **LaTeX** and **R Markdown**, which are two very useful typesetting systems for you to generate neat documents for your problem sets and research projects. The second part of discussion will review some basic R skills when exploring a new dataset.
+
+### 1. LaTeX
+
+LaTeX is a high-quality typesetting system; it includes features designed for the production of technical and scientific documentation. LaTeX is the de facto standard for the communication and publication of scientific documents.
+
+-   Installation: [LaTeX installation guide](https://projects.iq.harvard.edu/files/gov2001/files/r_and_latex_installation.pdf)
+-   Short Tutorials: [LaTeX tutorial from Gov department PreFresher](https://projects.iq.harvard.edu/prefresher/additional-latex-resources)
+
+If you prefer not to download the LaTeX compiler and editor to your laptop, you can use [Overleaf](https://www.overleaf.com/), which is an online LaTeX editor that is very easy to use and work on projects with multiple collaborators. It also provides many [templates](https://www.overleaf.com/latex/templates) for you to choose from. Here is a brief [introduction video](https://www.youtube.com/watch?v=xcTN4F3l9Ds) of how to use Overleaf.
+
+-   To create a nice table output in Overleaf, [TablesGenerator](https://www.tablesgenerator.com/) is very helpful. You can also use `stargazer` in R to create regression tables in LaTeX form and copy them into Overleaf. Here is a [handout](https://ignacioriveros1.github.io/r/2021/03/25/stargazer-for-amazing-academic-tables.html) of how to use the `stargazer` package (we will talk more on this in the future).
+
+-   To insert math equations in Overleaf, [LaTeX Equation Editor](https://latex.codecogs.com/eqneditor/editor.php) would be your go-to.
+
+Here is an [Overleaf template](https://www.overleaf.com/read/cddmfsytsxrz) for POL 211 Problem Set I. Please feel free to copy it to your future work!
+
+### 2. R Markdown
+
+Another way to submit both your answers and R code with only one pdf document is by using **R Markdown**.
+
+R Markdown is a markup language that allows you to create dynamic documents in R programming language. With R Markdown, you can easily combine text, code, and visualizations in a single document. R Markdown documents can be rendered in a variety of output formats, including HTML, PDF, Microsoft Word, and more.
+
+R Markdown provides a way to weave together narrative text, code, and results into a single document that can be easily shared and reproduced. It allows you to write code and see the results of that code inline, making it easy to explain complex statistical analyses or data visualizations.
+
+Here is a thorough introduction of [how to use R Markdown](https://rmarkdown.rstudio.com/lesson-1.html). For more information on how to adjust the style of your R Markdown, here is a [Cookbook](https://bookdown.org/yihui/rmarkdown-cookbook/).
+
+For the following topic on exploring a new dataset using R, all the materials will be shown in R Markdown format. You are also more than welcome to upload your problem set:
+
+-   by knitting your R Markdown to **html** first, then open it in a browser, and then save it as a pdf.(Just click the `Knit` button!)
+
+-   by knitting your R Markdown to **pdf** directly if you have already downloaded a LaTeX compiler in your computer.
+
+    When knitting to pdf, all of the contents in R Markdown will be presented in LaTeX format automatically. If you don't have a LaTeX compiler installed on your machine, you will encounter an error message when attempting to knit your R Markdown to PDF. If you need more help, here is a [guide](https://www.youtube.com/watch?v=ETHo0O9_kvc) I found online that provides step-by-step instructions on how to do it.
+
+-   A R Markdown template for Problem Set I can be downloaded from Canvas-Files.
+
+### 3. Exploring a New Dataset using R (Part I)
+
+Note: All these R codes are prepared by Prof. Ryan Hubert.
+
+#### a. Load R packages
+
+There are many useful packages in R that can be installed freely. If it is the first time you are going to use a package, here are the steps:
+
+-   Install it
+-   library it (which means telling R you are going to use it)
+
+Once you have installed the package, you don't have to install it every time you open R studio. However, you still have to load it through the `library` function every time.
+
+```{r, warning=FALSE, message=FALSE}
+# Install packages
+# install.packages("tidyverse") # manipulate data 
+# install.packages("Matrix") # calculate rank
+## these are the packages we will use for today 
+
+# load packages
+library(tidyverse)
+library(Matrix) 
+```
+
+The `tidyverse` is a powerful collection of R packages that are actually data tools for transforming and visualizing data. All packages of the `tidyverse` share an underlying philosophy and common APls.
+
+![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/ggplot_hive.jpeg){width="60%"}
+
+The core packages within the `tidyverse` are:
+
+-   `ggplot2`, which implements the grammar of graphics. You can use it to visualize your data.
+-   `dplyr` is a grammar of data. You can use it to solve the most common data manipulation challenges.
+-   `tidyr` helps you to create tidy data or data where each variable is in a column, each observation is a row end each value is a column, each observation is a row end each value is a cell.
+-   `readr` is a fast and friendly way to read rectangular
+-   `purrr` enhances R's functional programming (FP) toolkit by providing a complete and consistent set of tools for working with functions and vectors.
+-   `tibble` is a modern re-imaginging of the data
+-   `stringr` provides a cohesive set of functions designed to make working with strings as easy as possible
+-   `forcats` provide a suite of useful tools that solve common problems with factors.
+
+Highly recommend this [data wrangling cheat sheet](https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf) with `dplyr` and `tidyr` in R!
+
+#### b. Import data
+
+For today, we are using `USDC-DATASET-JOP.csv`. You can download this csv file from Canvas or from [here](https://dataverse.harvard.edu/file.xhtml?fileId=4306747&version=1.0.).
+
+```{r, warning=FALSE, message=FALSE}
+# Import data
+df <- read_csv("/Users/yu-shiuanhuang/Desktop/method-sequence/data/USDC-DATASET-JOP.csv") 
+# Here we assign the dataset as an object called “df”
+
+## Note: you create new objects by assigning them with the `<-` phrase. You can also use an equal sign `=`.
+```
+
+Here are some tips for how to find the file path of the data you are going to use.
+
+-   First, where did you store your data? In which folder? In my case, I stored the data in the `data` folder within the `method-sequence` folder.
+
+-   Second, use `getwd` function to get the grasp of how does a file path look like. `getwd` function returns an absolute file path representing the current working directory of the R process.
+
+```{r, message=FALSE, warning=FALSE}
+  getwd()
+```
+
+As you can see, my current working directory is `"/Users/yu-shiuanhuang/Desktop/method-sequence/docs"`. Since I know that I stored the data in the `data` folder within the `method-sequence` folder, I can simply just change the file path to `"/Users/yu-shiuanhuang/Desktop/method-sequence/data/USDC-DATASET-JOP.csv"` and put it in the `read_csv` function so R knows where to read the file you want.
+
+If you import the data successfully, you should be able to see df popping up in the environment section.
+
+![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/environment.png){width="60%"}
+
+Sometimes the dataset we are interested in may be stored in a different form, such as `dta`, `spss`, `xlsx`, `rds`, `rdata`, etc. You can find the corresponded codes from [here](https://www.datafiles.samhsa.gov/get-help/format-specific-issues/how-do-i-read-data-r).
+
+#### c. Basic information about the dataset
+
+What is the size of the dataset?
+
+```{r, message=FALSE, warning=FALSE}
+# the number of row is:
+nrow(df)
+```
+
+How many observations (rows) and variables (columns) we have in the dataset?
+
+```{r, message=FALSE, warning=FALSE}
+# the number of column is:
+ncol(df)
+```
+
+You can also use `dim` function to get the size of the dataset.
+
+```{r, message=FALSE, warning=FALSE}
+dim(df) 
+## this function gives you the number of rows and columns at the same time
+```
+
+The size of this dataset is 97,725 x 54.
+
+What does the dataset actually look like?
+
+If you want to just quickly see the first six rows to get a feel for what the dataset looks like:
+
+```{r, message=FALSE, warning=FALSE}
+head(df)
+```
+
+Note that a lot of the variables are not visible because R will try to clean up output.
+
+One convenient thing is that you can see the type of each variable.[Here](https://tibble.tidyverse.org/articles/types.html) is the full list of all the possible types of variables (in tidyverse).
+
+If you want to look at the whole dataset, use `View(df)` command and it will open in a new tab in R.
+
+#### d. Exploring the variables
+
+Most people prefer to look at variables using their names.
+
+How to ask R to tell us the name of each variables?
+
+```{r message=FALSE, warning=FALSE}
+# Name of each column
+colnames(df)
+```
+
+How to call out one specific variable we are interested in from the dataset? There are multiple ways to look at an arbitrary variable:
+
+```{r, message=FALSE, warning=FALSE, eval=FALSE}
+## Use column number
+df[, 2] 
+df[[2]]
+
+## Use variable name
+df[, "OUTCOME"]
+df[["OUTCOME"]]
+df$OUTCOME ## This is the most common way to do it
+```
+
+```{r, message=FALSE, warning=FALSE}
+head(df$OUTCOME) ## To see the first six rows of this variable
+```
+
+What kind of variable is the `OUTCOME` variable? It looks like a categorical variable!
+
+The next question would be what are the categories (called "levels" in R) of this variable?
+
+```{r, message=FALSE, warning=FALSE}
+# This asks R to give us a list of all the values used in this variable.
+unique(df$OUTCOME)
+```
+
+There are 34 categories in this variable.
+
+Here's an issue: when R loaded the dataset, it didn't code this variable as a categorical variable. Since the `OUTCOME` variable is coded as strings/texts in the dataset, in R, the type of this variable is character.
+
+```{r, message=FALSE, warning=FALSE}
+# Look at what this says about the variable type:
+type_sum(df$OUTCOME)
+
+# When you summarize it in R, R doesn’t provide you with meaningful information
+summary(df$OUTCOME)
+```
+
+Good news is that we can transform the type of a variable in R.
+
+```{r, message=FALSE, warning=FALSE}
+# lets's change the type to a categorical variable, known as a "factor" variable in R:
+df$OUTCOME <- as.factor(df$OUTCOME) 
+## In order to override the original variable, we have to assign the new version of the variable to the original one.
+
+# After factorizing, R can summarize in a more meaningful way: what is the number of each category?
+summary(df$OUTCOME)
+```
+
+#### e. Exploring the observations
+
+Each row (observation) in this dataset is a court case. We can also use R to look at an arbitrary one.
+
+```{r, message=FALSE, warning=FALSE}
+df[5,] # This means that we want to call out the fifth row of the data.
+
+# If you want to see all the variables for that observation, here are some options:
+t(df[5,]) ## downside: this treats all the values like strings!
+as.data.frame(df[5,]) ## downside: sort of ugly and hard to see
+
+## To draw out an element from a data, you have to specify a row number and a column number.
+df[5, 1]
+```
+
+Usually, you only need to see some of the variables. For example: suppose we want to know which judge heard this case (`jid_anon`), what the case outcome was (`OUTCOME`) and the party of the judge's appointing president (`jrepublican`).
+
+```{r, message=FALSE, warning=FALSE}
+df[5, c("jid_anon", "OUTCOME", "jrepublican")]
+```
+
+A more neat way to write the code by using `tidyverse` package.
+
+```{r, message=FALSE, warning=FALSE}
+# using pipes to do the same thing; use select function from tidyverse to pick variables 
+df[5, ] %>% select(jid_anon, OUTCOME, jrepublican)
+```
+
+`%>%` is called "pipes." Pipes take the output from one function and feed it to the first argument of the next function.
+
+We can also find a row by "filtering" the data based on some criteria.
+
+What if I want to find a case by its ID number? Eg, "/dockets-cacd/2007/200738-00195.html"
+
+```{r, message=FALSE, warning=FALSE}
+# use filter function from tidyverse to set the condition 
+df %>% filter(file == "/dockets-cacd/2007/200738-00195.html")
+```
+
+What if I want to find all cases heard by judges appointed by Bush 43?
+
+```{r, message=FALSE, warning=FALSE}
+df %>% filter(jpresident == "Bush43")
+```
+
+The reason why we need to add quotation mark when setting the condition in the `filter` function is that both of the `file` and `jpresident` variables are coded in character type (categorical) in R. If we filter our cases based on whether the judge of the case is assigned by a Republican president (when `jrepublican` == 1), we don't have to add quotation mark in the condition as this variable is coded as the type of double (dbl) in R, which is a class of numeric.
+
+```{r, message=FALSE, warning=FALSE}
+df %>% filter(jrepublican == 1)
+```
+
+#### f. Some measurement issues
+
+What kinds of variable do we have?
+
+There are slight differences between the way a computer stores/understands data and the way we conceptualize it. In this dataset, we have some variables on cardinal scales.
+
+For example: How many plaintiffs are named in each case? (Why is this on a cardinal scale?)
+
+```{r, message=FALSE, warning=FALSE}
+head(df$pla_count)
+```
+
+What is the data type? It's "dbl" which means it's a number that need not be an integer (can be fractional number, 3.51)
+
+```{r, message=FALSE, warning=FALSE}
+type_sum(df$pla_count)
+```
+
+Note: this variable is actually comprised of integers, we could convert it if we want, but this doesn't really matter. (Why? 11.0 = 11)
+
+```{r, message=FALSE, warning=FALSE}
+df$pla_count <- as.integer(df$pla_count)
+type_sum(df$pla_count)
+```
+
+We also have some variables that are ordinal.
+
+For example, in what years were cases filed? (Why is this on an ordinal scale?)
+
+```{r, message=FALSE, warning=FALSE}
+head(df$YEAR)
+```
+
+What is the data type? It's also "dbl".
+
+```{r, message=FALSE, warning=FALSE}
+type_sum(df$YEAR)
+```
+
+Acknowledge, this is bad! We do not want R to treat this as a cardinal variable.
+
+For example, it (incorrectly) allows us to add them:
+
+```{r, message=FALSE, warning=FALSE}
+df$YEAR[1] + df$YEAR[2]
+
+## Notice here the change in indexing! Remember that when you call out one variable from the data, it is a vector. To draw out an element from a vector, you only have to specify one number inside [ ].
+```
+
+So, we should change it to a factor variable so that we don't make this mistake.
+
+```{r, error=TRUE}
+df$YEAR <- as.factor(df$YEAR)
+df$YEAR[1] + df$YEAR[2] 
+```
+
+We got an error when we tried to do something silly, which is good!
+
+In the analysis for Ryan's paper, they had to convert the `OUTCOME` variable to dummies. How can we do it in R?
+
+Recall that there are 34 unique categories in the `OUTCOME` variable.
+
+```{r, message=FALSE, warning=FALSE}
+unique(df$OUTCOME) 
+```
+
+When we want to make each category of this variable into dummies, it means that we need to create 34 new dummy variables (34 new columns for the dataset). For example, the new dummy variable `dism_other` will be coded as 1 if the `OUTCOME` variable is coded as dism_other. Let's use `ifesle` function to create this dummy!
+
+```{r, message=FALSE, warning=FALSE}
+df$dism_other <- ifelse(df$OUTCOME == "dism_other", 1, 0)
+```
+
+Let's check if we did it correctly.
+
+```{r, message=FALSE, warning=FALSE}
+df %>% select(OUTCOME, dism_other) %>% head()
+```
+
+But there is a total of 34 categories in the `OUTCOME` variable, it would be a waste of time to generate all 34 dummies if we have to retype the above one by one for each category. Luckily, R is here to help us! We can run a `forloop` function to ask R to do the same thing for all the 34 categories.
+
+```{r, message=FALSE, warning=FALSE}
+for(v in levels(df$OUTCOME)){
+  print(v)
+  df[[v]] <- ifelse(df$OUTCOME == v, 1, 0) ## df[[v]] is a way to call out/create a variable
+} ## This is called "forloop."
+```
+
+```{r, message=FALSE, warning=FALSE}
+ncol(df)
+```
+
+You can find that the number of columns increased to 88 from 54 after creating 34 dummies.
+
+#### g. The rank of a matrix
+
+The rank of a dataset is the number of "linearly independent" variables.
+
+```{r, message=FALSE, warning=FALSE}
+library(Matrix) ## This package has a function for calculating the rank of a matrix
+
+# Let's create a fake dataset
+df2 <- data.frame(var1 = seq(1, 100, 3)) ## Creates 34 rows
+
+df2$var2 <- (df2$var1/pi) ## create a new variable called var2 in df2
+pi ## pi is an inbuilt R constant whose value is 3.141593
+
+df2$var3 <- 6 
+df2
+```
+
+What is the rank of this matrix (the fake dataset we created)?
+
+```{r, message=FALSE, warning=FALSE}
+rankMatrix(as.matrix(df2)) 
+## The input must be a numeric matrix, which means we have to covert df2 from a dataframe to a matrix
+```
+
+There are 3 variables in df2, but there are only 2 linearly independent variables since the generation of var2 is based on var1.
+
+## Discussion II
+
+For today's discussion, we'll first briefly go over the solution keys to Problem Set 1 and then continue our materials for exploring a new dataset using R.
+
+### Exploring a New Dataset using R (Part II)
+
+For today, we are using `USDC-DATASET-JOP.csv`. You can download this csv file from Canvas or from [here](https://dataverse.harvard.edu/file.xhtml?fileId=4306747&version=1.0.)
+
+```{r, message=F, warning=F, error=F}
+## Load packages
+library(tidyverse)
+
+## Import data
+df <- read_csv("/Users/yu-shiuanhuang/Desktop/method-sequence/data/USDC-DATASET-JOP.csv") 
+```
+
+#### a. Summary Statistics
+
+In the following, we will compute summary statistics for the univariate distribution of the variable that quantifies the number of defendants named in each court case (it's named `def_count`).
+
+1.  Calculate the mean
+
+    ```{r, message=F, warning=F, error=F}
+    ## This is the easy way to calculate the mean:
+    mean(df$def_count, na.rm = TRUE)
+    ```
+
+    ```{r}
+    ## How to calculate it in the long/manual way?
+    ## Try out!
+    sum(df$def_count)/nrow(df)
+    ```
+
+    Recall the sample mean equation from the lecture slide:
+
+    $$\bar{x} = \frac{1}{N}\sum_{i=1}^{N}x_{i}=\frac{x_{1}+x_{2}+...+x_{N}}{N}$$
+
+2.  Calculate the median
+
+    ```{r, message=F, warning=F, error=F}
+    ## This is the easy way to calculate the median:
+    median(df$def_count, na.rm = TRUE)
+    ```
+
+    ```{r}
+    ## How to calculate it in the long/manual way?
+    ## Try out!
+    ## First, sort the distribution from smallest to largest values
+    sorted.def_count <- sort(df$def_count)
+    
+
+    ## Next, identify the "middle" value, which is (N+1)/2  
+    sorted.def_count[(nrow(df)+1)/2]
+    ```
+
+    Since the distribution of `def_count` has an odd number, we have one median. If instead we had an even number, notice that R will automatically take **the average of the two middle values**. Technically, as Gailmard (2014) points out, any number weakly between the two middle values is a median.
+
+    ```{r, message=F, warning=F, error=F}
+    fake.data <- c(3, 0, 2, 10, 7, 1) ## notice: even number of values!
+
+    sort(fake.data)
+    median(fake.data) 
+    ```
+
+    R tells us the median is 2.5 but technically it's any number on interval $[2, 3]$.
+
+3.  Calculate the variance and standard deviation
+
+    ```{r, message=F, warning=F, error=F}
+    ## This is the easy way to calculate the variance and std. dev.:
+    var(df$def_count, na.rm = TRUE)
+    sd(df$def_count, na.rm = TRUE)
+    ```
+
+    ```{r}
+    ## How to calculate them in the long/manual way?
+    ## Try out!
+    ## Sample variance
+    sum((df$def_count-mean(df$def_count))^2)/(nrow(df)-1)
+
+
+    ## Sample standard deviation
+    sqrt(sum((df$def_count-mean(df$def_count))^2)/(nrow(df)-1))
+
+    ```
+
+    Recall the sample variance equation from the lecturer slide:
+
+    $$s^2_{x}=\frac{1}{N-1}\sum_{i=1}^{N}(x_i-\bar{x})^2$$
+
+Now that you know how to manually compute the sample mean, median, variance, and standard deviation in R, let's create a custom `function` that can calculate these four descriptive statistics all at once, without relying on the built-in R functions like `mean()`, `median()`, `var()`, or `sd()`.
+
+Please manually create a function named `des_stat` by using `function()`:
+
+```{r}
+## Create your own function
+## Try out!
+
+des_stat <- function(x){
+  x <- x[!is.na(x)] ## remove missing values from x
+  s.mean <- sum(x)/length(x) ## sample mean
+  s.median <- sort(x)[(length(x)+1)/2] ## sample median
+  s.variance <- sum((x-mean(x))^2)/(length(x)-1) ## sample variance
+  s.sd <- sqrt(s.variance)
+  
+  ## design the function to return these values
+  stats <- data.frame(mean = s.mean,
+                      median = s.median, 
+                      variance = s.variance, 
+                      sd = s.sd)
+  stats
+}
+
+des_stat(df$def_count)
+```
+
+How to create a function in R?
+
+While applying built-in functions facilitates many common tasks, often we need to create our own function to automate the performance of a particular task. To declare a user-defined function in R, we use the keyword `function`. The syntax is as follows:
+
+```{r, message=F, warning=F, error=F}
+function_name <- function(parameters){
+  function_body 
+}
+```
+
+Above, the main components of an R function are: **function name**, **function parameters**, and **function_body**. Let's take a look at each of them separately.
+
+-   **function name**: This is the name of the function object that will be stored in the R environment after the function definition and used for calling that function. It should be concise but clear and meaningful so that the user who reads our code can easily understand what exactly this function does.
+
+-   **function parameters**: Sometimes, they are called formal **arguments**. Function parameters are the variables in the function definition placed inside the parentheses and separated with a comma that will be set to actual values (called arguments) each time we call the function.
+
+-   **function_body**: The function body is a set of commands inside the curly braces that are run in a predefined order every time we call the function. In other words, in the function body, we place what exactly we need the function to do.
+
+For example:
+
+```{r, message=F, warning=F, error=F}
+circumference <- function(r){
+  2*pi*r
+}
+
+circumference(2)
+```
+
+Above, we created a function to calculate the circumference of a circle with a known radius using the formula $C=2\pi r$, so the function has the only parameter `r`. After defining the function, we called it with the radius equal to 2 (hence, with the argument 2). The function body we set will do the calculation for us (i.e., $2*\pi*2$).
+
+Here is an example when you have more than 1 parameter (argument) in your function:
+
+```{r, message=F, warning=F, error=F}
+sum_two_nums <- function(x, y){
+    x + y
+}
+sum_two_nums(1, 2)
+sum_two_nums(pi, 5)
+```
+
+
+4.  Calculate the interquartile range (IQR)
+
+    The $n$th percentile is the value in a distribution where $n$ percent of the values are equal to or below that value. IQR is defined by the difference between the first and the third quartile.
+
+    $$ IQR = P^{75} - P^{25} $$
+
+    ```{r, message=F, warning=F, error=F}
+    ## This is the easy way to find the first and the third quartile:
+    quantile(df$def_count, 0.25) ## First quartile
+    quantile(df$def_count, 0.75) ## Third quartile
+    ```
+
+    ```{r, message=F, warning=F, error=F}
+    ## You can also use quantile function to find an arbitrary percentile
+    quantile(df$def_count, 0.87) ## the 87th percentile
+    ```
+
+    ```{r, message=F, warning=F, error=F}
+    ## Notice: R names the values it returns. That's helpful, but sometimes annoying.
+    ## Remove the name this way:
+    unname(quantile(df$def_count, 0.25))
+    unname(quantile(df$def_count, 0.75))
+    ```
+
+    ```{r, message=F, warning=F, error=F}
+    ## This is the easy way to calculate IQR:
+    IQR(df$def_count)
+
+    ## This is a longer way:
+    unname(quantile(df$def_count, 0.75)) - unname(quantile(df$def_count, 0.25))
+    ```
+
+    ```{r}
+    ## How to calculate IQR in the long/manual way (similar to the median)?
+
+    ## First, sort the distribution from smallest to largest values
+    sorted.def_count <- sort(df$def_count)
+
+
+    ## Next, identify the value at the 25th percentile: 0.25 * N (round this up to nearest integer using ceiling function)
+    sorted.def_count[ceiling(0.25*nrow(df))]
+    sorted.def_count[ceiling(0.75*nrow(df))]
+    ```
+
+5.  Find outliers
+
+    An arbitrary (but widely used) definition of an outlier is that any value in a distribution that is at least $1.5×IQR$ above the third quartile or below the first quartile.
+
+    How many outliers are there in the distribution of `def_count`?
+
+    ```{r, message=F, warning=F, error=F}
+    ## First, what is the lowest and highest threshold for outliers?
+    iqr.d <- IQR(df$def_count)
+    min.threshold <- quantile(df$def_count, 0.25) - (1.5 * iqr.d)
+    min.threshold ## -2.5
+    max.threshold <- quantile(df$def_count, 0.75) + (1.5 * iqr.d)
+    max.threshold ## 9.5
+    ```
+
+    Any data point that is smaller than -2.5 or larger than 9.5 is an outlier.
+
+    ```{r}
+    ## Please count how many outliers are there in the distribution of def_count?
+    ## Try out!
+    df %>% filter(def_acount < min.threshold | def_count > max.threshold) %>% count()
+
+    
+    ```
+
+#### b. Plot distribution (histograms)
+
+To better observe the distribution of a variable, plot histograms! Histograms visualize quantitative data or numerical data (cardinal variables).
+
+```{r, message=F, warning=F, error=F}
+## First, we would like to define the bins that will be used later
+my.min.value <- min(df$def_count) ## Find the minimum of the variable
+my.max.value <- max(df$def_count) ## Find the maximum of the variable
+
+my.bins <- seq(my.min.value, my.max.value, 1) 
+## Generate a sequence of number that the values are from the minimum to the maximum while the increment of the sequence is 1
+```
+
+```{r, message=F, warning=F, error=F, fig.align='center', fig.width=6, fig.height=4}
+# Now, let's build a plot layer by layer:
+ggplot(df) + 
+  geom_histogram(aes(x = def_count), breaks = my.bins)
+```
+
+This histogram sucks! Why? Because it's not easy to see the most important part of the distribution (the low values). In other words: we're plotting a lot of outliers.
+
+Let's try to focus in on the part of the plot that's the most interesting. To do this, we need to exclude outliers from the data and only plot any values that are not outliers!
+
+```{r, message=F, warning=F, error=F}
+## Remember: we already figured out what the outliers are:
+outliers <- df$def_count[df$def_count < min.threshold | df$def_count > max.threshold]
+unique(sort(outliers))
+```
+
+Looks like any number 10 or above is an outlier.
+
+```{r, message=F, warning=F, error=F, fig.align='center', fig.width=6, fig.height=4}
+## So, let's tell R to only plot a histogram for values 9 and lower.
+my.max.value <- 9
+
+## Let's make the x axis numbers correspond to the bins. 
+## To do this, let's define what we want our labels to be:
+my.labs <- seq(my.min.value, my.max.value, 1)
+```
+
+```{r, message=F, warning=F, error=F, fig.align='center', fig.width=6, fig.height=4}
+ggplot2::ggplot(data = df, aes(x = def_count)) + 
+  geom_histogram(breaks = my.bins, color = "black", fill = "gray85") + 
+  scale_x_continuous(limits = c(my.min.value, my.max.value), breaks = my.labs) +
+  scale_y_continuous(breaks = seq(0,30000,2500), limits = c(0,30000)) +
+  labs(x = "Number of Defendants In Each Case", y = "Frequency") + 
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+```
+
+When using `ggplot2` to plot histograms, the frequency of each bar is calculated as only including the upper but not the lower bound. For example, for the bar 0-1, the frequency is $0<$`def_count`$<=1$.
+
+We can also manually check the exact frequency of each bar to see if 0 is excluded from the 0-1 bar.
+
+```{r, message=F, warning=F, error=F}
+df %>% count(def_count)
+```
+
+We can also add vertical lines that specify mean and median of the variable.
+
+```{r, message=F, warning=F, error=F, fig.align='center', fig.width=6, fig.height=4}
+# Let's save the mean and median as objects that we can use later.
+my.mean <- mean(df$def_count)
+my.median <- median(df$def_count)
+
+ggplot(df, aes(x = def_count)) + 
+  geom_histogram(breaks = my.bins, color = "black", fill = "gray85") + 
+  scale_x_continuous(limits = c(my.min.value, my.max.value), breaks = my.labs) + 
+  scale_y_continuous(breaks = seq(0,30000,2500), limits = c(0,30000)) + 
+  geom_vline(aes(xintercept = my.mean), size = 0.8, linetype = 2, color = "blue") +  
+  ## add the line of mean   
+  geom_vline(aes(xintercept = my.median), size = 0.8, linetype = 2, color = "red") + 
+  ## add the line of median
+  labs(x = "Number of Defendants In Each Case", y = "Frequency") + 
+  theme_bw() + 
+  theme(panel.grid.minor = element_blank())
+```
+
+We can see that the distribution of `def_count` is **right skewed**, which is also referred to positively skewed. What does this mean?
+
+A skewed distribution occurs when one tail is longer than the other. Skewness defines the asymmetry of a distribution. Unlike the familiar normal distribution with its bell-shaped curve, these distributions are asymmetric. The two halves of the distribution are not mirror images because the data are not distributed equally on both sides of the distribution's peak.
+
+How to Tell if a Distribution is Left Skewed or Right Skewed?
+
+-   **Right skewed** distributions occur when the long tail is on the right side of the distribution. Analysts also refer to them as positively skewed. This condition occurs because probabilities taper off more slowly for higher values. Consequently, you'll find extreme values far from the peak on the high end more frequently than on the low. When the distribution of data is skewed to the right, *the mean is often larger than the median*.
+
+-   **Left skewed** distributions occur when the long tail is on the left side of the distribution. Statisticians also refer to them as negatively skewed. This condition occurs because probabilities taper off more slowly for lower values. Therefore, you'll find extreme values far from the peak on the low side more frequently than the high side. When the distribution of data is skewed to the right, *the median is often greater than the mean*.
+
+How you plot frequency is important!
+
+What if I wanted to use different bin sizes?
+
+```{r, message=F, warning=F, error=F, fig.align='center', fig.width=6, fig.height=4}
+my.bins2 <- c(0,1,2.5,3.5,10)
+
+ggplot(df, aes(x = def_count)) + 
+  geom_histogram(breaks = my.bins2, color = "black", fill = "gray85") + 
+  scale_x_continuous(breaks = my.labs) + 
+  scale_y_continuous(breaks = seq(0,30000,2500), limits = c(0,30000)) +
+  labs(x = "Number of Defendants In Each Case", y = "Frequency") + 
+  theme_bw() + 
+  theme(panel.grid.minor = element_blank())
+```
+
+This feels like it's misleading, because it is!
+
+Let's fix it by using density on the y axis. Density is relative frequency per unit on the x axis. The density of each bin is calculated by dividing its relative frequency by its width in terms of units of the x variable (i.e., you divide the frequency of a group by the width of it).
+
+```{r, message=F, warning=F, error=F, fig.align='center', fig.width=6, fig.height=4}
+ggplot(df) + 
+  geom_histogram(aes(y = ..density.., x = def_count), breaks = my.bins2,
+                 color = "black", fill = "gray85") +
+  scale_x_continuous(breaks = my.labs) + 
+  scale_y_continuous(breaks = seq(0,0.3,0.05), limits = c(0,0.3)) +
+  labs(x = "Number of Defendants In Each Case", y = "Density") + 
+  theme_bw() + 
+  theme(panel.grid.minor = element_blank())
+```
+
+## Discussion III
+
+For today's discussion, we'll begin by reviewing the solution keys for Problem Set 2. Afterward, we'll delve into the topic of exploring relationships in data. We will learn how to use R to visualize relationships between two variables, whether they are categorical or numerical. Additionally, we will explore statistics that help us formally describe these relationships.
+
+### Relationships in Data
+
+When we want to describe the relationship between two sets of data, we can plot the data sets in a scatter plot and look at four characteristics:
+
+- Direction: Are the data points sloping upwards or downwards?
+- Form: Do the data points form a straight line or a curved line?
+- Strength: Are the data points tightly clustered or spread out?
+- Outliers: Are there data points far away from the main body of data?
+
+Today, our focus will be on the first three characteristics. We will delve into covariance, the correlation coefficient, and linear regression. These are three fundamental statistics that allow us to describe the relationships between the variables of interest.
+
+#### a. Visualizing Relationships -- Scatter Plot
+
+For today, we are using `Covid19.csv`. You can download this csv file from Canvas or from [here](https://drive.google.com/file/d/1CTjNdylGuBT5gMVgvNFla9YhuEhq_Yt7/view?usp=sharing).
+
+```{r, message=F, error=F, warning=F}
+## load packages and import data
+library(tidyverse)
+  
+cf <- read.csv("/Users/yu-shiuanhuang/Desktop/method-sequence/data/Covid19.csv")
+```
+
+Let's visualize the relationship between the politics of a county (`dem16vs`) and the share of people who say they always wear a mask (`mask_always`) in a scatter plot.
+
+-   `dem16vs`: Democratic vote share in 2016 presidential election.
+-   `mask_always`: The estimated share of people in a county who would say they always wear a mask in public when they expect to be within six feet of another person.
+
+```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+ggplot(cf, aes(x = dem16vs, y = mask_always)) + 
+  geom_point(color = "black", fill = "white", 
+             stroke = 1, shape = 1) + 
+             ## Use the stroke aesthetic to modify the width of the border
+             ## The shape of points can be adjusted by specifying the shape argument
+  xlab("Democratic Vote Share, 2016 Presidential") + 
+  ylab("% Reporting Always Wearing Mask") + 
+  ylim(0,1) + 
+  xlim(0,1) + 
+  labs(title = "NY Times Covid-19 Survey", 
+       subtitle = "All Counties") + 
+  theme_bw()
+```
+
+The plot above is hard to see since all the dots are on top of each other. So instead of plotting all the datapoints, let's draw a random sample of 500 of the rows of the dataset and plot them.
+
+```{r, message=F, error=F, warning=F}
+set.seed(110) ## this allows us to draw the *same* random sample every time.
+    
+samp <- sample(1:nrow(cf), 500) 
+## This means randomly taking a sample of 500 from the elements of the total rows of cf 
+glimpse(samp)
+```
+
+`samp` is the rows we randomly sample from all the rows in `cf`. For example, the first element in `samp` is 2008, which means we're going to draw the 2008th row out of the original dataset.
+
+Now let's replot the scatter plot again with only 500 datapoints we randomly drew from the whole dataset.
+
+```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+ggplot(cf[samp,], aes(x = dem16vs, y = mask_always)) + 
+  ## Specify the random sample within the bracket of cf and remember to put it on the row position!
+  geom_point(color = "black", fill = "white", 
+             stroke = 1, shape = 1) + 
+  xlab("Democratic Vote Share, 2016 Presidential") + 
+  ylab("% Reporting Always Wearing Mask") + 
+  ylim(0,1) + 
+  xlim(0,1) + 
+  labs(title = "NY Times Covid-19 Survey", 
+       subtitle = "500 Randomly Selected Counties") + 
+  theme_bw()
+```
+
+Be cautious about the axis scaling! Choosing how you scale the x and y axis doesn't change the distribution or correlation, but it can mislead people!
+
+```{r, message=F, error=F, warning=F, fig.align='center', fig.width=8, fig.height=4}
+p1 <- ggplot(cf[samp,], aes(x = dem16vs, y = mask_always)) + 
+  geom_point(color = "black", fill = "white", 
+             stroke = 1, shape = 1) + 
+  xlab("Democratic Vote Share, 2016 Presidential") + 
+  ylab("% Reporting Always Wearing Mask") + 
+  ylim(-10,10) + ## change the scale of y axis
+  xlim(0,1) + 
+  labs(title = "NY Times Covid-19 Survey", 
+       subtitle = "500 Randomly Selected Counties") + 
+  theme_bw()
+
+p2 <- ggplot(cf[samp,], aes(x = dem16vs, y = mask_always)) + 
+  geom_point(color = "black", fill = "white", 
+             stroke = 1, shape = 1) + 
+  xlab("Democratic Vote Share, 2016 Presidential") + 
+  ylab("% Reporting Always Wearing Mask") + 
+  xlim(-2,2) + ## change the scale of x-axis
+  ylim(0,1) + 
+  labs(title = "NY Times Covid-19 Survey", 
+       subtitle = "500 Randomly Selected Counties") + 
+  theme_bw()
+
+ggpubr::ggarrange(p1, p2, ncol = 2, nrow = 1)
+```
+
+#### b. Visualizing Relationships -- Crosstab/Contingency Table
+
+A crosstab or contingency table is also a way to observe the relationship between two variables.
+
+Let's look at the relationship between Covid-19 deaths and political breakdown of counties (whether the county voted for Trump or Clinton in 2016 presidential election). The goal is to replicate the same table as the one in the lecture slide (counties by vote choice and deaths/capita).
+
+First, let's create some new variables.
+
+1.  Looking at the variable on Covid-19 deaths, some of these counties are bigger, so will have more deaths. To account for this, we have to rescale the deaths data to be per capita.
+
+    ```{r, message=F, error=F, warning=F}
+    cf <- cf %>%
+      mutate(deaths.percap = c19deaths/population)
+
+    cf %>% 
+      select(county_name, c19deaths, population, deaths.percap) %>%
+      head()
+    ```
+
+2.  Generate a dummy variable indicating whether the county voted for Trump
+
+    ```{r, message=F, error=F, warning=F}
+    cf <- cf %>%
+      mutate(trump = ifelse(dem16vs < 0.5, "Voted Trump", "Voted Clinton"))
+
+    cf %>% 
+      select(county_name, dem16vs, trump) %>% 
+      head() ## check the new var to see if we create it correctly
+    ```
+
+3.  Generate a categorical variable indicating which deaths per capita quartile a county is in.
+
+    ```{r, message=F, error=F, warning=F}
+    n25 <- ceiling(nrow(cf) * 0.25) ## The first quartile is in the 778th row 
+    n50 <- ceiling(nrow(cf) * 0.50) ## The second quartile is in the 1555th row
+    n75 <- ceiling(nrow(cf) * 0.75) ## The third quartile is in the 2333rd row
+
+    cf <- cf %>%
+      arrange(deaths.percap) %>% ## Arrange the data based on the order of values in deaths.percap
+      mutate(case_id = row_number()) %>%
+      mutate(deaths.quartile = case_when(
+        case_id >= 1 & case_id <= n25 ~ "1st Quartile Deaths/Capita",
+        case_id > n25 & case_id <= n50 ~ "2nd Quartile Deaths/Capita",
+        case_id > n50 & case_id <= n75 ~ "3rd Quartile Deaths/Capita",
+        case_id > n75 ~ "4th Quartile Deaths/Capita",
+      ))
+    ```
+
+4.  Now, let's create the crosstab: count the number of counties under different quartile deaths/capita and which candidate they voted for (Trump or Clinton).
+
+    ```{r, message=F, error=F, warning=F}
+    crosstab <- cf %>%
+      count(deaths.quartile, trump) %>%
+      spread(trump, n) %>% ## After the count operation, this spreads the trump variable into separate columns, one for each unique value in the trump variable. It places the counts (n) for each trump value into their respective columns. 
+      mutate(Total = `Voted Clinton` + `Voted Trump`) ## Generate a column for the row total
+    
+    Total <- c("Total", unname(colSums(crosstab[, 2:4]))) ## Generate a row for the column total
+    
+    crosstab <- crosstab %>% rbind(Total)
+    
+    knitr::kable(crosstab, "simple", align = "llll")
+    ```
+
+    A crosstab does not make it easier to see the relationship. Usually, when the two variables you are interested in are cardinal ones (both `dem16vs` and `deaths.percap` are continuous variables), plotting a scatter plot is more straightforward to see the relationship. In general, crosstab/contingency table is more useful when the two variables you are interested in are both **categorical variables**.
+
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    ggplot(cf[samp,], aes(x = dem16vs, y = deaths.percap)) + 
+      geom_point(color = "black", fill = "white", 
+                 stroke = 1, shape = 1) +     
+      xlab("Democratic Vote Share, 2016 Presidential") + 
+      ylab("Deaths Per Capita") +
+      xlim(0,1) + 
+      labs(title = "NY Times Covid-19 Survey", 
+           subtitle = "500 Randomly Selected Counties") + 
+      theme_bw()
+    ```
+
+#### c. Covariance, Correlation Coefficient, Linear Regression
+
+In addition to visualizing data using scatter plots or contingency tables to grasp relationships, how can we employ statistical measures to describe these relationships more formally?
+
+1. Covariance
+
+    Covariance is a useful measure for describing the **direction** of the linear association between two quantitative variables.
+
+    $$Cov(x, y) = \frac{1}{N-1}\sum_{i=1}^{N}(x_i-\bar{x})(y_i-\bar{y})$$
+    As we can see from the equation, the covariance sums the term $(x_i-\bar{x})(y_i-\bar{y})$ for each data point, where $\bar{x}$ is the average $x$ value, and $\bar{y}$ is the average $y$ value. The term becomes more positive if both $x$ and $y$ are larger than the average values in the data set, and becomes more negative if smaller. As the covariance accounts for every data point in the set, a positive covariance must mean that most, if not all, data points are in sync with respect to $x$ and $y$ (small $y$ when $x$ is small or large $y$ when $x$ is large). Conversely, a negative covariance must mean that most, if not all, data points are out of sync with respect to $x$ and $y$ (small $y$ when $x$ is large or large $y$ when $x$ is small). 
+
+    Let's start by using a fake dataset to practice how to compute covariance.
+
+    ```{r, message=F, error=F, warning=F}
+    tf <- data.frame(x = c(3, 2, 1, 7, -1), 
+                     y = c(8, 10, 13, 2, 8))
+    
+    knitr::kable(tf, "simple", align = "cc")
+    ```
+
+    ```{r}
+    ## Covariance
+    tf$x.dev2 <- tf$x - mean(tf$x)
+    tf$y.dev2 <- tf$y - mean(tf$y)
+    
+    cov.fake <- (1/(nrow(tf)-1))*sum(tf$x.dev2*tf$y.dev2)
+    cov.fake   
+
+    ```
+
+    You can use the canned function `cov()` to double check your answer.
+
+    ```{r, message=F, error=F, warning=F}
+    ## Covariance
+    cov(tf$x, tf$y)
+    ```
+
+    Covariance is a useful measure at describing the direction of the linear association between two quantitative variables, but it has two weaknesses: a larger covariance does not always mean a stronger relationship, and we cannot compare the covariances across different sets of relationships. For example, if we find that the covariance between variables $x$ and $y$ is larger than the covariance between $x$ and $z$, we can only conclude that both $y$ and $z$ are positively associated with $x$. However, we cannot determine whether the relationship between $x$ and $y$ is stronger than the relationship between $x$ and $z based solely on their covariances.
+
+2. Correlation Coefficient
+
+    To account for the weakness, we normalize the covariance by the standard deviation of the $x$ values and $y$ values, to get the correlation coefficient. The correlation coefficient is a value between -1 and 1, and measures both the direction and the strength of the linear association. One important distinction to note is that correlation does not measure the slope of the relationship — a large correlation only speaks to the strength of the relationship. Some key points on correlation are:
+
+    - Correlation measures the direction and strength of the linear association between two quantitative variables.
+    - Positive and negative indicates direction, large and small indicates the strength.
+    - Correlation has symmetry: correlation of x and y is the same as correlation of y and x.
+    - Correlation is unitless and normalized.
+
+    $$r_{xy}=\frac{Cov(x, y)}{s_xs_y}$$
+
+    Please compute the correlation coefficient between $x$ and $y$ using the formula above with the fake dataset
+
+    ```{r}
+    ## Correlation
+    cor.fake <- cov.fake/(sd(tf$x)*sd(tf$y))
+    cor.fake
+    ```
+
+    You can also used the canned function `cor()` to double check your answers.
+    ```{r, message=F, error=F, warning=F}
+    ## Correlation
+    cor(tf$x, tf$y)
+    ```
+
+3. Linear Regression
+
+    Correlation and covariance are quantitative measures of the strength and direction of the relationship between two variables, but they do not account for the slope of the relationship. In other words, we do not know **how a change in one variable could impact the other variable**. Regression is the technique that fills this void — it allows us to make the best guess at how one variable affects the other variables. The simplest linear regression, which is usually measured by ordinary least square (OLS) method, allows us to fit a "line of best fit" to the scatter plot, and use that line (or model) to describe the relationship between the two variables. The OLS approach aims to fit a line that minimizes squared residuals. The equation for that line is:
+
+    $$\hat{y} = a + bx$$ 
+    The equations of $a$ and $b$ are:
+
+    $$b = \frac{r_{xy}s_{y}}{s_{x}}=\frac{Cov(x, y)}{s^2_{x}}$$
+
+    $$a = \bar{y}-b\bar{x}$$
+    **Note**: A more detailed introduction regarding linear regression will be discussed in POL 212 and 213. 
+    
+    What are the intercept ($a$) and slope ($b$) between $x$ and $y$ in the fake dataset? Please compute in a manual way!
+
+    ```{r, message=F, error=F, warning=F}
+    ## Slope
+    b <- cov(tf$x, tf$y)/var(tf$x)
+    
+    ## Intercept
+    a <- mean(tf$y) - b * mean(tf$x)
+    ```
+
+    You can also use the canned function `lm` to check your answer.
+    ```{r, message=F, error=F, warning=F}
+    reg <- lm(y ~ x, data = tf)
+    stargazer::stargazer(reg, type = "text", digits = 4)
+    ```
+
+#### d. Practice
+
+Now that you know how to use covariance, correlation coefficients, and linear regression to describe relationships in data, let's apply what you've learned to the `Covid19.csv` dataset to compute the covariance, correlation coefficient, and regression line between `dem16vs` and `mask_always`.
+
+1. What is the covariance and correlation coefficient between `dem16vs` and `mask_always`? Please compute them in a manual way.
+
+    ```{r}
+    ## Covariance
+    dem16vs.dev <- cf$dem16vs[samp]  - mean(cf$dem16vs[samp])
+    mask_always.dev <- cf$mask_always[samp] - mean(cf$mask_always[samp])
+    
+    cov.covid19 <- (1/(500 - 1))*sum(dem16vs.dev*mask_always.dev)
+    cov.covid19
+    
+    cov(cf$dem16vs[samp], cf$mask_always[samp])
+
+    ## Correlation
+    cor.covid19 <- cov.covid19/(sd(cf$dem16vs[samp])*sd(cf$mask_always[samp] ))
+    cov.covid19
+    
+    cor(cf$dem16vs[samp], cf$mask_always[samp])
+    ```
+
+2. What are the intercepts and slopes for the regression line between `dem16vs` and `mask_always`? Note that in this practice, we are calculating the regression line based on the 500 randomly selected counties!
+
+    ```{r}
+    ## Please find a and b! 
+    b <- cov(cf$dem16vs[samp], cf$mask_always[samp])/var(cf$dem16vs[samp])
+    a <- mean(cf$mask_always[samp]) - b * mean(cf$dem16vs[samp])
+    print(paste0("y = ", round(a, 2), " + ", round(b, 2), "x"))
+    ```
+
+3. Now you have the regression line, please add the line on the scatter plot using `geom_abline()`!
+
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    ## Add the regression line! 
+    ggplot(cf[samp,], aes(x = dem16vs, y = mask_always)) + 
+    ## Specify the random sample within the bracket of cf and remember to put it on the row position!
+      geom_point(color = "black", fill = "white", 
+                 stroke = 1, shape = 1) + 
+      geom_abline(slope = b, intercept = a, size = 2, color = "darkorange") +
+      annotate(geom = "text", x = 0.85, y = 0.95, 
+               label = "y = 0.35 + 0.51x", color = "darkorange") +
+      xlab("Democratic Vote Share, 2016 Presidential") + 
+      ylab("% Reporting Always Wearing Mask") + 
+      ylim(0,1) + 
+      xlim(0,1) + 
+      labs(title = "NY Times Covid-19 Survey", 
+           subtitle = "500 Randomly Selected Counties") + 
+      theme_bw()
+    ```
+    
+## Discussion IV
+
+In today's discussion, we'll start by reviewing the solutions to Problem Set 3. Afterward, we'll dive into the first part of "Learning from Data." During this session, we'll revisit the fundamental concept of the data generating process and underscore the significance of understanding probability theory as a foundational step in data analysis. Furthermore, we'll practice computing joint, marginal, and conditional distributions, and develop skills for summarizing central tendency and dispersion within these distributions.
+
+### Probability Distribution
+
+**Note**: Most of the materials for today's discussion can be referred to [STAT 414: Introduction to Probability Theory.](https://online.stat.psu.edu/stat414/).
+
+#### a.  Data Generating Process (DGP)
+
+The contemporary world is full of data and, especially, it is becoming easier and easier to transform it into data. Data analysis is about making good use of data for certain purposes, such as to predict or to make inferences about the world. For these tasks, a first step is to have a sound understanding on how the data was generated, i.e., which processes lead to its creation. The analytical strategy for data analysis will be highly dependent on which processes have generated the data under scrutiny.
+
+Overall, in the following method sequence classes, we will only consider the type of **probability based (stochastic)** data generation processes. In the probability based DGP, data is generated by a probabilistic process, i.e., each element of the population is selected with a (known) probability to form part of the sample data. One possible way to achieve this is by using a random mechanism when generating the data.
+
+<center>
+
+![Source: [Lumen learning](https://courses.lumenlearning.com/wm-concepts-statistics/chapter/wim-linking-probability-to-statistical-inference/)](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/producing_data_inferences.png){width="80%"}
+
+</center>
+
+Example:
+
+-   Research Question: What percentage of U.S. adults support the death penalty?
+
+-   Steps in Statistical Investigation:
+
+    1.  Produce Data: Determine what to measure, then collect the data. The poll selected 1,082 U.S. adults at random. Each adult answered this question: "Do you favor or oppose the death penalty for a person convicted of murder?"
+
+    2.  Explore the Data: Analyze and summarize the data.In the sample, 65% favored the death penalty.
+
+    3.  Draw a Conclusion: Use the data, probability, and statistical inference to draw a conclusion about the population.
+
+However, there is a cost that has to be taken into account: by drawing a sample we have not observed all of the individuals in the population. It is necessary, then, to account for the uncertainty implied in the sampling process that generated the data. In addition to the **sampling uncertainty**, there are other sources of uncertainty that would lead us to assume our data is generated by a stochastic DGP: **theoretical and fundamental uncertatinty**.
+
+Let's consider a scenario where we are not only interested in understanding the percentage of adults who support the death penalty in the U.S. but also whether there is a difference in support based on political affiliation, particularly Republicans. In this case, we have a theoretical framework that focuses on the relationship between a person's political alignment and their stance on the death penalty. However, it's possible that other factors, such as how individuals value a person's life, could also influence their views on the death penalty. Unfortunately, we didn't include these additional factors in our theory, which could potentially impact our data collection. Consequently, the results derived from our sample data might be subject to theoretical uncertainty. Additionally, there is the possibility of fundamental uncertainty within our sample data. This could arise when respondents pay minimal attention to the survey questions and opt for random responses regarding their opinions on the death penalty. Such factors are beyond the control of researchers and can introduce further uncertainty into our findings.
+
+In summary, statistical inferences always involve an element of uncertainty. As a researcher, our aim is to account for this uncertainty by incorporating probability statements as an integral part of our conclusions in our findings.
+
+#### b.  Probability Distribution
+
+How to model stochastic data generating process? Any time we want to answer a research question that involves using a sample to draw a conclusion about some larger population, we need to answer the question "how likely is it that we get a sample proportion of people supporting for the death penalty at 65%?" or "what is the probability of...?". To answer such a question, we need to use probability to quantify the uncertainty of the outcomes of interest.
+
+Just a reminder, when we employ a probability distribution to model a stochastic DGP, we are essentially playing as the God saying that the data for the variable of interest is generated by this probability distribution. However, in real-life, what we can directly observe is the empirical distribution (or frequency distribution) derived from our available sample data. We make an assumption that this empirical distribution from the sample data reflects the underlying theoretical probability distribution.
+
+1.  Discrete Random Variables
+
+    -   What is a Random Variable $X$?
+
+        Given a random experiment with sample space $S$, a random variable $X$ is a set function that assigns one and only one real number to each element $s$ that belongs in the sample space $S$. The set of all possible values of the random variable $X$, denoted $x$, is called the support, or space, of $X$. For example:
+
+        A rat is selected at random from a cage of male ($M$) and female rats ($F$). Once selected, the gender of the selected rat is noted. The sample space is thus: $$S = \left \{ M, F \right \}$$
+
+        Let's further define the random variable $X$ as follows:
+
+        -   Let $X = 0$ if the rat is male.
+        -   Let $X = 1$ if the rat is female.
+
+        Note that the random variable $X$ assigns one and only one real number (0 and 1) to each element of the sample space ($M$ and $F$). The support, or space, of $X$ is $\left \{ 0, 1 \right \}$.
+
+        Also note that we don't necessarily need to use the number 0 and 1 as the support. For example, we could have alternatively (and perhaps arbitrarily) used the numbers 5 and 15, respectively. In that case, our random variable would be defined as $X = 5$ of the rate is male, and $X = 15$ of the rate is female.
+
+    -   What is the Probability Mass Function (PMF) of a discrete random variable?
+
+        The probability that a discrete random variable $X$ takes on a particular value $x$, that is, $P(X = x)$, is frequently denoted $f(x)$. The function $f(x)$ is typically called the **probability mass function (PMF)**.
+
+        The probability mass function, $P(X = x) = f(x)$, of a discrete random variable $X$ is a function that satisfies the following properties:
+
+        -   $P(X = x) = f(x) > 0$ if $x \in$ the support $S$
+
+            For every element in the support $S$, all of the probabilities must be positive. Note that if $x$ does not belong in the support $S$, then $f(x) = 0$.
+
+        -   $\sum_{x \in S}^{}f(x)=1$
+
+            If you add up the probabilities for all of the possible $x$ values in the support $S$, then the sum must equal 1.
+
+        -   $P(X \in A) = \sum_{x \in A}^{}f(x)$
+
+            To determine the probability associated with the event $A$, you just sum up the probabilities of the $x$ values in $A$.
+
+        **Exercise 1**:
+
+        I toss a fair four-sided dice, and let $X$ be defined as the outcome on the die I observe, $\left \{ 1, 2, 3, 4 \right \}$. What is the sample space of $X$, the possible outcomes of $X$, as well as its probability mass function $f(x)$?
+
+        We can also plot PMF in R.
+
+        ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=6, fig.height=4}
+        x <- 1:4
+        n <- length(x)
+        fx <- rep(1/4, n)
+        ```
+
+        ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+        plot(x = x, y = fx, pch = 19, 
+            xaxt="n",
+            ylim = c(0, 0.5),
+            xlab = "x",
+            ylab = "f(x)",
+            main = "Probability Mass Function")
+        axis(1, at = seq(min(x), max(x), by = 1))
+        ```
+
+    -   What is the Cumulative Distribution Function (CDF) of a discrete random variable?
+
+        The cumulative distribution function (CDF) of the discrete random variable $X$ has the following definition:
+
+        $$F(x) = P(X \leq x) = \sum_{a \leq x}^{}f(a)$$
+
+        in which $F(x)$ is a non-decreasing *step* function.
+
+        We can also plot CDF in R. Let's plot the CDF of the Exercise 1.
+
+        ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=6, fig.height=4}
+        x <- 1:4
+        n <- length(x)
+        fx <- rep(1/4, n)
+        Fx <- cumsum(fx)
+        ```
+
+        ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+        ## Let's make an empty plot
+        plot(x = NA, y = NA, pch = NA, 
+            xaxt="n",
+            xlim = c(min(x), max(x)),
+            ylim = c(0, 1),
+            xlab = "x",
+            ylab = "F(x)",
+            main = "Cumulative Distribution Function")
+        axis(1, at = seq(min(x), max(x), by = 1))
+            
+        ## Add closed circles, open circles, and finally the horizontal lines
+        points(x = x, y = Fx, pch = 19) ## closed circles
+        points(x = x[-1], y = Fx[-n], pch = 1) ## open circles
+        for(i in 1:(n-1)) {
+          points(x = x[i+0:1], 
+                 y = Fx[c(i,i)], 
+                 type = "l")
+         }
+        ```
+
+        **Exercise 2**:
+
+        Suppose $X$ is a discrete random variable. Let the PMF of $X$ be equal to:
+
+        $$f(x) = \frac{5-x}{10}, x = 1, 2, 3, 4. $$
+
+        The CDF of $X$ is $F(x) = P(X \leq x) = \sum_{a \leq x}^{}f(a)$.
+
+        **2.1** What is the cumulative probability when $X \leq 2$?
+
+        **2.2** Is $P(X \leq 2)$ equal to $P(X = 2)$?
+
+2.  Continuous Random Variables
+
+        A continuous random variable takes on an uncountably infinite number of possible values. For a discrete random variable $X$ that takes on a finite or countably infinite number of possible values, we determined $P(X=x)$ for all of the possible values of $X$, and called it the probability mass function (PMF).
+
+        For continuous random variables, the probability that $X$ takes on any particular value $x$ is 0. That is, finding $P(X=x)$ for a continuous random variable $X$ is not going to work. Instead, we'll need to find the probability that $X$ falls in some interval $(a, b)$, that is, we'll need to find $P(a<X<b)$. We'll do that using a **probability density function (PDF)**.
+
+    -   What is the Probability Density Function (PDF) of a continuous random variable?
+
+        The probability density function of a continous random variable $X$ with support $S$ is an integrable function $f(x)$ satisfying the following:
+
+        1.  $f(x)$ is positive everywhere in the support $S$, that is, $f(x)>0$, for all $x$ in $S$.
+
+        2.  The area under the curve f(x) in the support $S$ is 1, that is:
+
+            $$\int_{S}^{}f(x)dx=1$$
+
+        3.  If $f(x)$ is the PDF of $x$, then the probability that $X$ belongs to $A$, where $A$ is some interval, is given by the integral of $f(x)$ over that interval, that is:
+
+            $$P(X \in A) = \int_{A}^{}f(x)dx$$
+
+        As you can see, the definition for the PDF of a continuous random variable differs from the definition for the PMF of a discrete random variable by simply changing the summations that appeared in the discrete case to integrals in the continuous case.
+
+        **Exercise 3**:
+
+        Let $X$ be a continuous random variable whose PDF is:
+
+        $f(x) = 3x^2$, $0<x<1$
+
+        First, note again that $f(x) \neq P(X=x)$. For example, $f(0.9)=3(0.9)^{2}=2.43$, which is clearly not a probability! In the continuous case, $f(x)$ is instead the height of the curve at $X=x$, so that the total area under the curve is 1. In the continuous case, it is areas under the curves that define the probabilities.
+
+        Now let's first start by verifying that $f(x)$ is a valid probability density function.
+
+        -   $f(x) > 0$ at any value of $x$.
+
+        -   $\int_{0}^{1}3x^2dx=x^3 |_{x=0}^{x=1}=1^3-0^3=1$
+
+        **3.1** What is the probability that $X$ falls between $\frac{1}{2}$ and 1? That is, what is $P(\frac{1}{2}<X<1)$?
+
+        **3.2** Please use integration to show that $P(X=\frac{1}{2})=0$.
+
+        **Exercise 4**:
+
+        Let $X$ be a continuous random variable whose probability density function is:
+
+        $$f(x) = \frac{x^3}{4}$$
+
+        for any interval $0<x<c$. What is the value of the constant $c$ that makes $f(x)$ a valid probability density function?
+
+    -   What is the Cumulative Distribution Function (CDF) of a continuous random variable?
+
+        You might recall that the cumulative distribution function is defined for discrete random variables as:
+
+        $$F(x) = P(X \leq x) = \sum_{a \leq x}^{}f(a)$$
+
+        Again, $F(x)$ accumulates all of the probability less than or equal to $x$.The cumulative distribution function for continuous random variables is just a straightforward extension of that of the discrete case. All we need to do is replace the summation with an integral.
+
+        The cumulative distribution function of a continuous random variable $X$ is defined as:
+
+        $$F(x) = P(X \leq x) = \int_{a \leq x}^{}f(a)da$$
+
+        Recall that for discrete random variables, $F(x)$ is in general a non-decreasing *step* function. For continuous random variables, $F(x)$ is a non-decreasing *continuous* function.
+
+        **Exercise 5**:
+
+        Let's return to the example in which $X$ has the following probability density function:
+
+        $f(x) = 3x^2$, $0<x<1$
+
+        What is the cumulative distribution function $F(x)$?
+
+#### c.  Multivariate Probability Distributions
+
+Now we know the probability distribution of both discrete and continuous random variables, respectively. Let's extend the concept of a probability distribution of one random variable $X$ to a joint probability distribution of two discrete random variables $X$ and $Y$. For example, suppose $X$ denotes the number of significant others a randomly selected person has, and $Y$ denotes the number of arguments the person has each week. We might want to know if there is a relationship between $X$ and $Y$. Or, we might want to know the probability that $X$ takes on a particular value $x$ and $Y$ takes on a particular value $y$. That is, we might want to know $P(X=x, Y=y)$.
+
+Suppose we toss a pair of fair, four-sided dice, in which one the dice is red and the other is black. We'll let:
+
+-   $X$ = the outcome on the red die = $\left \{ 1, 2, 3, 4 \right \}$
+-   $Y$ = the outcome on the black die = $\left \{ 1, 2, 3, 4 \right \}$
+
+What is the support of $f(x, y)$? What is the probability that $X$ takes on a particular value $x$, and $Y$ takes on a particular value $y$? That is, what is $P(X=x, Y=y)$? Please calculate the probability for each cell in the table below. Note that columns represent the outcomes of the black die, whereas rows represent the outcomes of the red die.
+
+| $f(x,y)$ | $Y=1$ | $Y=2$ | $Y=3$ | $Y=4$ | $f_X(x)$ |
+|----------|-------|-------|-------|-------|----------|
+| $X=1$    |       |       |       |       |          |
+| $X=2$    |       |       |       |       |          |
+| $X=3$    |       |       |       |       |          |
+| $X=4$    |       |       |       |       |          |
+| $f_Y(y)$ |       |       |       |       |          |
+
+Now that we've found our first joint probability mass function, let's formally define it now.
+
+Let $X$ and $Y$ be two discrete random variables, and let $S$ denote the two-dimensional support of $X$ and $Y$. Then, the function $f(x, y) = P(X=x, Y=y)$ is a joint probability mass function if it satisfies the following three conditions:
+
+1.  $0 \leq f(x, y) \leq 1$
+
+    Each probability must be a valid probability number between 0 and 1 (inclusive).
+
+2.  $\sum_{}^{}\sum_{(x, y) \in S}^{}f(x, y)=1$
+
+    The sum of the probabilities over the entire support $S$ must equal 1.
+
+3.  $P[(X, Y)\in A]=\sum_{}^{}\sum_{(x, y)\in A}^{}f(x, y)$ where $A$ is a subset of $S$
+
+    In order to determine the probability of an event $A$, you simply sum up the probabilities of the $(x, y)$ values in $A$.
+
+#### d.  Marginal Distribution
+
+Now, if you take a look back at the representation of our joint p.m.f. in tabular form, you can see that the last column contains the probability mass function of $X$ alone, and the last row contains the probability mass function of $Y$ alone. Those two functions, $f(x)$ and $f(y)$, which in this setting are typically referred to as **marginal probability mass functions**, are obtained by simply summing the probabilities over the support of the other variable. That is, to find the probability mass function of $X$, we sum, for each $x$, the probabilities when \$y=1, 2, 3, \$ and $4$. That is, for each $x$, we sum $f(x, 1)$, $f(x, 2)$, $f(x, 3)$, and $f(x, 4)$. Now that we've seen the two marginal probability mass functions in our example, let's give a formal definition of a marginal probability mass function.
+
+Let $X$ be a discrete random variable with support $S_1$, and let $Y$ be a discrete random variable with support $S_2$, Let $X$ and $Y$ have the joint probability mass function $f(x, y)$ with support $S$. Then, the probability mass function of $X$ alone, which is called the marginal probability mass function of $X$, is defined by:
+
+$$f_X(x)=\sum{y}{}f(x, y)=P(X=x)$$ $$x \in S_1$$
+
+where, for each $x$ in the support $S_1$, the summation is taken over all possible values of $y$. Similarly, the probability mass function of $Y$ alone, which is called the marginal probability mass function of $Y$, is defined by:
+
+$$f_Y(y)=\sum{x}{}f(x, y)=P(Y=y)$$ $$x \in S_2$$
+
+where, for each $y$ in the support $S_2$, the summation is taken over all possible values of $x$.
+
+If you again take a look back at the representation of our joint p.m.f. in tabular form, you might notice that the following holds true:
+
+$$P(X=x, Y=y) = \frac{1}{16} = P(X=x) \cdot P(Y=y) = \frac{1}{4} \cdot \frac{1}{4} = \frac{1}{16}$$
+
+for all $x \in S_1$, $y \in S_2$. When this happens, we say that $X$ and $Y$ are independent. A formal definition of the independence of two random variables $X$ and $Y$ follows.
+
+The random variables $X$ and $Y$ are independent if and only if:
+
+$$P(X=x, Y=y) = P(X=x) \times P(Y=y)$$
+
+for all $x \in S_1$, $y \in S_2$. Otherwise, $X$ and $Y$ are said to be dependent.
+
+**Exercise 6**:
+
+Please find the marginal distributions of $X$ and $Y$, respectively.
+
+|$f(x, y)$ | $X=0$  | $X=1$  | $X=2$ | $f_Y(y)$ |
+|----------|--------|--------|-------|----------|
+| $Y=1$    | $0.1$  | $0.2$  | $0.3$ |          |
+| $Y=2$    | $0.05$ | $0.15$ | $0.2$ |          |
+| $f_X(x)$ |        |        |       |          |
+
+Is $X$ and $Y$ independent from each other or not?
+
+#### e.  Conditional Distribution
+
+Marginal distributions tell us the distribution of a particular variable ignoring the other variable(s). In contrast, the conditional distribution of $X$ given $Y$ gives you a distribution over $X$ when holding $Y$ fixed at specific values. Formally:
+
+$$f_{X|Y}(x|y)=\frac{f(x, y)}{f_Y(y)}$$
+
+The conditional distribution of $Y$ given $X$ is defined by:
+
+$$f_{Y|X}(y|x)=\frac{f(x, y)}{f_X(x)}$$
+
+Recall the example we had for joint distribution.
+
+| $f(x,y)$ | $Y=1$          | $Y=2$          | $Y=3$          | $Y=4$          | $f_X(x)$       |
+|------------|------------|------------|------------|------------|------------|
+| $X=1$    | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{4}{16}$ | $\frac{4}{16}$ |
+| $X=2$    | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{4}{16}$ |
+| $X=3$    | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{4}{16}$ |
+| $X=4$    | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{1}{16}$ | $\frac{4}{16}$ |
+| $f_Y(y)$ | $\frac{4}{16}$ | $\frac{4}{16}$ | $\frac{4}{16}$ | $\frac{4}{16}$ | $1$            |
+
+What is the conditional distribution of $Y$ given $X=2$?
+
+When $Y=1$: $f_{Y|X}(y|x=2)=\frac{f(x, y)}{f_X(x=2)}=\frac{\frac{1}{16}}{\frac{4}{16}}=\frac{1}{4}$
+
+When $Y=2$: $f_{Y|X}(y|x=2)=\frac{f(x, y)}{f_X(x=2)}=\frac{\frac{1}{16}}{\frac{4}{16}}=\frac{1}{4}$
+
+When $Y=3$: $f_{Y|X}(y|x=2)=\frac{f(x, y)}{f_X(x=2)}=\frac{\frac{1}{16}}{\frac{4}{16}}=\frac{1}{4}$
+
+When $Y=4$: $f_{Y|X}(y|x=2)=\frac{f(x, y)}{f_X(x=2)}=\frac{\frac{1}{16}}{\frac{4}{16}}=\frac{1}{4}$
+
+So,
+
+$f_{Y|X}(y|x=2)= \frac{1}{4} if y = 1, 2, 3, 4$
+
+We will get the same answers for the conditional probability of $Y$ given $X=1$, $X=3$, or $X=4$.
+
+From this example of finding the conditional probability of $Y$ given $X=2$, we again find that $X$ and $Y$ are independent from each other, as the distribution over $Y$ does not change as $Y$ changes. That is,
+
+$$f(x, y) = f_X(x)\cdot f_Y(y) \Rightarrow f_{X|Y}{x|y} = f_X(x) and f_{Y|X}{y|x} = f_Y(y)$$
+
+**Exercise 7**:
+
+Find the conditional distribution of $X$ given $Y=2$.
+
+|$f(x, y)$ | $X=0$  | $X=1$  | $X=2$ | $f_Y(y)$ |
+|----------|--------|--------|-------|----------|
+| $Y=1$    | $0.1$  | $0.2$  | $0.3$ | $0.6$    |
+| $Y=2$    | $0.05$ | $0.15$ | $0.2$ | $0.4$    |
+| $f_X(x)$ | $0.15$ | $0.35$ | $0.5$ | $1$      |
+
+#### f.  Central Tendency of Probability Distributions
+
+The expected value, or mathematical expectation, of a discrete random variable $X$ is:
+
+$$E(X)=\sum_{x\in X}{}xf(x)$$
+
+where $x$ is the possible outcomes of the discrete random variable $X$, and $f(x)$ is the probability mass function of $X$.
+
+For example, what is the average toss of a fair six-sided die?
+
+If the random variable $X$ is the top face of a tossed, fair, six-sided die, then the PMF of $X$ is:
+
+$$f(x) = \frac{1}{6}$$
+
+for $x = 1, 2, 3, 4, 5,$ and $6$. Therefore, the average toss, that is the expected value of $X$, is:
+
+$$E(X) = 1(\frac{1}{6}) + 2(\frac{1}{6}) + 3(\frac{1}{6}) + 4(\frac{1}{6}) + 5(\frac{1}{6}) + 6(\frac{1}{6}) = 3.5$$
+
+Hmm... if we toss a fair, six-sided die once, should we expect the toss to be 3.5? No, of course not! All the expected value tells us is what we would expect the average of a large number of tosses to be **in the long run**. If we toss a fair, six-sided die a thousand times, say, and calculate the average of the tosses, will the average of the 1000 tosses be exactly 3.5? No, probably not! But, we can certainly expect it to be close to 3.5. It is important to keep in mind that the expected value of is a theoretical average, not an actual, realized one! Let's run a simulation to observe this more directly.
+
+```{r, message=F, warning=F, error=F}
+x <- 1:6
+
+s1 <- sample(x, replace = TRUE, size = 100)
+mean(s1)
+```
+
+```{r, message=F, warning=F, error=F}
+s2 <- sample(x, replace = TRUE, size = 1000)
+mean(s2)
+```
+
+```{r, message=F, warning=F, error=F}
+s3 <- sample(x, replace = TRUE, size = 10000)
+mean(s3)
+```
+
+Expectations have some nice properties:
+
+1.  The expected value of a constant $a$ is that constant: $E(a) = a$.
+
+2.  The expected value of a constant $b$ times a random variable $X$ is that constant times the expected value of $X$: $E(bX) = bE(X)$.
+
+3.  Given two random variables, $X$ and $Y$, $E(X+Y) = E(X) + E(Y)$.
+
+4.  $E(X)$ always falls between the minimum and maximum values that $X$ can take: $min X \leq E(X) \leq max X$.
+
+**Exercise 8**:
+
+Suppose the PMF of the discrete random variable $X$ is:
+
+| $x$    | $0$   | $1$   | $2$   | $3$   |
+|--------|-------|-------|-------|-------|
+| $f(x)$ | $0.2$ | $0.1$ | $0.4$ | $0.3$ |
+    
+8.1 What is the expected value of $X$, that is, $E(X)$? 
+    
+8.2 Suppose that there is another discrete random variable $Y$, and the expected value of $Y$ is $3.2$, that is, $E(Y) = 3.2$. What is the expected value of $2X+3Y$, that is, $E(2X+3Y)$?
+    
+**Exercise 9**:
+    
+9.1 Find the expected values of the random variables from their marginal distributions.
+    
+9.2 Find the expected value of $X$ given $Y=2$. 
+    
+  
+|$f(x, y)$ | $X=0$  | $X=1$  | $X=2$ | $f_Y(y)$ |
+|----------|--------|--------|-------|----------|
+| $Y=1$    | $0.1$  | $0.2$  | $0.3$ | $0.6$    |
+| $Y=2$    | $0.05$ | $0.15$ | $0.2$ | $0.4$    |
+| $f_X(x)$ | $0.15$ | $0.35$ | $0.5$ | $1$      |
+    
+All these nice properties can also be applied to a continuous random variable. The expected value of a continuous random variable is:
+    
+$$\int_{x\in X}{}xf(x)dx$$
+    
+Let's use an example to practice. Let the random variable $X$ denote the time a person waits for an elevator to arrive. Suppose the longest one would need to wait for the elevator is 2 minutes, so that the possible values of $X$ (in minutes) are given by the interval $[0,2]$. A possible PDF for $X$ is given by:
+    
+$$f(x) = \begin{cases} x, & \text{for } 0 < x \leq 1\\ 2-x, & \text{for } 1 < x \leq 2 \\ 0, & \text{otherwise }  \end{cases} $$ 
+      What is the expected value of $X$?
+      
+$$E(X) = \int_{0}^{1}x\cdot xdx + \int_{1}^{2}x\cdot(2-x)dx = \int_{0}^{1}x^2dx + \int_{1}^{2}(2x-x^2)dx = \frac{1}{3} + \frac{2}{3} = 1$$
+      
+Thus, we expect a person will wait 1 minute for the elevator on average.
+      
+
+#### g.  Dispersion of Probability Distributions
+
+The variance of a random variable $X$ is:
+    
+$$ Var(X) = E((X-E(X))^2) = E(X^2) - E(X)^2$$
+    
+The formulat can be applied to both discrete and continuous random variables.
+    
+    
+The variance of a random variable also has nice properties:
+    
+1. The variance of a constant $a$ is $0$: $Var(a) = 0$.
+    
+2. $Var(X)$ is always weakly positive: $Var(X) \geq 0$.
+    
+3. The variance of a constant $b$ times a random variable $X$ is that constant squared times the variance of $X$: $Var(bX) = b^2 Var(X)$.
+    
+4. If $X$ and $Y$ are stochastically independent, then $Var(X+Y) = Var(X) + Var(Y)$.
+    
+    
+**Exercise 10**:
+    
+10.1 What is the variance of $X$?
+    
+10.2 What is $Var(2X)$?
+    
+| $x$    | $0$   | $1$   | $2$   | $3$   |
+|--------|-------|-------|-------|-------|
+| $f(x)$ | $0.2$ | $0.1$ | $0.4$ | $0.3$ |
+    
+    
+**Exercise 11**:
+    
+Recall the elevator question, please compute the variance of $X$.
+    
+$$f(x) = \begin{cases} x, & \text{for } 0 < x \leq 1\\ 2-x, & \text{for } 1 < x \leq 2 \\ 0, & \text{otherwise }  \end{cases} $$
+    
+## Discussion V
+
+### Different Kinds of Probability Distribution
+
+**Note**: Most of the materials for today's discussion can be referred to [STAT 414: Introduction to Probability Theory.](https://online.stat.psu.edu/stat414/).
+
+In today's discussion, we'll be reviewing some specially named discrete and continuous probability mass functions, such as bernoulli distribution, binomial distribution, uniform distribution, and normal distribution.
+
+The basic idea behind this lesson is that when certain conditions are met, we can derive a general formula for the probability mass function of a discrete random variable and the probability distribution function of a continuous random variable. 
+
+#### a. Bernoulli Distribution
+
+Bernoulli Distribution is a type of discrete probability distribution where every experiment conducted asks a question that can be answered only in yes or no. In other words, the random variable can be 1 with a probability $p$ or it can be 0 with a probability $(1 - p)$. Such an experiment is called a Bernoulli trial. A pass or fail exam can be modeled by a Bernoulli Distribution. Bernoulli distribution can also be used to derive a binomial distribution, geometric distribution, and negative binomial distribution.
+
+For example, suppose there is an experiment where you flip a coin that is fair. If the outcome of the flip is heads then you will win. This means that the probability of getting heads is $p = \frac{1}{2}$. If $X$ is the random variable following a Bernoulli Distribution, we get $P(X = 1) = p = \frac{1}{2}$. We can also write it as $X \sim  Bernoulli(p)$ or just $X \sim  B(p)$.
+
+- Probability Mass Function (PMF)
+
+    A Bernoulli distribution is a discrete probability distribution where $Y=\left \{0, 1 \right \}$, its PMF is defined by:
+  
+    $$ f(y) = \begin{cases} 1 - p & \text{if } \ \ y = 0 \\ p & \text{if } \ \ y = 1 \\ \end{cases} $$
+    A Bernoulli distribution only has **one parameter**, $p$. It is a special case of the Binomial distribution when the number of trials = 1. 
+
+
+- Cumulative Distribution Function (CDF)
+
+    $$ F(y) = \begin{cases} 0 & \text{if } \ \ y < 0 \\ 1-p & \text{if } \ \ 0 \leq y < 1\\ 1 & \text{if } \ \ x \geq 1 \end{cases} $$
+
+- Expected Value and Variance
+
+    - Expected Value
+    
+      \begin{align*}
+      E(Y) &= \sum_{y \in Y}^{}yf(y) \\
+      &= 1 \times p + 0 \times (1-p)\\
+      &= p
+      \end{align*}
+      
+    - Variance
+    
+      \begin{align*}
+      Var(Y) &= E(Y^2) - (E(Y))^2 \\
+      &= [1^2 \times p + 0^2 \times (1-p)] - p^2\\
+      &= p - p^2 \\
+      &= p(1-p)
+      \end{align*}
+
+- Exercise 1:
+
+    1.1 We’re rolling a die and our random variable takes on the value $X = 1$ if the outcome is strictly greater than 4 and $X = 0$ otherwise. Then, $X \sim Bernoulli(\frac{1}{3})$. Please write out its PMF and CDF.
+    
+    1.2 What are the expected value and variance of rolling the die?
+
+
+#### b. Binomial Distribution
+
+Suppose we repeat a Bernoulli experiment $n$ times independently and we add up the outcomes. That is, suppose that our random variable is $Y = X_1 + X_2 + · · · + X_n$, where $X_i \sim Bernoulli(p)$ and the $X_i$ are
+independent. Then $Y$ is said to have a Binomial distribution with sample size $n$ and probability of success $p$, denoted $Y \sim Binomial(n, p)$. As you can see, a Binomial distribution has **two parameters**, $n$ and $p$.
+
+- Probability Mass Function (PMF)
+
+    $$ f(y) = \begin{cases} \binom{n}{y}p^y(1-p)^{N-y} & \text{if } \ \ y \in  \left \{0, 1, 2, ..., n \right \} \\ 0 & \text{otherwise } \end{cases} $$
+
+    where:
+    - $n$ is the number of trials (occurrences)
+    
+    - $y$ is the number of successful trials
+    
+    - $p$ is the probability of success in a single trial
+    
+    - $\binom{n}{y}$ is the combination of $n$ and $y$. A combination is the number of ways to choose a sample of $y$ elements from a set of $N$ distinct objects where order does not matter, and replacements are not allowed. Note that $\binom{n}{y} = \frac{n!}{y!(N-y)!}$, where $!$ is factorial (so, $4! = 4 \times 3 \times 2 \times 1$).
+
+
+- Cumulative Distribution Function (CDF)
+
+    $$F(y) = P(Y \leq y) = \sum_{y=0}^{n} \binom{n}{y}p^y(1-p)^{n-y} $$
+    
+
+- Expected Value and Variance
+
+    - Expected Value
+    
+      Recall that expected value is a linear operator, which suggests that:
+    
+      \begin{align*}
+      E(Y) &= E(X_1) + E(X_2) + ... + E(X_n) \\
+      &= p + p + ... + p\\
+      &= np
+      \end{align*} 
+      
+    - Variance
+    
+      Recall that the variance of a sum of independent random variables is the sum of the variances:
+      
+      \begin{align*}
+      Var(Y) &= Var(X_1) + Var(X_2) + ... + Var(X_n) \\
+      &= p(1-p) + p(1-p) + ... + p(1-p)\\
+      &= np(1-p)
+      \end{align*}
+      
+      
+- Exercise 2:
+    
+    2.1 Bob makes 60% of his free-throw attempts and he always shoots 12 free-throws during the class break. What is the PMF and CDF of Bob making free-throws?
+    
+    2.2 What is the probability that Bob makes exact 10 free-throws out of the total 12 free-throws?
+    
+    2.3 What is the probability that Bob makes less than 3 times.
+    
+    2.4 What is the probability that Bob makes more than 3 times.
+    
+    2.5 Theoretically, in the long run, what are the expected value and variance of Bob making free-throws?
+
+      
+- Binomial Distribution in R
+
+    We can also use R to do the calculation for Excercise 2. Here are some base R functions to do it:
+
+    | Function | Description |
+    |------|------|
+    | `dbinom(x, size, prob)` | Find the probability of getting a certain number of successes (`x`) in a certain number of trials (`size`) where the probability of success on each trial is fixed (`prob`).|
+    | `pbinom(q, size, prob)` |Return the value of the cumulative density function (CDF) of the binomial distribution given a certain random variable `q`, number of trials (`size`) and probability of success on each trial (`prob`).|
+    | `qbinom(p, size, prob)` |The inverse of `pbinom()` function. It takes the probability value and gives output which corresponds to the probability value.|
+    | `rbinom(n, size, prob)` |Generate a vector of binomial distributed random variables given a vector length n, number of trials (`size`) and probability of success on each trial (`prob`).|
+
+
+    2.2 What is the probability that Bob makes exact 10 free-throws out of the total 12 free-throws?
+    
+    - number of successes x = 10
+    
+    - number of trials n = 12
+    
+    - prob of success on each trial p = 0.6
+    
+    ```{r, message=F, error=F, warning=F}
+    dbinom(x = 10, size = 12, prob = 0.6)
+    ```
+    
+    The probability that Bob makes exactly 10 shots is 0.0639.
+    
+    We can also plot all the probabilities when Bob makes exactly 0, 1, 2, ..., 12 shots.
+    
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    df <- data.frame(x = c(0:12), y = dbinom(x = c(0:12), 
+                 size = 12, prob = 0.6))
+    sum(df$y) ## Should be 1
+
+    ggplot(df, aes(x = x, y = y)) +
+      geom_col(color = "black", fill = "gray85") +
+      scale_x_continuous(limits = c(0, 12), 
+                         breaks = seq(0, 12, 1)) + 
+      scale_y_continuous(breaks = seq(0, 0.25, 0.02), 
+                         limits = c(0, 0.25)) + 
+      labs(x = "X", y = "Probability") + 
+      theme_bw() + 
+      theme(panel.grid.minor = element_blank())
+```
+    
+    2.3 What is the probability that Bob makes less than 3 times.
+    
+    ```{r, message=F, error=F, warning=F}
+    pbinom(q = 2, size = 12, prob = 0.6)
+    ```
+    
+    2.4 What is the probability that Bob makes more than 3 times.
+    
+    ```{r, message=F, error=F, warning=F}
+    1 - pbinom(q = 3, size = 12, prob = 0.6)
+    ```
+    
+    2.5 Theoretically, in the long run, what are the expected value and variance of Bob making free-throws?
+    
+    ```{r, message=F, error=F, warning=F}
+    set.seed(1234)
+    sample.throws <- rbinom(n = 100000, size = 12, prob = 0.6)
+
+    mean(sample.throws) # very close to 12*0.6=7.2
+    var(sample.throws) # very close to 12*0.6*0.4=2.88
+    ```
+    
+#### c. Uniform Distribution
+
+In statistics, uniform distribution is a term used to describe a form of probability distribution where every possible outcome has an equal likelihood of happening. The probability is constant since each variable has equal chances of being the outcome. There are two types of uniform distribution:
+
+1. Discrete uniform distribution
+
+    A discrete uniform distribution is a statistical distribution where the probability of outcomes is equally likely and with **finite values**. A good example of a discrete uniform distribution would be the possible outcomes of rolling a 6-sided die. The possible values would be 1, 2, 3, 4, 5, or 6. In this case, each of the six numbers has an equal chance of appearing. Therefore, each time the 6-sided die is thrown, each side has a chance of $\frac{1}{6}$. The number of values is finite. It is impossible to get a value of 1.3, 4.2, or 5.7 when rolling a fair die.
+
+
+2. Continuous uniform distribution
+
+    Not all uniform distributions are discrete; some are continuous. A continuous uniform distribution (also referred to as rectangular distribution) is a statistical distribution with an **infinite number** of equally likely measurable values. Unlike discrete random variables, a continuous random variable can take any real value within a specified range.
+
+    A continuous uniform distribution usually comes in a rectangular shape. A good example of a continuous uniform distribution is an idealized random number generator. With continuous uniform distribution, just like discrete uniform distribution, every variable has an equal chance of happening. However, there is an infinite number of points that can exist. Today, we will focus on continuous uniform distribution.
+    
+    - Probability Distribution Function (PDF)
+    
+      A continuous random variable $X$ has a uniform distribution, denoted $X \sim Uniform \left [a, b\right ]$, if its probability density function is:
+      
+      $$ f(x) = \begin{cases} \frac{1}{b-a}& \text{if } x \in [a, b] \\ 0 & \text{otherwise} \end{cases} $$
+      
+      for two constants $a$ and $b$, such that $a<x<b$. A graph of the PDF looks like this:
+      
+      <center>
+      ![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/uniform_pdf.png){width=50%}
+      </center>
+      
+      Note that the length of the base of the rectangle is $(b-a)$, while the length of the height of the rectangle is $\frac{1}{b-a}$.Therefore, as should be expected, the area under $f(x)$ and between the endpoints $a$ and $b$ is 1. Additionally, $f(x)>0$ over the support $a<x<b$. Therefore, $f(x)$ is a valid probability density function.
+    
+    
+    - Cumulative Distribution Function (CDF)
+    
+    The cumulative distribution function of a continuous uniform random variable is:
+    
+    $$F(x) = \begin{cases}  0 & \text{if } \ \ x < a \\ \frac{x-a}{b-a}& \text{if } \ \ x \in [a, b] \\ 1 & \text{if } \ \ x < a \\ \end{cases}$$
+     A graph of the CDF looks like this:
+     
+     <center>
+     ![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/uniform_cdf.png){width=50%}
+     </center>
+    
+    As the picture illustrates, $F(x)=0$ when $x$ is less than the lower endpoint of the support ($a$, in this case) and $F(x)=1$ when $x$ is greater than the upper endpoint of the support ($b$, in this case). The slope of the line between $a$ and $b$ is, of course, $\frac{1}{b-a}$.
+    
+    - Expected Value and Variance
+    
+      - Expected Value
+        
+        \begin{align*}
+        E(X) &= \int_{a}^{b}x(\frac{1}{b-a})dx \\
+        &= \frac{1}{b-a}\left[\frac{x^2}{2}\right]^b_a\\
+        &= \frac{1}{2(b-a)}(b^2-a^2) \\
+        &= \frac{1}{2(b-a)}(b+a)(b-a) \\
+        &= \frac{(a+b)}{2}
+        \end{align*} 
+      
+      - Variance
+        
+        \begin{align*}
+        E(X^2) &= \int_{a}^{b}x^2(\frac{1}{b-a})dx \\
+        &= \frac{1}{b-a}\left[\frac{x^3}{2}\right]^b_a\\
+        &= \frac{1}{3(b-a)}(b^3-a^3) \\
+        &= \frac{1}{3(b-a)}(b-a)(b^2+ab+a^2)\\
+        &= \frac{b^2+ab+a^2}{3}
+        \end{align*}
+        
+        \begin{align*}
+        Var(X) &= E(X^2) - (E(X))^2 \\
+        &= \frac{b^2+ab+a^2}{3} - (\frac{(a+b)}{2})^2 \\
+        &= \frac{b^2+ab+a^2}{3} - \frac{b^2+2ab+a^2}{4} \\
+        &= \frac{4b^2+4ab+4a^2-3b^2-6ab-3a^2}{12} \\
+        &= \frac{b^2-2ab+a^2}{12} \\
+        &= \frac{(b-a)^2}{12}
+        \end{align*}
+    
+    - Continuous Uniform Distribution in R
+    
+        | Function | Description |
+        |------|------|
+        | `dunif(x, min, max)` | Return the corresponding uniform probability density function (PDF) values of a certain vector quantile `x`. |
+        | `punif(q, min, max)` |Return the value of the cumulative density function (CDF) of the uniform distribution given a certain random variable q and the interval. |
+        | `qunif(p, min, max)` |The inverse of `punif()` function. It takes the probability value and gives output which corresponds to the probability value.|
+        | `runif(n, min, max)` |Generate `n` number of random numbers within any interval, defined by the min and the max argument.|
+        
+    - Exercise 3:
+    
+      Suppose we have a population distribution looks like this: $X \sim Uniform \left [0, 10\right ]$
+      
+      $$ f(x) = \begin{cases} \frac{1}{10}& \text{if } x \in [0, 10] \\ 0 & \text{otherwise} \end{cases} $$
+      
+      3.1 What does this continuous uniform distribution looks like?
+      
+        ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+          ggplot(data.frame(x = c(-5, 15)), aes(x = x)) + 
+              stat_function(fun = dunif, 
+                            args = list(min= 0, max = 10), 
+                            size = 1) + 
+              scale_y_continuous(name = "density") + 
+              scale_x_continuous(name = "X", 
+                                 breaks = seq(-5, 15, 2)) + 
+              theme_bw() + 
+              theme(panel.grid = element_blank())
+        ```
+          
+      3.2 What is the probability when $X \leq 4$?
+      
+        ```{r, message=F, echo= F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+          cut <- 4
+
+          # Define the function for the shading
+          funcShaded <- function(x, lower_bound) {
+            y = dunif(x, min = 0, max = 10)
+            y[x >= lower_bound] <- NA
+            return(y)
+          }
+
+          ggplot(data.frame(x = c(-5, 15)), aes(x = x)) + 
+            stat_function(fun = dunif, 
+                          args = list(min= 0, max = 10), 
+                          size = 1) + 
+            stat_function(fun = funcShaded, 
+                          args = list(lower_bound = cut),
+                          geom = "area", fill = "blue", 
+                          alpha = 0.3) +
+            scale_y_continuous(name = "density") + 
+            scale_x_continuous(name = "X", 
+                               breaks = seq(-5, 15, 1)) + 
+            theme_bw() + 
+            theme(panel.grid = element_blank()) 
+        ```
+
+        ```{r, message=F, error=F, warning=F}
+        punif(4, min = 0, max = 10)
+        ```
+
+        $P(X \leq 4) = 0.4$
+
+
+      3.3 What is the probability when $X \geq 4$?
+
+        ```{r, message=F, echo= F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+          # Define the function for the shading
+          funcShaded2 <- function(x, lower_bound) {
+              y = dunif(x, min = 0, max = 10)
+              y[x <= lower_bound] <- NA
+              return(y)
+          }
+
+          ggplot(data.frame(x = c(-5, 15)), aes(x = x)) + 
+              stat_function(fun = dunif, 
+                            args = list(min= 0, max = 10), 
+                            size = 1) + 
+              stat_function(fun = funcShaded2, 
+                            args = list(lower_bound = cut),
+                            geom = "area", fill = "red", 
+                            alpha = 0.3) +
+              scale_y_continuous(name = "density") + 
+              scale_x_continuous(name = "X", 
+                                 breaks = seq(-5, 15, 1)) + 
+              theme_bw() + 
+              theme(panel.grid = element_blank())
+        ```
+
+        ```{r, message=F, error=F, warning=F}
+        1- punif(4, min = 0, max = 10)
+        ```
+
+        $P(X \geq 4) = 1 - P(X \leq 4) = 0.6$
+          
+      3.4 What are the expected value and variance of this distribution? Please compute them by hand.
+      
+      
+      
+        ```{r, message=F, error=F, warning=F}
+        set.seed(1234)
+        sample.x <- runif(n = 100000, min = 0, max = 10) ## n is the number of obs I'd like to create; this can be seen as a sample we draw from a DGP under normal distribution
+        sample.x[1:50] 
+
+        mean(sample.x) ## very close to 5 
+        var(sample.x) ## very close to 8.33
+        ```
+
+#### d. Normal Distribution
+
+Normal distribution is the most important probability distribution function used in statistics because of its advantages in real case scenarios. For example, the height of the population, shoe size, IQ level, rolling a dice, and many more. 
+
+- Probability Distribution Function (PDF)
+
+    The continuous random variable $X$ follows a normal distribution if its probability density function is defined as:
+    
+    $$f(x)=\frac{1}{\sigma\sqrt{2\pi}}\left \{ -\frac{1}{2} (\frac{x-\pi}{\sigma})^2\right \}$$
+    
+    for $\infty < x < \infty$, $\infty < \mu < \infty$, and $0 < \sigma < \infty$. The mean of $X$ is $\mu$ and the variance of $X$ is $\sigma^2$. We say $X \sim N(\mu, \sigma^2)$.
+    
+    <center>
+    ![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/normal_pdf.png){width=60%}
+    </center>
+    
+    The probability density function of normal distribution is **bell-shaped** curve graph, which is symmetric. The graph signifies that the peak point is the mean of the data set and half of the values of data set lie on the left side of the mean and other half lies on the right part of the mean telling about the distribution of the values. The shape of any normal curve depends on its mean $\mu$ and standard deviation $\sigma$.
+
+    
+- Cumulative Distribution Function (CDF)
+
+    We won't focus on the CDF of normal distribution as it is ugly, but here it is.
+    
+    $$\Phi (\frac{x-\mu}{\sigma})=\frac{1}{2}\left [ 1+erf(\frac{x-\mu}{\sigma\sqrt{2}}) \right ]$$
+    
+    <center>
+    ![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/normal_cdf.png){width=60%}
+    </center>
+    
+    
+- Expected Value and Variance
+
+    - Expected Value
+    
+      $$E(x)=\int xf(x)dx=\int x\frac{1}{\sigma\sqrt{2\pi}}\left \{ -\frac{1}{2} (\frac{x-\pi}{\sigma})^2\right \}dx=\mu$$
+      
+    - Variance
+      
+      $$Var(x)=\int (x-E(x))^2f(x)dx=\int (x-\mu)^2\frac{1}{\sigma\sqrt{2\pi}}\left \{ -\frac{1}{2} (\frac{x-\pi}{\sigma})^2\right \}dx=\sigma^2$$
+    
+
+- Normal Distribution in R
+
+    | Function | Description |
+    |------|------|
+    | `dnorm(x, mean, sd)` | Probability density function (PDF). |
+    | `pnorm(x, mean, sd)` |Cumulative distribution function (CDF), which measures the probability that a random number $X$ takes a value less than or equal to $x$.|
+    | `qnorm(p, mean, sd)` |The inverse of `pnorm()` function. It takes the probability value and gives output which corresponds to the probability value.|
+    | `rnorm(n, mean, sd)` |Generate a vector of random numbers which are normally distributed.|
+
+
+- Exercise 4:
+
+    Suppose $X$, the grade on a midterm exam, is normally distributed with mean 70 and standard deviation 10, $X \sim N(70, 10^2)$.
+    
+    4.1 What does the grade on midterm exam normal distribution look like?
+    
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    ggplot(data.frame(x = c(30, 110)), aes(x = x)) + 
+      stat_function(fun = dnorm, 
+                    args = list(mean = 70, sd = 10), 
+                    size = 1) + 
+      scale_y_continuous(name = "density") + 
+      scale_x_continuous(name = "X", 
+                         breaks = seq(30, 110, 10)) + 
+      geom_vline(aes(xintercept = 70), lty = 2, 
+                     color = "red", alpha = 0.4) +
+      theme_bw() + 
+      theme(panel.grid = element_blank())
+```
+
+    4.2 What is the probability that a randomly selected student has a grade below 60?
+    
+    4.3 What is the probability that a randomly selected student has a grade above 90?
+    
+    4.4 What is the probability that a randomly selected student has a grade between 75 and 95?
+    
+    4.5 The instructor wants to give 15% of the class an A. What cutoff should the instructor use to determine who gets an A?   
+    
+    4.6 The instructor now wants to give 10% of the class an A−. What cutoff should the instructor use to determine who gets an A−?
+  
+  
+## Discussion VI
+
+### Sampling Distribution
+
+In inferential statistics, we want to use characteristics of the sample (i.e. a statistic) to estimate the characteristics of the population (i.e. a parameter).
+
+In the previous lectures, we learned how to define events as random variables. By doing so, we can understand events mathematically by using probability functions, means, and standard deviations. All of this is important because it helps us reach our goal to be able to make inferences about the population based on the sample. But we need more.
+
+If we obtain a random sample and calculate a sample statistic from that sample, the sample statistic is also a random variable. However, the population parameters are fixed. If the statistic is a random variable, can we find the distribution? The mean? The standard deviation?
+
+The answer is yes! This is why we need to study the sampling distribution of statistics.
+
+#### a. Sampling Distribution
+
+The sampling distribution of a statistic is the distribution of all possible values taken by the statistic when all possible samples of a fixed size $n$ are taken from the population. It is a theoretical idea -- we do not actually build it.
+
+Simply said, the sampling distribution of a statistic is the probability distribution of that statistic.
+
+<center>
+![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/sampling_dist.png){width=60%}
+</center>
+
+Suppose we have a sample with independent and identically distributed (iid) draws. We know that $\bar{X}$ is a random variable with a sampling distribution.
+
+- Independent means that the sample items are all independent events. In other words, they are not connected to each other in any way; knowledge of the value of one variable gives no information about the value of the other and vice versa.
+    
+- Identically distributed means that there are no overall trends -- the distribution doesn't fluctuate and all items in the sample are taken from the same probability distribution.
+
+
+- The expected value of the sampling distribution of $\bar{X}$ is the population mean $\mu$.
+
+    $$\begin{aligned} E(\bar{X}) &= E(\frac{X_1+X_2+...+X_n}{n}) \\ &= \frac{1}{n}E(X_1+X_2+...+X_n) \\ &= \frac{1}{n}E(X_1)+\frac{1}{n}E(X_2)+...+\frac{1}{n}E(X_n) \\ &= \frac{1}{n}\mu + \frac{1}{n}\mu + ... + \frac{1}{n}\mu \\ &= \frac{1}{n}n\mu \\ &= \mu \end{aligned}$$
+
+    Note that $X_i$ are identically distributed, which means they have the same mean $\mu$. Therefore, we can replace $E(X_i)$ with the alternative notation $\mu$.
+    
+    The expected value of the sampling distribution for $\bar{X}$  is simply the mean of the population (DGP) distribution. This means that the sample mean $\bar{X}$ is an unbiased estimator for the population (DGP) mean, $\mu$.
+
+- The variance of the sampling distribution of $\bar{X}$ is the population variance $\sigma^2$ divided by the sample size $n$.
+
+    $$\begin{aligned} Var(\bar{X}) &= Var(\frac{X_1+X_2+...+X_n}{n}) \\ &= \frac{1}{n^2}Var(X_1+X_2+...+X_n) \\ &= \frac{1}{n^2}Var(X_1)+\frac{1}{n^2}Var(X_2)+...+\frac{1}{n^2}Var(X_n) \\&= \frac{1}{n^2}\sigma^2 + \frac{1}{n^2}\sigma^2 + ... + \frac{1}{n^2}\sigma^2 \\ &= \frac{1}{n^2}n\sigma^2 \\ &= \frac{\sigma^2}{n} \end{aligned}$$
+    Note the $X_i$ are identically distributed, which means they have the same variance $\sigma^2$. Therefore, we can replace $Var(X_i)$ with the alternative notation $\sigma^2$.
+    
+    If we take the square root of variance of the sampling distribution we get the standard deviation of the sampling distribution, which is known as **standard error**.
+    
+    $$SE(\bar{X}) = \sqrt{Var(\bar{X})} = \sqrt{\frac{\sigma^2}{n}} = \frac{\sigma}{\sqrt{n}}$$
+    
+    The standard error of a sampling distribution gives us a sense for how confident we should be in our estimate of the population mean. Our result indicates that as the sample size increases, the standard deviation of the sample mean decreases, which is good. It means that as long as our sample is large enough, we can be very confident about our estimate of the population mean based on the sample mean we have.
+
+
+In the following example, we use R to illustrate the sampling distribution for the sample mean for a hypothetical population. The sampling method is done without replacement.
+
+##### Exam Score Example
+
+An instructor of an introduction to statistics course has 200 students (which is the population). The population mean of their scores out of 100 points is $\mu = 71.18$, and the population standard deviation is $\sigma = 10.73$. That said, these 200 students' scores $X$ is following normal distribution with the parameter $\mu$ being 71.18 and $\sigma$ being 10.73, $X \sim N(71.18, 10.73)$.
+
+1. The sampling distribution of the sample mean when $n = 10$ for the exam scores data.
+
+- Let's first draw one sample based on the population distribution, $X \sim N(71.18, 10.73)$.
+
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    set.seed(1234) # to get replicable results
+    exam.sample <- rnorm(n = 10, mean = 71.18, sd = 10.73)
+    exam.sample 
+    ```
+
+- Now, let's replicate the above process for 1000 times, which will generate 1000 iid samples based on the population distribution, $X \sim N(71.18, 10.73)$.
+
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    set.seed(1234) 
+    exam.iid.sample <- replicate(1000, rnorm(n = 10, mean = 71.18, sd = 10.73))
+    exam.iid.sample <- as.data.frame(exam.iid.sample)
+    
+    knitr::kable(exam.iid.sample[, c(1:5)], "simple", align = "ccccc")
+    ```
+    
+- Since we draw 1000 iid samples from the population, we now should have 1000 sample mean based on these samples. Let's plot all these sample means in a histogram to observe the distribution of these sample means, which is sampling distribution. 
+
+    Note the process of taking many different samples in an effort to see what the sampling distribution looks like is referred to as a "Monte Carlo simulation." The "true" sampling distribution is the one where we take an infinite number of samples, which obviously we cannot achieve.
+    Monte Carlo simulation is the term for the process of repeated sampling to approximate something. We're using it here for sampling distributions, but it is used in other contexts as well.
+
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    # What is the mean of each sample?
+    sample.mean <- colMeans(exam.iid.sample)
+    sample.mean[1:5]
+
+    # Plot the distribution of these sample means
+    library(tidyverse)
+    
+    my.bins <- seq(62, 82, 0.5)
+    ggplot(data.frame(sample.mean = sample.mean), aes(x = sample.mean)) + 
+      geom_histogram(breaks = my.bins, color = "black", fill = "gray85") +
+      geom_vline(xintercept = mean(sample.mean), linetype = "dashed", 
+                 color = "red", alpha = 0.5, lwd = 0.8) +
+      geom_vline(xintercept = 71.18, linetype = "dashed", 
+                 color = "blue", alpha = 0.5, lwd = 0.8) +
+      scale_x_continuous(limits = c(62, 82)) + 
+      scale_y_continuous(limits = c(0, 250)) +
+      labs(x = "Sample mean (X bar)", y = "Frequency", 
+           title = "1000 Samples with n=10") + 
+      theme_bw() + 
+      theme(panel.grid.minor = element_blank())
+    ```
+    
+    What are the mean and standard error of the sample mean? 
+    
+    ```{r, message=F, error=F, warning=F}
+    mean(sample.mean)
+    sd(sample.mean)
+    ```
+    
+    As you can see, the mean and standard error based on all 1000 samples we drew are very close to the population mean of 71.18 and the standard deviation divided by the square root of the sample size ($\frac{10.73}{\sqrt{10}}=3.393124$). However, they are not exactly the same. The reason is that we can only simulate the sampling distribution of the exam scores but cannot simulate it for an infinite number of samples. That said, we can never reach the "true" sampling distribution.
+    
+
+2. The sampling distribution of the sample mean when $n = 100$ for the exam scores data.
+
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    set.seed(1234)
+    exam.iid.sample <- replicate(1000, rnorm(n = 100, mean = 71.18, sd = 10.73))
+    exam.iid.sample <- as.data.frame(exam.iid.sample)
+    ```
+    
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    # What is the mean of each sample?
+    sample.mean <- colMeans(exam.iid.sample)
+    sample.mean[1:5]
+
+    # Plot the distribution of these sample means
+    library(tidyverse)
+    
+    ggplot(data.frame(sample.mean = sample.mean), aes(x = sample.mean)) + 
+      geom_histogram(breaks = my.bins, color = "black", fill = "gray85") +
+      geom_vline(xintercept = mean(sample.mean), linetype = "dashed", 
+                 color = "red", alpha = 0.5, lwd = 0.8) +
+      geom_vline(xintercept = 71.18, linetype = "dashed", 
+                 color = "blue", alpha = 0.5, lwd = 0.8) +
+      scale_x_continuous(limits = c(62, 82)) + 
+      scale_y_continuous(limits = c(0, 250)) +
+      labs(x = "Sample mean (X bar)", y = "Frequency", 
+           title = "1000 Samples with n=100") + 
+      theme_bw() + 
+      theme(panel.grid.minor = element_blank())
+    ```
+
+    What are the mean and standard error of the sample mean? 
+    
+    ```{r, message=F, error=F, warning=F}
+    mean(sample.mean)
+    sd(sample.mean)
+    ```
+
+
+As you observe from the exam score example, if the population is normally distributed with mean $\mu$ and standard deviation $\sigma$, then the sampling distribution of the sample mean is also normally distributed no matter what the sample size is.
+
+#### b. Central Limit Theorem (CLT)
+
+What happens when the sample comes from a population that is not normally distributed? This is where the Central Limit Theorem comes in.
+
+For a large sample size ($n > 30$), $\bar{X}$ is approximately normally distributed, regardless of the distribution of the population one samples from. If the population has mean $\mu$ and standard deviation $\sigma$, then $\bar{X}$ follows an approximate normal distribution with mean $\mu$ and standard deviation $\frac{\sigma}{\sqrt{n}}$.
+
+The Central Limit Theorem applies to a sample mean from any distribution. We could have a left-skewed or a right-skewed distribution. As long as the sample size is large, the distribution of the sample means will follow an approximate normal distribution.
+
+Notes on the CLT:
+
+- If the population is skewed and sample size you draw is small, then the sample mean won't be normal.
+
+- If the population is normal, then the distribution of sample mean looks normal even if $n = 2$.
+
+- If the population is skewed, then the distribution of sample mean looks more and more normal when $n$ gets larger.
+
+- Note that in all cases, the mean of the sample mean is close to the population mean and the standard error of the sample mean is close to $\frac{\sigma}{\sqrt{n}}$.
+
+##### Right-skewed Distribution Example
+
+Suppose $X$ is following a chi-square distribution with 3 as the degrees of freedom , $X \sim Chi-square(3)$. The population mean of a chi-square distribution is the degrees of freedom. In this case, $\mu = 3$. Please do the following:
+
+This is what a chi-square distribution looks like:
+
+<center>
+![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/chisquare_pdf.png){width=60%}
+</center>
+
+
+1. Find the sampling distribution of the sample mean when $n = 10$ for $X$.
+
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    set.seed(1234)
+    iid.sample <- replicate(1000, rchisq(n = 5, df = 3, ncp = 0))
+    iid.sample <- as.data.frame(iid.sample)
+    ```
+    
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    # What is the mean of each sample?
+    sample.mean <- colMeans(iid.sample)
+    sample.mean[1:5]
+
+    # Plot the distribution of these sample means
+    my.bins <- seq(0, 8, 0.1)
+    ggplot(data.frame(sample.mean = sample.mean), aes(x = sample.mean)) + 
+      geom_histogram(breaks = my.bins, color = "black", fill = "gray85") +
+      geom_vline(xintercept = mean(sample.mean), linetype = "dashed", 
+                 color = "red", alpha = 0.5, lwd = 0.8) +
+      geom_vline(xintercept = 3, linetype = "dashed", 
+                 color = "blue", alpha = 0.5, lwd = 0.8) +
+      scale_x_continuous(limits = c(0, 8)) + 
+      scale_y_continuous(limits = c(0, 100)) +
+      labs(x = "Sample mean (X bar)", y = "Frequency", 
+           title = "1000 Samples with n=5") + 
+      theme_bw() + 
+      theme(panel.grid.minor = element_blank())
+    ```
+
+
+2. Find the sampling distribution of the sample mean when $n = 30$ for $X$.
+
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    set.seed(1234)
+    iid.sample <- replicate(1000, rchisq(n = 30, df = 3, ncp = 0))
+    iid.sample <- as.data.frame(iid.sample)
+    ```
+    
+    ```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+    # What is the mean of each sample?
+    sample.mean <- colMeans(iid.sample)
+    sample.mean[1:5]
+
+    # Plot the distribution of these sample means
+    ggplot(data.frame(sample.mean = sample.mean), aes(x = sample.mean)) + 
+      geom_histogram(breaks = my.bins, color = "black", fill = "gray85") +
+      geom_vline(xintercept = mean(sample.mean), linetype = "dashed", 
+                 color = "red", alpha = 0.5, lwd = 0.8) +
+      geom_vline(xintercept = 3, linetype = "dashed", 
+                 color = "blue", alpha = 0.5, lwd = 0.8) +
+      scale_x_continuous(limits = c(0, 8)) + 
+      scale_y_continuous(limits = c(0, 100)) +
+      labs(x = "Sample mean (X bar)", y = "Frequency", 
+           title = "1000 Samples with n=30") + 
+      theme_bw() + 
+      theme(panel.grid.minor = element_blank())
+    ```
+
+
+#### c. Exercises
+
+##### Exercises 1: Weights of Baby Giraffes
+
+The weights of baby giraffes are known to have a mean of 125 pounds and a standard deviation of 15 pounds. If we obtained a random sample of 40 baby giraffes,
+
+1.1 what is the probability that the sample mean will be between 120 and 130 pounds?
+
+Let $X$ represent the weights of baby giraffes. According to the question, we know that $X \sim N(125, 15^2)$. This suggests that $\bar{X}$, the sample means of the weights of baby giraffes, also follows a normal distribution with the mean being 125 and the variance being $\frac{15^2}{40}$ (i.e., $\bar{X} \sim N(125, \frac{15^2}{40})$). So, the probability that the sample mean will be between 120 and 130 pounds is:
+
+```{r, warning=F, error=F, message=F}
+pnorm(130, mean = 125, sd = sqrt(15^2/40)) - 
+  pnorm(120, mean = 125, sd = sqrt(15^2/40))
+```
+
+1.2 what is the 75th percentile of the sample means of size $n = 40$?
+
+```{r, warning=F, error=F, message=F}
+qnorm(0.75, mean = 125, sd = sqrt(15^2/40)) 
+  
+```
+
+##### Exercise 2: Biden approval
+
+Consider whether adults in Sacramento approve of Biden's performance in office. There are about 405,000 adults in Sacramento. 
+
+```{r}
+pop <- 405000
+```
+
+Let's define a dummy where 1 indicates approval for Biden and 0 indicates disapproval. We'll assume everyone has an opinion one way or the other. Suppose you were omniscient and know exactly which adults approve of Biden. Being omniscient means that you are magically given this dataset of all adults' approval or disapproval of Biden:
+
+```{r}
+set.seed(1029) 
+df <- bind_cols(adult = 1:pop, 
+                biden = sample(c(rep(1, 243000), rep(0, pop - 243000)), pop))
+```
+
+The population percentage of voters approve of Biden in Sacramento is 0.6.
+```{r}
+mean(df$biden)
+```
+
+The population variance of voters approve of Biden in Sacramento is 0.24 ($=p(1-p)=0.6*0.4$).
+```{r}
+var(df$biden)
+```
+
+In real life, nobody is omniscient! Now, let's think about a pollster who wants to learn what you already know by drawing a simple random sample of adults and calculating an estimate of Biden approval.
+
+The researcher decides to draw a simple random sample of 900 adults. She asks each adult whether they approve of Biden. Nobody lies.
+
+```{r}
+n <- 900 # sample size
+
+set.seed(1238) 
+poll1 <- sample(df$biden, n) # draw a sample of size N without replacement
+```
+
+What is her estimate of Biden approval?
+```{r}
+mean(poll1)
+```
+
+Now, instead of drawing one sample out of the population, simulate the sampling distribution of Biden approval in Sacramento. Please draw the same size of the sample ($n=900$) for 100,000 times. 
+
+```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+## Hint: replicate()
+set.seed(1234)
+sample <- replicate(100000, sample(df$biden, n))
+sample <- as.data.frame(sample)
+
+## Try out!
+```
+
+
+Plot the sample means from the simulations.
+```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+## Hint: calculate the sample means first before plotting a histogram
+sample.mean <- colMeans(sample)
+
+ggplot(data.frame(sample.mean = sample.mean), aes(x = sample.mean)) +
+  geom_histogram(bins = 20, color = "black", fill = "gray85") +
+  theme_bw()
+
+## Try out!
+```
+
+Theoretically, what distribution does the sample means of Biden approval in Sacramento follow?
+
+$$\bar{X} \sim N(0.6, \frac{0.24}{900})$$
+
+
+Now you know the sampling distribution of the sample means of Biden approval in Sacramento. Recall that the researcher drew a simple random sample of 900 adults and got an estimate of the Biden approval with 0.5344444. How likely is it to get an estimate of Biden approval rate below 0.5344444 based on the sampling distribution we have?
+
+```{r, message=F, error=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
+ggplot() + 
+  stat_function(data = data.frame(x = seq(0.53,0.67,0.001)), 
+                aes(x = x), fun = dnorm, 
+                args = list(mean = 0.6, sd = sqrt(0.24/n)), size = 1) + 
+  geom_vline(xintercept = 0.6, size = 1, color = "blue") + 
+  annotate("label", x = 0.6, y = 5, label = "true\nmean", 
+           lineheight = 0.75, color = "blue") + 
+  geom_vline(xintercept = mean(poll1), size = 1, color = "red") + 
+  annotate("label", x = mean(poll1), y = 5, label = "Poll 1", 
+           lineheight = 0.75, color = "red") +
+  theme_bw()
+```
+
+```{r}
+## Hint: pnorm()
+pnorm(0.5344444, mean = 0.6, sd = sqrt(0.24/900))
+
+## Try out!
+```
+
+
+We can also calculate how many standard deviations is away from the true DGP mean is the estimate? To get this, we calculate the z score.
+```{r}
+z.score <- (mean(poll1) - 0.6)/(sqrt(0.24/n))
+z.score
+```
+
+The estimate is approximately 4 standard deviations below the mean of the sampling distribution (which, recall is the DGP mean). Since we are looking at a sampling distribution, we call the standard deviations "standard errors." So, it's a bit better to say the estimate from the poll the researcher conducted is approximately 4 standard errors below the mean of the sampling distribution.
+
+
+## Discussion VII
+
+### Hypothesis Testing
+
+Hypothesis testing is the process of making a choice between two conflicting hypotheses. It is a form of statistical inference that uses data from a sample to draw conclusions about a population parameter or a population probability distribution. First, a tentative assumption is made about the parameter or distribution. This assumption is called the **null hypothesis** and is denoted by $H_0$. An **alternative hypothesis** (denoted $H_a$), which is the opposite of what is stated in the null hypothesis, is then defined. The hypothesis-testing procedure involves using sample data to determine whether or not $H_0$ can be rejected. If $H_0$ is rejected, the statistical conclusion is that the alternative hypothesis $H_a$ is true.
+
+- Null hypothesis ($H_0$): The null hypothesis states the "status quo". This hypothesis is assumed to be true until there is evidence to suggest otherwise.
+
+- Alternative hypothesis ($H_a$): This is the statement that one wants to conclude. It is also called the research hypothesis.
+
+The goal of hypothesis testing is to see if there is enough evidence against the null hypothesis. In other words, to see if there is enough evidence to reject the null hypothesis. If there is not enough evidence, then we fail to reject the null hypothesis.
+
+
+We want to know the answer to a research question. We determine our null and alternative hypotheses. Now it is time to make a decision.
+
+The decision is either going to be:
+
+1. reject the null hypothesis or ...
+
+2. fail to reject the null hypothesis.
+
+**Note**: Why can’t we say we “accept the null”? The reason is that we are assuming the null hypothesis is true and trying to see if there is evidence against it. Therefore, the conclusion should be in terms of rejecting the null.
+
+Consider the following table. The table shows the decision/conclusion of the hypothesis test and the unknown "reality", or truth. We do not know if the null is true or if it is false. If the null is false and we reject it, then we made the correct decision. If the null hypothesis is true and we fail to reject it, then we made the correct decision.
+
+<center>
+![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/type_errors.png){width=70%}
+</center>
+
+
+What happens when we do not make the correct decision? When doing hypothesis testing, two types of mistakes may be made and we call them **Type I error** and **Type II error**. If we reject the null hypothesis when it is true, then we made a type I error. If the null hypothesis is false and we failed to reject it, we made another error called a Type II error.
+
+The “reality”, or truth, about the null hypothesis is unknown and therefore we do not know if we have made the correct decision or if we committed an error. We can, however, define the likelihood of these events.
+
+- $\alpha$: The probability of committing a Type I error. Also known as the significance level.
+
+- $\beta$: The probability of committing a Type II error.
+
+- Power: Power is the probability the null hypothesis is rejected given that it is false (i.e., $1-\beta$).
+
+$\alpha$ and $\beta$ are probabilities of committing an error so we want these values to be low. However, we cannot decrease both. As $\alpha$ increases, $\beta$ decreases.
+
+**Note**: Type I error is also thought of as the event that we reject the null hypothesis GIVEN the null is true. In other words, Type I error is a conditional event and $\alpha$ is a conditional probability. The same idea applies to Type II error and $\beta$.
+
+**Trial Example**
+
+A man goes to trial and is tried for the murder of his ex-wife. He is either guilty or innocent. 
+
+Let's set up the null and alternative hypotheses.
+
+$$
+\begin{cases}
+H_0: \text{The man is innocent.} \\
+H_a: \text{The man is guilty.}
+\end{cases}
+$$
+Remember that we assume the null hypothesis is true and try to see if we have evidence against the null. Therefore, it makes sense in this example to assume the man is innocent and test to see if there is evidence that he is guilty.
+
+- What is the Type I Error in this example?
+
+    Type I error is committed if we reject $H_0$ when it is true. In other words, when the man is innocent but found guilty. $\alpha$ is the probability of a Type I error, or in other words, it is the probability that the man is innocent but found guilty.
+
+- What is the Type II Error in this example?
+
+    Type II error is committed if we fail to reject $H_0$ when it is false. In other words, when the man is guilty but found not guilty. $\beta$ is the probability of a Type II error, or in other words, it is the probability that the man is guilty but found not guilty.
+    
+As you can see here, the Type I error (putting an innocent man in jail) is the more serious error. Ethically thinking, it is more serious to put an innocent man in jail than to let a guilty man go free. So to minimize the probability of a type I error we would choose a smaller significance level (i.e., smaller $\alpha$).
+
+#### a. Hypothesis Test for One-sample parameter
+
+1. One-sample Mean Hypothesis Test
+
+    Recall that the distribution of the population is Normal and/or the sample size is large ($n>30$), the sampling distribution of the sample mean $\bar{X}$ is approximately normal with mean $\mu$ and standard error $\frac{\sigma}{\sqrt{n}}$. Under these conditions, we can calculate **z-scores**, which follows the standard normal distribution, $Z \sim N(0, 1^2)$. Then we can check how is it likely to observe such z-score within the standard normal distribution and decide whether we should reject the null hypothesis.
+    
+    $$z = \frac{\bar{x}-\mu}{\frac{\sigma}{\sqrt{n}}}$$
+    
+    If the population standard deviation is unknown, we use the estimated standard error based on the sample standard deviation from the observed data, $\frac{S_X}{\sqrt{n}}$. Under these conditions, we cannot calculate z-scores and instead have to calculate **t-scores** or **t-statistics**, which follows a t-distribution with $n-1$ degrees of freedom.
+    
+    $$t = \frac{\bar{x}-\mu}{\frac{S_X}{\sqrt{n}}}$$
+    
+    
+    **Emergency Room Wait Time Example**
+    
+    The administrator at your local hospital states that on weekends the average wait time for emergency room visits is 10 minutes. Based on discussions you have had with friends who have complained on how long they waited to be seen in the ER over a weekend, you dispute the administrator's claim. You decide to test your hypothesis. Over the course of a few weekends, you record the wait time for 40 randomly selected patients. The average wait time for these 40 patients is 11 minutes with a standard deviation of 3 minutes.
+
+    Do you have enough evidence to support your hypothesis that the average ER wait time exceeds 10 minutes? You opt to conduct the test at a 5% level of significance.
+    
+    
+    **Answer:**
+    
+    - Step 1: Set up the hypotheses and check conditions.
+    
+        At this point we want to check whether we can apply the central limit theorem. The sample size is greater than 30, so we should be okay.
+    
+        This is a right-tailed test.
+    
+        $$
+        \begin{cases}
+        H_0: \mu = 10 \\
+        H_a: \mu >10
+        \end{cases}
+        $$
+    
+    - Step 2: Decide on the significance level, $\alpha$.
+    
+        The problem states that $\alpha = 0.5$.
+        
+    - Step 3: Calculate the test statistic.
+    
+        Since the population standard deviation is unknown, we can only calculate a t-score based on the estimated standard error using the sample standard deviation, which is 3.
+        
+        $$\begin{aligned} t^* &= \frac{\bar{x}-\mu}{\frac{S_X}{\sqrt{n}}}=\frac{11-10}{\frac{3}{\sqrt{40}}}= 2.108185 \end{aligned}$$
+    - Step 4: Compute the appropriate p-value based on our alternative hypothesis.
+    
+        ```{r, warning=F, error=F, message=F}
+        t <- (11-10)/(3/sqrt(40))
+        pt(q = t, df = 40-1, lower.tail = FALSE)
+        ```
+      
+        If `lower.tail` argument is set to be TRUE (default), probabilities are $P(X \leq x)$, otherwise, $P(X > x)$. Since we are doing a right-tailed test, `lower.tail` should be set to be `FALSE`.
+        
+        You can also use `pnorm` to calculate p-value as we know that when the sample size is large, t-distribution is very alike normal distribution. For practical purposes, the t-distribution can be treated as equal to the normal distribution when sample sizes are greater than 30.
+        
+        ```{r, warning=F, error=F, message=F}
+        1 - pnorm(t, mean = 0, sd = 1)
+        ```
+
+    - Step 5: Make a decision about the null hypothesis.
+    
+        Since our p-value is 0.020746 when using t-distribution and 0.01750749 when using standard normal distribution, we know both of them are less than the significance level, 5%. Therefore, we reject the null hypothesis.
+        
+    - Step 6: State an overall conclusion.
+    
+        There is enough evidence, at a significance level of 5%, to reject the null hypothesis and conclude that the mean waiting time is greater than 10 minutes.
+        
+
+2. One-sample Proportion Hypothesis Test
+
+    Recall that if $np$ and $n(1-p)$ are both greater than five, then the sample proportion $\hat{p}$ will have an approximate normal distribution with mean $p$ and standard error $\sqrt{\frac{p(1-p)}{n}}$. With these information, we are able to calculate z-score:
+
+    $$z = \frac{\hat{p} - p}{\sqrt{\frac{p(1-p)}{n}}}$$
+
+    **Online Purchases Example**
+    
+    An e-commerce research company claims that 60% or more graduate students have bought merchandise online. A consumer group is suspicious of the claim and thinks that the proportion is lower than 60%. A random sample of 80 graduate students shows that only 22 students have ever done so. Is there enough evidence to show that the true proportion is lower than 60%? Please Conduct the hypothesis test at 5% Type I error rate.
+    
+    - Step 1: Set up the hypotheses and check conditions.
+  
+        Since the research hypothesis is to check whether the proportion is less than 0.6 we set it up as a one (left)-tailed test:
+        
+        $$
+        \begin{cases}
+        H_0: p = 0.6 \\
+        H_a: p < 10
+        \end{cases}
+        $$
+        
+        Can we use the z-test statistic? The answer is yes since the hypothesized population value $p$ is 0.6 and we can check that: 
+        
+        $np = 80*0.6 = 48 > 5$
+        
+        $n(1-p) = 80*0.4 = 32 > 5$
+        
+    - Step 2: Decide on the significance level, $\alpha$.
+    
+        According to the question, $\alpha = 0.05$.
+        
+    - Step 3: Calculate the test statistic.
+    
+        $$z = \frac{\hat{p} - p}{\sqrt{\frac{p(1-p)}{n}}} = \frac{\frac{22}{80}-0.6}{\sqrt{\frac{0.6(1-0.6)}{80}}} = -5.933661$$
+    - Step 4: Compute the appropriate p-value based on our alternative hypothesis.
+    
+        ```{r, warning=F, error=F, message=F}
+        z <- ((22/80) - 0.6)/sqrt((0.6*0.4)/80)
+        pnorm(z, mean = 0, sd = 1)
+        ```
+
+    - Step 5: Make a decision about the null hypothesis.
+        
+        Since our p-value is very small and less than our significance level of 5%, we reject the null hypothesis.
+        
+    - Step 6: State an overall conclusion.
+    
+        There is enough evidence in the data provided to suggest, at 5% level of significance, that the true proportion of students who made purchases online was less than 60%.
+
+
+#### b. Comparing Two Population Parameters
+
+When we compare two population means or two population proportions, we consider the difference between the two population parameters. In other words, we consider either $\mu_x - \mu_y$ or $p_x - p_y$. 
+
+1. Two-sample Means Hypothesis Test
+
+    We present the theory here to give you a general idea of how we can apply the Central Limit Theorem.
+
+    - Let $X$have a normal distribution with mean $\mu_x$, variance $\sigma^2_x$, and standard deviation $\sigma_x$.
+
+    - Let $Y$have a normal distribution with mean $\mu_y$, variance $\sigma^2_y$, and standard deviation $\sigma_y$.
+
+    - If $X$ and $Y$ are independent, then $X-Y$ will follow a normal distribution with mean $\mu_x-\mu_y$, variance $\sigma^2_x + \sigma^2_y$, and standard deviation $\sqrt{\sigma^2_x + \sigma^2_y}$.
+
+    The idea is that, if the two random variables are normal, then their difference will also be normal. This is wonderful but how can we apply the Central Limit Theorem?
+
+    If $X$ and $Y$ are normal, we know that $\bar{X}$ and $\bar{Y}$ will also be normal. If $X$ and $Y$ are not normal but the sample size is large ($n > 30$), then $\bar{X}$ and $\bar{Y}$ will be approximately normal (applying the CLT). Using the theorem above, then $\bar{X}-\bar{Y}$ will be approximately normal with mean $\mu_x-\mu_y$ and standard deviation $\sqrt{\frac{\sigma^2_x}{n_x}+\frac{\sigma^2_y}{n_y}}$.
+    
+    However, in most cases, $\sigma_x$ and $\sigma_y$ are unknown, and they have to be estimated. It seems natural to estimate $\sigma_x$ by $S_x$ and $\sigma_y$ by $S_y$, so the estimated standard deivation is $\sqrt{\frac{S_x^2}{n_x}+\frac{S_y^2}{n_y}}$.
+
+    Theoretically, when the variances of the populations of the two groups are unknown, and we use the sample variances of the observed groups to estimate them, the test statistics we calculate should be t-scores. These t-scores will follow the t-distribution under certain degrees of freedom, which vary based on conditions. Conditions such as whether the variance of two groups are equal or unequal (for more detailed discussion, please check [here](https://online.stat.psu.edu/stat500/lesson/7/7.3)). However, in this class, for simplicity and that when the sample size is large, t-distribution becomes standard normal distribution, we will treat the t-scores we calculate as z-scores when doing hypothesis testing and use standrad normal distribution to calculate p-value.
+    
+    $$z = \frac{(\bar{x}-\bar{y})-(\mu_x - \mu_y)}{\sqrt{\frac{S_x^2}{n_x}+\frac{S_y^2}{n_y}}}$$
+    
+    **Mean Weight of Two Species of Turtles Example**
+    
+    Suppose we want to know whether or not the mean weight between two different species of turtles is equal. Suppose we collect a random sample of turtles from each population with the following information:
+    
+    Sample 1:
+    
+      - Sample size: $n_1 = 40$.
+      - Sample mean weight: $\bar{x_1} = 300$.
+      - Sample standard deviation: $s_1 = 18.5$.
+    
+    Sample 2:
+    
+      - Sample size: $n_2 = 38$.
+      - Sample mean weight: $\bar{x_2} = 305$.
+      - Sample standard deviation: $s_2 = 16.7$.
+    
+    Please perform a two sample t-test at significance level $\alpha = 0.05$. 
+    
+    - Step 1: Set up the hypotheses and check conditions.
+    
+        <br>
+
+        <br>
+        
+        <br>
+    
+    - Step 2: Decide on the significance level, $\alpha$.
+    
+        <br>
+
+        <br>
+        
+        <br>
+    
+    - Step 3: Calculate the test statistic.
+        
+        <br>
+
+        <br>
+        
+        <br>
+    
+    - Step 4: Compute the appropriate p-value based on our alternative hypothesis.
+        
+        <br>
+
+        <br>
+        
+        <br>
+        
+    - Step 5: Make a decision about the null hypothesis.
+        
+        <br>
+
+        <br>
+        
+        <br>
+        
+    - Step 6: State an overall conclusion.
+    
+        <br>
+
+        <br>
+        
+        <br>
+
+
+2. Two-sample Proportions Hypothesis Test
+
+    For a test for two proportions, we are interested in the difference. If the difference is zero, then they are not different (i.e., they are equal). Therefore, the null hypothesis will always be:
+
+    $$H_0: p_x - p_y = 0$$
+    
+    Another way to look at it is $p_x = p_y$. This is worth stopping to think about. Remember, in hypothesis testing, we assume the null hypothesis is true. In this case, it means that $p_x$ and $p_y$ are equal. Under this assumption, then $\hat{p_x}$ and $\hat{p_y}$ are both estimating the same proportion. Think of this proportion as $p^*$. Therefore, the sampling distribution of both proportions, $\hat{p_x}$ and $\hat{p_y}$, will, under certain conditions, be approximately normal centered around $p^*$, with standard error $\sqrt{p^*(1-p^*)(\frac{1}{n_x+n_y})}$.
+    
+    We take this into account by finding an estimate for this $p^*$ using the two sample proportions. We can calculate an estimate of $p^*$ using the following formula:
+    
+    $$\frac{x+y}{n_x+n_y}$$
+    
+    This value is the total number in the desired categories $x+y$ from both samples over the total number of sampling units in the combined sample $n_x+n_y$.
+    
+    Putting everything together, if we assume $p_x = p_y$, then the sampling distribution of $\hat{p_x} - \hat{p_y}$ will be approximately normal with mean 0 and standard error of $\sqrt{p^*(1-p^*)(\frac{1}{n_x+n_y})}$, under certain conditions. Therefore,
+    
+    $$z = \frac{(\hat{p_x} - \hat{p_y})-0}{\sqrt{p^*(1-p^*)(\frac{1}{n_x+n_y})}}$$
+    
+    which will follow standard normal distribution.
+    
+    **Received $100 by Mistake Example**
+    
+    Males and females were asked about what they would do if they received a $100 bill by mail, addressed to their neighbor, but wrongly delivered to them. Would they return it to their neighbor? Of the 69 males sampled, 52 said “yes” and of the 131 females sampled, 120 said “yes.”
+
+    Does the data indicate that the proportions that said “yes” are different for males and females at a 5% level of significance? 
+    
+    - Step 1: Set up the hypotheses and check conditions.
+    
+        $$\begin{cases} H_0: p_m - p_f = 0 \\ H_a: p_m - p_f \neq 0 \end{cases} $$
+    
+    - Step 2: Decide on the significance level, $\alpha$.
+        
+        According to the question, $\alpha = 0.05$.
+    
+    - Step 3: Calculate the test statistic.
+    
+        $n_m = 69$, $\hat{p_m} = \frac{52}{69}$
+        
+        $n_f = 131$, $\hat{p_f} = \frac{120}{131}$
+        
+        $\hat{p^*} = \frac{52+120}{69+131} = \frac{172}{200} = 0.86$
+        
+        $z^* = \frac{(\hat{p_m} - \hat{p_f})-0}{\sqrt{p^*(1-p^*)(\frac{1}{n_m+n_f})}} = \frac{\frac{52}{69}-\frac{120}{131}}{0.86(1-0.86)\sqrt{\frac{1}{69}+\frac{1}{131}}}=-3.146572$
+        
+    
+    - Step 4: Compute the appropriate p-value based on our alternative hypothesis.
+        
+        ```{r, message=F, error=F, warning=F}
+        z <- ((52/69)-(120/131))/sqrt((0.86*0.14)*((1/69)+1/131))
+        pnorm(z, mean = 0, sd = 1) + (1 - pnorm(-z, mean = 0, sd = 1))
+        ```
+
+    - Step 5: Make a decision about the null hypothesis.
+        
+        Since our p-value of 0.001651968 is less than our significance level of 5%, we reject the null hypothesis. 
+        
+    - Step 6: State an overall conclusion.
+    
+        There is enough evidence to suggest that proportions of males and females who would return the money are different.
+
+
+#### c. T-test in R
+
+1. One-sample T-test in R
+
+    To conduct a one-sample t-test in R, we use the syntax `t.test(x, mu = 0)` where `x` is the name of our variable of interest and `mu` is set equal to the mean specified by the null hypothesis.
+
+    For example, if we wanted to test whether the volume of a shipment of lumber ($x$) was less than usual ($\mu = 39000$ cubic feet), we would run:
+
+    ```{r, message=F, error=F, warning=F}
+    # draw a sample
+    set.seed(1234)
+    treeVolume <- rnorm(100, mean = 36500, sd = 2000)
+
+    t.test(treeVolume, mu = 39000) # H0: mu = 39000
+    ```
+
+    You should get the same answer as calculated by hand.
+    ```{r, message=F, error=F, warning=F}
+    t <- (mean(treeVolume)-39000)/(sd(treeVolume)/sqrt(100)); t
+
+    pt(t, 100-1, lower.tail = TRUE)
+    ```
+
+
+2. Independent-samples T-test in R
+
+    The independent-samples test can take one of three forms, depending on the structure of your data and the equality of their variances. The general form of the test is `t.test(y1, y2, paired=FALSE)`. By default, R assumes that the variances of `y1` and `y2` are unequal, thus defaulting to Welch's test. To toggle this, we use the flag `var.equal=TRUE`.
+
+    Let's test the hypothesis in which Clevelanders and New Yorkers spend different amounts for eating outside on a monthly basis.
+    
+    ```{r}
+    # draw two samples 
+    set.seed(1234)
+    Spenders_Cleve <- rnorm(60, mean = 380, sd = 77)
+    Spenders_NY <- rnorm(60, mean = 400, sd = 80)
+    ```
+
+    - Equal variance
+    
+        ```{r}
+        t.test(Spenders_Cleve, Spenders_NY, var.equal = TRUE)
+        ```
+    
+    - Unequal variance
+
+        ```{r}
+        t.test(Spenders_Cleve, Spenders_NY, var.equal = FALSE)
+        ```
+
+## Discussion VIII
+
+### Confidence Intervals
+
+#### a. Statistical Inferences
+
+The real power of statistics comes from applying the concepts of probability to situations where you have data but not necessarily the whole population. The results, called statistical inference, give you probability statements about the population of interest based on that set of data.
+
+There are two types of statistical inferences: 
+
+1. Estimation: Use information from the sample to estimate (or predict) the parameter of interest. For instance, using the result of a poll about the president's current approval rating to estimate (or predict) his or her true current approval rating nationwide.
+
+2. Hypothesis Tests: Use information from the sample to determine whether a certain statement about the parameter of interest is true. For instance, suppose a news station claims that the President’s current approval rating is more than 75%. We want to determine whether that statement is supported by the poll data.
+
+#### b. Estimation
+
+Two common estimation methods are point and interval estimates:
+
+1. Point Estimates: An estimate for a parameter that is one numerical value. An example of a point estimate is the sample mean ($\bar{x}$) or the sample proportion ($\hat{p}$).
+
+2. Interval Estimates: When we use the sample mean ($\bar{x}$) to estimate the population mean ($\mu$), can we be confident that $\bar{x}$ is close to $\mu$? Interval estimates give an interval as the estimate for a parameter. Such intervals are built around point estimates which is why understanding point estimates is important to understanding interval estimates. Rather than using just a point estimate, we could find an interval (or range) of values that we can be really confident contains the actual unknown population parameter. For example, we could find lower ($L$) and upper ($U$) values between which we can be really confident the population mean falls:
+
+$$L < \mu < U$$
+
+An interval of such values is called a confidence interval. Each interval has a **confidence coefficient** (reported as a proportion):
+
+$$1-\alpha$$
+
+or a **confidence level** (reported as a percentage):
+
+$$(1-\alpha)*100 \%$$
+Typical confidence coefficients are 0.90, 0.95, and 0.99, with corresponding confidence levels 90%, 95%, and 99%. For example, upon calculating a confidence interval for a mean with a confidence level of, say 95%, we can say:
+
+"We can be 95% confident that the population mean falls between $L$ and $U$."
+
+As should agree with our intuition, the greater the confidence level, the more confident we can be that the confidence interval contains the actual population parameter.
+
+Now that we have a general idea of what a confidence interval is, we'll now turn our attention to deriving a particular confidence interval, namely that of a population mean $\mu$.
+
+<center>
+![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/1_alpha.png){width=50%}
+</center>
+
+From the above diagram of the standard normal curve, we can see that the following probability statement is true:
+
+$$P[-z_{\frac{\alpha}{2}} \leq Z \leq z_{\frac{\alpha}{2}}]=1-\alpha$$
+
+Then, simply replacing $Z$, we get:
+
+$$P[-z_{\frac{\alpha}{2}} \leq \frac{\bar{X}-\mu}{\sigma/\sqrt{n}} \leq z_{\frac{\alpha}{2}}]=1-\alpha$$
+
+Now, let's focus only on manipulating the inequality inside the brackets for a bit. Because we manipulate each of the three sides of the inequality equally, each of the following statements are equivalent:
+
+$$-z_{\frac{\alpha}{2}} \leq \frac{\bar{X}-\mu}{\sigma/\sqrt{n}} \leq z_{\frac{\alpha}{2}} \\
+-z_{\frac{\alpha}{2}}(\frac{\sigma}{\sqrt{n}}) \leq \bar{X}-\mu \leq z_{\frac{\alpha}{2}}(\frac{\sigma}{\sqrt{n}}) \\
+-\bar{X}-z_{\frac{\alpha}{2}}(\frac{\sigma}{\sqrt{n}})\leq -\mu \leq -\bar{X} + z_{\frac{\alpha}{2}}(\frac{\sigma}{\sqrt{n}}) \\
+\bar{X}-z_{\frac{\alpha}{2}}(\frac{\sigma}{\sqrt{n}})\leq \mu \leq \bar{X}+z_{\frac{\alpha}{2}}(\frac{\sigma}{\sqrt{n}})$$
+So, in summary, by manipulating the inequality, we have shown that the following probability statement is true:
+
+$$P[\bar{X}-z_{\frac{\alpha}{2}}(\frac{\sigma}{\sqrt{n}})\leq \mu \leq \bar{X}+z_{\frac{\alpha}{2}}(\frac{\sigma}{\sqrt{n}})]=1-\alpha$$
+This indicates that a $(1-\alpha)*100\%$ confidence interval for the mean $\mu$ is:
+
+$$[\bar{x} - z_{\frac{\alpha}{2}}(\frac{\sigma}{\sqrt{n}}), \ \  \bar{x} + z_{\frac{\alpha}{2}}(\frac{\sigma}{\sqrt{n}})]$$
+
+If the population standard deviation ($\sigma$) is unknown, we can use sample standard deviation to estimate it:
+
+$$[\bar{x} - z_{\frac{\alpha}{2}}(\frac{s_x}{\sqrt{n}}), \ \  \bar{x} + z_{\frac{\alpha}{2}}(\frac{s_x}{\sqrt{n}})]$$
+
+#### c. Interpretation
+
+Although the derivation of the $Z$-interval for a mean technically ends with the following probability statement:
+
+$$P[\bar{X}-z_{\frac{\alpha}{2}}(\frac{\sigma}{\sqrt{n}})\leq \mu \leq \bar{X}+z_{\frac{\alpha}{2}}(\frac{\sigma}{\sqrt{n}})]=1-\alpha$$
+
+it is *incorrect* to say: "The probability that the population mean $\mu$ falls between the lower value $L$ and the upper value $U$ is $1-\alpha$." Why?
+
+Probability statements are about random variables. The population mean $\mu$ is a constant, not a random variable. It makes no sense to make a probability statement about a constant that does not change.
+
+So, in short, frequentist statisticians don't like to hear people trying to make probability statements about constants, when they should only be making probability statements about random variables. So, okay, if it's incorrect to make the statement that seems obvious to make based on the above probability statement, what is the correct understanding of confidence intervals? Here's how frequentist statisticians would like the world to think about confidence intervals:
+
+1. Suppose we take a large number of samples, say 1000.
+2. Then, we calculate a 95% confidence interval for each sample.
+3. Then, "95% confident" means that we'd expect 95%, or 950, of the 1000 intervals to be correct, that is, to contain the actual unknown value $\mu$. (Recall the simulation Hanno presented in the lecture!)
+
+So, what does this all mean in practice?
+
+In reality, we take just one random sample. The interval we obtain is either correct or incorrect. That is, the interval we obtain based on the sample we've taken either contains the true population mean or it does not. Since we don't know the value of the true population mean, we'll never know for sure whether our interval is correct or not. We can just be very confident that we obtained a correct interval (because 95% or 99% of the intervals we could have obtained are correct).
+
+### Exercise 1: Confidence Intervals for the Difference in Means
+
+There's a line of literature suggests that those who voted for a winning party/coalition are more satisfied with how democracy works in general than those who voted for a losing party/coalition. To test if this statement is believable, a researcher draws nationally representative samples all over the democracies and has point estimates for both winners' and losers' mean scores of satisfaction with democracy. Satisfaction with democracy is assessed on a scale ranging from 1 (not at all satisfied) to 4 (very satisfied). 
+
+- winners: $\bar{x}_w = 2.70$, $SE_w = 0.01$, $n_w = 5462$
+
+- losers: $\bar{x}_l = 2.37$, $SE_l = 0.01$, $n_l = 12688$
+
+1. What is the distribution of the difference in mean satisfaction with democracy scores between winners and losers?
+
+<br/>
+
+<br/>
+
+<br/>
+
+2. Based on the above distribution, please construct a 95% confidence interval around the difference in mean satisfaction with democracy scores between winners and losers? What does this confidence interval mean substantively?
+
+<br/>
+
+<br/>
+
+<br/>
+
+3. Perform a hypothesis test to see if you can get same conclusion as above.
+
+<br/>
+
+<br/>
+
+<br/>
+
+
+### Exercise 2: Confidence Intervals for Regression Coefficients
+
+In addition to compare the satisfaction with democracy mean score difference between winners and losers, the researcher also ran a simple linear regression in which the dependent variable is satisfaction with democracy and the independent variable is winner-loser status. Winner-loser status is coded as 1 if a respondent self-reported that she voted for a losing party/coalition in the most recent election. 
+
+Here is the regression table:
+
+$$
+\begin{array}{|c|c|c|c|c|c|c|}
+\hline
+\texttt{} & \texttt{estimate} & \texttt{p-value} & \texttt{t value} & \texttt{std.error} & \texttt{CI lower} & \texttt{CI upper}\\ \hline
+\texttt{intercept}      & 2.70        & 0.002   &   &   &   &  \\ \hline
+\texttt{loser}      & -0.33        & 0.001      &   &   &   &  \\ \hline
+\end{array}
+$$
+
+1. Perform a hypothesis test to see if there is a relationship between one's winner-loser status and satisfaction with democracy.
+
+<br/>
+
+<br/>
+
+<br/>
+
+2. Find out the t values and std.error based on the information provided in the regression table.
+
+<br/>
+
+<br/>
+
+<br/>
+
+3. construct a 95% confidence interval around estimates of intercept and the coefficient of `loser`? What does this confidence interval mean substantively? Is you conclusion different from the one you derived from the hypothesis test?
+
+<br/>
+
+<br/>
+
+<br/>
+
+
+
+
+
+
+  
+  
+  
+  
+
+

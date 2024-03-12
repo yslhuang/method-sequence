@@ -1,0 +1,615 @@
+---
+title: "Problem Set 5"
+author: "Pol211, UC Davis"
+date: "Due by 11/06, 2023 at 11:59 PM"
+output: 
+  pdf_document: default
+---
+
+**Note:** You can skip questions 1 and 2 if you decide to answer question 5. However, this requires that you seriously attempt to answer all parts of question 5, i.e. you cannot skip question 1 and 2 and then just provide minimal answers to question 5.
+
+# Question 1 (2 points, skip if answering question 5)
+
+Your friend loves ice cream. When it's sunny, your friend eats 3 scoops of ice cream per day. When it is not sunny, your friend flips a coin and eats 2 scoops of ice cream if the coin lands on heads, and 1 scoop if the coin lands on tails. You and your friend live in a place where it is sunny 60% of the time.
+
+**a.** Write down the probability mass function of the random variable $X$, which tells you how many scoops of ice cream your friend eats in a day. 
+
+**b.** What is the expected value of $X$?
+
+**c.** Let's define a new random variable $Y$, which is equal to 1 if you eat 3 scoops of ice cream on a given day, and 0 otherwise. This variable follows a "special" distribution. What is this distribution, and what is its parameter?
+
+**d.** Now, let's define a new random variable $Z$, which is equal to the number of days in year that you eat 3 scoops of ice cream. What is the distribution of $Z$, and what are its parameters? Similar to the distribution of $Y$, it has a specific name. What is the expected value of $Z$?
+
+
+**Answer:**
+
+**a.** Let's first define the random variable $X$, which tells us how many scoops of ice cream your friend eats in a day. We can then write down the probability mass function of $X$:
+
+$$
+\begin{aligned}
+Pr(X=1) &= Pr(\text{not sunny})Pr(\text{tails}) = 0.4 \times 0.5 = 0.2 \\
+Pr(X=2) &= Pr(\text{not sunny})Pr(\text{heads}) = 0.4 \times 0.5 = 0.2 \\
+Pr(X=3) &= Pr(\text{sunny}) = 0.6
+\end{aligned}
+$$
+
+**b.** We can now calculate the expected value of $X$:
+
+$$
+\begin{aligned}
+E(X) &= 1 \times 0.2 + 2 \times 0.2 + 3 \times 0.6 \\
+&= 0.2 + 0.4 + 1.8 \\
+&= 2.4
+\end{aligned}
+$$
+
+**c.** The distribution is the Bernoulli distribution, and the parameter is the probability of success, which is 0.6. We can write this as $Y \sim Bernoulli(0.6)$.
+
+**d.** The distribution is the binomial distribution, and the parameters are the number of trials $N$ and the probability of success $p$. The number of trials is 365 (days in a year), and the probability of success is 0.6 (your friend eats 3 scoops with probability 0.6 on any given day). We can write this as $Z \sim Binomial(365, 0.6)$. We can now calculate the expected value of $Z$:
+
+$$
+\begin{aligned}
+E(Z) &= Np \\
+&= 365 \times 0.6 \\
+&= 219
+\end{aligned}
+$$
+
+
+
+
+# Question 2 (4 points, skip if answering question 5)
+
+During the week, you can either bike, walk or take the bus to campus. On Monday, Tuesday and Wednesday, you don't have early classes, so you don't care about how long it takes you to get to campus. Therefore, on these days, you are equally likely to take the bus, walk or bike. On Thursday and Friday, you have class at 9 AM, so you want to get to campus as quickly as possible. On these days, you are equally likely to bike or take the bus, but you never walk.
+
+Assume you have two random variables: $X$ is the mode of transportation to campus on a given weekday, such that $\mathcal{X} = \{\text{bus}, \text{walk}, \text{bike}\}$, and $Y$ tells you whether you have a class at 9 AM on a given weekday, such that $\mathcal{Y} = \{\text{early class}, \text{no early class}\}$.\footnote{For this problem, we only consider weekdays, i.e. Monday, Tuesday, Wednesday, Thursday and Friday. We ignore the weekend.}
+
+**a.** What is the conditional distribution of $X$ given $Y$? Since X can have 3 values and Y can have 2 values, there are 6 possible combinations of $X$ and $Y$. 
+
+**b.** What is the marginal distribution of $Y$?
+
+**c.** Based on your answers to the previous questions, what is the joint distribution of $X$ and $Y$?
+
+**Hint:** The joint PMF tells you the probabilities $Pr(X=x, Y=y)$ for all combinations of $X$ and $Y$. Since this must follow the rules of probability, we know that the sum of all probabilities must be 1.
+
+**d.** So far, we have not assigned any numerical values $x$ to the random variable $X$. We will now do this -- more specifically, we will assign a speed to each mode of transportation as follows:
+
+$$
+\begin{aligned}
+\text{bus:} & 15 \text{ mph} \\
+\text{walk:} & 3 \text{ mph} \\
+\text{bike:} & 12 \text{ mph} \\
+\end{aligned}
+$$
+
+Instead of the mode of transportation, we will now consider the speed of each mode of transportation. Note that this has the same distribution that we determined before, but now the values of $X$ are numerical. This means that instead of $X=\text{bus}$, we now have $X=15$, and so on. However, $Pr(X=15)$ is still the same as $Pr(X=\text{bus})$.
+
+Calculate the conditional expected values $E(X|Y=\text{early class})$ and $E(X|Y=\text{no early class})$. For this, you will need the conditional distribution of $X$ given $Y$, which you calculated in part **a.**.
+
+**e.** Calculate the following quantity. You should have all you need for this from previous questions.
+
+$$E(X|Y=\text{early class})\cdot Pr(Y=\text{early class}) + E(X|Y=\text{no early class})\cdot Pr(Y=\text{no early class})$$
+
+**f.** Find the marginal PMF of $X$ and then calculate the expected value of $X$. You should find the same value as in part **e.**. Briefly explain why the two are the same -- why does this make sense?
+
+**Answer:**
+
+**a.** We can write down the conditional distribution of $X$ given $Y$:
+
+$$
+\begin{aligned}
+Pr(X=\text{bus} | Y=\text{early class}) &= \frac{1}{2} \\
+Pr(X=\text{walk} | Y=\text{early class}) &= 0 \\
+Pr(X=\text{bike} | Y=\text{early class}) &= \frac{1}{2} \\
+Pr(X=\text{bus} | Y=\text{no early class}) &= \frac{1}{3} \\
+Pr(X=\text{walk} | Y=\text{no early class}) &= \frac{1}{3} \\
+Pr(X=\text{bike} | Y=\text{no early class}) &= \frac{1}{3} \\
+\end{aligned}
+$$
+
+**b.** We can write down the marginal distribution of $Y$. This is given in the question.
+
+$$
+\begin{aligned}
+Pr(Y=\text{early class}) &= \frac{2}{5} \\
+Pr(Y=\text{no early class}) &= \frac{3}{5} \\
+\end{aligned}
+$$
+
+**c.** We can now write down the joint distribution of $X$ and $Y$. Note that from the definition of the conditional distribution, we know that the joint distribution is the product of the conditional distribution and the marginal distribution. For example, we have:
+
+$$
+\begin{aligned}
+Pr(X=\text{bus}, Y=\text{early class}) &= Pr(X=\text{bus} | Y=\text{early class}) \times Pr(Y=\text{early class}) \\
+&= \frac{1}{2} \times \frac{2}{5} \\
+&= \frac{1}{5}
+\end{aligned}
+$$
+
+We can do this for all possible combinations of $X$ and $Y$, to get the following table:
+
+$$
+\begin{array}{c|cc}
+& Y=\text{early class} & Y=\text{no early class} \\
+\hline
+X=\text{bus} & \frac{1}{5} & \frac{1}{5} \\
+X=\text{walk} & 0 & \frac{1}{5} \\
+X=\text{bike} & \frac{1}{5} & \frac{1}{5} \\
+\end{array}
+$$
+
+**d.** We can now calculate the conditional expected values $E(X|Y=\text{early class})$ and $E(X|Y=\text{no early class})$:
+
+$$
+\begin{aligned}
+E(X|Y=\text{early class}) = \frac{1}{2} \times 15 + \frac{1}{2} \times 12 = 13.5 \\
+E(X|Y=\text{no early class}) = \frac{1}{3} \times 15 + \frac{1}{3} \times 3 + \frac{1}{3} \times 12 = 10
+\end{aligned}
+$$
+
+**e.** We can now calculate the following quantity:
+
+$$
+\begin{aligned}
+E(X|Y=\text{early class})\cdot Pr(Y=\text{early class}) + E(X|Y=\text{no early class})\cdot Pr(Y=\text{no early class}) &= 13.5 \times \frac{2}{5} + 10 \times \frac{3}{5} \\
+&= 5.4 + 6 \\
+&= 11.4
+\end{aligned}
+$$
+
+**f.** We now calculate the marginal PMF of $X$ based on the joint distribution of $X$ and $Y$ that we calculated in part **c.**:
+
+$$
+\begin{aligned}
+Pr(X=\text{bus}) &= \frac{1}{5} + \frac{1}{5} = \frac{2}{5} \\
+Pr(X=\text{walk}) &= 0 + \frac{1}{5} = \frac{1}{5} \\
+Pr(X=\text{bike}) &= \frac{1}{5} + \frac{1}{5} = \frac{2}{5} \\
+\end{aligned}
+$$
+
+We can now calculate the expected value of $X$:
+
+$$
+\begin{aligned}
+E(X) &= 15 \times \frac{2}{5} + 3 \times \frac{1}{5} + 12 \times \frac{2}{5} \\
+&= 6 + 0.6 + 4.8 \\
+&= 11.4
+\end{aligned}
+$$
+
+This is the same as the answer to part **e.**. This makes sense, since the expected value of $X$ is the weighted average of the expected values of $X$ given $Y=\text{early class}$ and $Y=\text{no early class}$, where the weights are the probabilities of $Y=\text{early class}$ and $Y=\text{no early class}$ respectively. This is exactly what we calculated in part **e.**.
+
+Using the expression given in **e.** to calculate $E(X)$ is also called the law of total expectation, or the law of iterated expectation.
+
+# Question 3 (3 points)
+
+Assume that you have two continuous uniform variables $X$ and $Y$ on the the following intervals:
+
+$$
+\begin{aligned}
+X &\sim U(3,9) \\
+Y &\sim U(2,4) \\
+\end{aligned}
+$$
+
+The two random variables are independent. From each distribution, you obtain values $x$ and $y$ respectively. You then want to draw a rectangle where the sides have lengths $x$ and $y$ respectively. 
+
+**a.** What is the expected value of the area of the rectangle?
+
+**Hint:** The expected value of a uniform distribution on the interval $[a,b]$ is $\frac{a+b}{2}$.
+
+**b.** One way to check analytical answers is to simulate the problem and see if the simulated answer is close to the analytical answer. You will now do this for the to the previous question. The general approach is as follows: Write code that simulates the problem. For example, you would write code that draws 1,000 values $x$ from a uniform distribution on the interval $[3,9]$, and 1,000 values $y$ from a uniform distribution on the interval $[2,4]$. You would then calculate the desired quantity, and assess the mean of the desired quantity across all draws (in this case, the mean of the area of the rectangle). You can then compare this to the analytical answer. Below is some code that provides a starting point for the simulation.
+
+```{r}
+
+# Set seed
+set.seed(3)
+
+# Draw 1000 values from a uniform distribution on the interval [3,9]
+x <- runif(1000, min = 3, max = 9)
+
+# Draw 1000 values from a uniform distribution on the interval [2,4]
+y <- runif(1000, min = 2, max = 4)
+
+# Your code here
+
+# ...
+
+```
+
+**c.** Use the simulation above to approximate the following quantities:
+
+  - The probability that the area of the rectangle is greater than 20.
+  - The probability that the area of the rectangle is greater than 20, given that the area of the rectangle is greater than 10.
+  - The variance of the area of the rectangle.
+
+**Note:** "approximate" means that you should use the simulated areas to calculate the probabilities and the variance. 
+
+**Answer:**
+
+**a.**
+
+The area of the rectangle is given by $A = XY$. We can now calculate the expected value of the area of the rectangle:
+
+$$
+\begin{aligned}
+E(A) &= E\left(XY\right) \\
+&= E(X)E(Y) \\
+&=   \frac{3+9}{2} \frac{2+4}{2} \\
+&= \frac{12}{2} \frac{6}{2} \\
+&= 18
+\end{aligned}
+$$
+
+**b.**
+
+```{r}
+
+# Set seed
+set.seed(3)
+
+# Draw 1000 values from a uniform distribution on the interval [3,9]
+x <- runif(1000, min = 3, max = 9)
+
+# Draw 1000 values from a uniform distribution on the interval [2,4]
+y <- runif(1000, min = 2, max = 4)
+
+# Calculate the area of the rectangle
+area <- x * y
+
+# Calculate the mean of the area of the rectangle
+mean(area)
+
+```
+
+**c.**
+
+```{r}
+
+# Assuming we have already run the code above
+
+# The probability that the area of the rectangle is greater than 20
+
+mean(area > 20)
+
+# The probability that the area of the rectangle is greater than 20, given that the area of the rectangle is greater than 10
+
+mean(area[area > 10] > 20)
+
+# The variance of the area of the rectangle
+
+var(area)
+```
+
+
+
+
+## Question 4 (3 points)
+
+Evaluate the following statements. For each of them, indicate whether it is true or false, and explain why.
+
+1. For a discrete RV $X$, the marginal PMF must be a function such that $\sum_{x \in \mathcal{X}}Pr(X=x)=1$. However, this does not need to hold for the conditional PMF $f_{X|Y}(x|y)$, since values of $Y$ do not need to occur with the same probability.
+
+**Hint:** $\sum_{x \in \mathcal{X}}$  means we sum over all possible values of the random variable $X$. The statement asks you whether $\sum_{x \in \mathcal{X}}Pr(X=x|Y=y)$ is necessarily equal to one or not. 
+
+2. The expected value of a random variable is the value that the random variable takes most often.
+
+3. In the discrete case, the joint PMF of two random variables $X$ and $Y$  tells you the probability that $X$ takes for a certain value $x$ and $Y$ takes for a certain value $y$. The marginal distribution then tells you the probability that $X$ takes for a certain value $x$, given some value of $Y$.
+
+4. If variables $Y$ and $X$ are independent, this implies that the expectation of $X$ given $Y$ does **not** differ across values of $Y$.
+
+5. A Bernoulli random variable is a binomial random variable with $N=2$.
+
+6. For a random variable $X$ with a normal distribution $X\sim N(0, \sigma^2)$, it is possible that $Pr(X<a)>Pr(X>(-a))$ for some $a\leq0$.
+
+**Answers:**
+
+1. False. The marginal PMF must be a function such that $\sum_{x \in \mathcal{X}}Pr(X=x)=1$. However, this also needs to hold for the conditional PMF $f_{X|Y}(x|y)$, since the conditional PMF needs to follow the properties of all PMFs.
+
+2. False. The expected value is defined as the sum of each value multiplied by the probability of that value. The value that the random variable takes most often is the mode (in the discrete case).
+
+3. False. The joint PMF of two random variables $X$ and $Y$ tells you the probability that $X$ takes for a certain value $x$ and $Y$ takes for a certain value $y$. The marginal distribution then tells you the probability that $X$ takes for a certain value $x$, regardless of the value of $Y$.
+
+4. True. If $Y$ and $X$ are independent, this implies that $E(X|Y) = E(X)$, which means that the expectation of $X$ given $Y$ does not differ across values of $Y$.
+
+5. False. A Bernoulli random variable is a binomial variable with $N=1$, i.e. it is a binomial variable with only one trial.
+
+6. False. The normal distribution is symmetric around 0, so $Pr(X<a)=Pr(X>(-a))$ for any $a\leq0$.
+
+# Question 5 (required for students in the methods subfield, 3 points)
+
+## 5.1 (1 point)
+
+Assume that we have a simple linear regression of the form $E(Y|X) = \alpha + \beta X$. The linear regression gives us an estimate of the expected value of $Y$ given $X$. 
+
+Note that the coefficients $\alpha$ and $\beta$ are chosen to minimize the following expression:
+
+$$
+E[(Y - \alpha - \beta X)^2]
+ $$
+
+In other words, the coefficients are chosen to minimize the expectation of the squared difference between the expectation of $Y$ given $X$ and the actual value of $Y$. We can use the last expression to derive the following expression for $\beta$ and $\alpha$:
+
+$$
+\begin{aligned}
+\beta = \frac{Cov(X,Y)}{Var(X)} \\ 
+\alpha = E(Y) - \beta E(X) 
+\end{aligned}
+$$
+
+Show that the expressions of $\beta$ and $\alpha$ given above minimize the expression $E[(Y - \alpha - \beta X)^2]$. To do this, you can take the derivatives of the expression in (1) with respect to $\alpha$ and $\beta$, and set the derivatives to 0. You can then solve for $\alpha$ and $\beta$.\footnote{As in a previous problem set, we will ignore the second derivative, i.e. we will assume we found a minimum.}
+
+**Note:** For this question, you can assume the following:
+
+$$
+\frac{\partial E[f(x,y)]}{\partial(x)} = E\left[\frac{\partial f(x,y)}{\partial x}\right]
+$$
+
+Where $\frac{\partial f(x,y)}{\partial x}$ is the partial derivative of some function $f(x,y)$ with respect to $x$.
+
+**Hint 1:** For some constant $a$ and RVs $X$ and $Y$:
+ 
+  - $E(aX)=aE(X)$ 
+  - $E(a)=a$ 
+  - $E(Y+X) = E(Y) + E(X)$
+
+**Hint 2:** $Var(X) = E(X^2) - E(X)^2$
+
+**Hint 3:** $Cov(X) = E(XY) - E(X)E(Y)$
+
+**Answer**:
+
+Let's first define that $e=E[(Y - \alpha - \beta X)^2]$. We then take the derivative of $e$ with respect to $\alpha$ and $\beta$.
+
+$$
+\begin{aligned}
+\frac{\partial e}{\partial \alpha} = E[-2(Y-\alpha-\beta X)] \\
+\frac{\partial e}{\partial \beta} = E[-2X(Y-\alpha -\beta X)]
+\end{aligned}
+$$
+
+We can now set these to 0. Note that we can take the -2 out of the expectation, since $E(aX)=aE(X)$. Let's start with the partial derivative wrt $\alpha$:
+
+$$
+\begin{aligned}
+-2E[(Y-\alpha-\beta X)] &= 0 \\
+E(Y) - \alpha - \beta E(X) &= 0 \\
+E(Y) - \beta E(X) &=  \alpha \\
+\end{aligned}
+$$
+
+Note that $\alpha$ and $\beta$ are constants, which is why we can do the last two steps.
+
+Next, let's look at the derivative of $e$ wrt $\beta$:
+
+$$
+\begin{aligned}
+0 &= E[-2X(Y-\alpha -\beta X)] \\
+0 &= -2E[X(Y-\alpha -\beta X)] \\
+0 &= E(XY)-\alpha E(X) -\beta E(X^2)
+\end{aligned}
+$$ 
+
+We also have a definition of $\alpha$ from above, which we can plug into the equation:
+
+$$
+\begin{aligned}
+0 &= E(XY)-[E(Y) - \beta E(X)]E(X) -\beta E(X^2) \\
+0 &= E(XY) - E(X)E(Y) + \beta [E(X)^2 - E(X^2)] \\ 
+\beta [E(X^2) - E(X)^2] &= E(XY) - E(X)E(Y) \\ 
+\beta &= \frac{E(XY) - E(X)E(Y)}{E(X^2) - E(X)^2}
+\end{aligned}
+$$
+
+Given what is stated in the hints, the last expression is equal to:
+
+$$
+\begin{aligned}
+\beta &= \frac{Cov(X,Y)}{Var(X)} 
+\end{aligned}
+$$ 
+
+In addition, we previously showed that:
+
+$$
+\begin{aligned}
+\alpha &= E(Y) - \beta E(X) & \\
+\end{aligned}
+$$
+
+## 5.2 (0.5 points)
+
+Next, recall that the definition of the correlation coefficient is:
+
+$$
+\rho(X,Y) = \frac{Cov(X,Y)}{\sqrt{Var(X)Var(Y)}}
+$$
+
+- Mathematically, what is the relationship between the correlation coefficient and the slope of the bivariate linear regression? 
+- When are the two the same?
+- Can you provide a brief intuition / explanation for the condition under which the two are the same?
+
+**Answer:**
+
+From the definition of the correlation coefficient, we know that:
+
+$$
+\begin{aligned}
+Cov(Y,Y) = \rho(X,Y) \sqrt{Var(X)Var(Y)}
+\end{aligned}
+$$
+
+We can now substitute this into the expression for $\beta$:
+
+$$
+\begin{aligned}
+\beta &= \frac{Cov(X,Y)}{Var(X)} \\
+&= \frac{\rho(X,Y) \sqrt{Var(X)Var(Y)}}{Var(X)} \\
+&= \rho(X,Y) \frac{\sqrt{Var(X)Var(Y)}}{Var(X)} \\
+&= \rho(X,Y) \sqrt{\frac{Var(Y)}{Var(X)}} \\
+\end{aligned}
+$$
+
+- The two are the same when $\sqrt{\frac{Var(Y)}{Var(X)}} = 1$, which is the case when $Var(Y) = Var(X)$.
+
+- Intuitively, the condition $Var(Y) = Var(X)$ implies that the dispersion of the variables is the same, which can be interpreted as the two variables being on the same scale. 
+
+## 5.3 (0.5 points)
+
+Consider the following PDF:
+
+$$
+f(x) = \begin{cases}
+\frac{3}{2}x^2 & \text{if } -1 \leq x \leq 1 \\
+0 & \text{otherwise} \\
+\end{cases}
+$$
+
+**a.** What is $E(X)$? Please do not use the integrals here, but rather come up with an intuitive explanation based on the shape of the distribution.
+
+**b.** What is the expected value of the new random variable $Y$, which is defined as the absolute value of $X$, i.e. $Y=|X|$?
+
+
+
+**Answer:**
+
+**a.** We can see that the PDF is symmetric around 0. This means that that the area under the PDF to the left of 0 is the same as the area under the PDF to the right of 0. As a result, the expected value of $X$ is 0.
+
+**b.** We can now calculate the expected value of $Y$. First, note that $Y$ is a function of $X$, so we can use LOTUS to calculate the expected value of $Y$. So we can just use the PDF of $X$ to calculate the expected value of $Y$. 
+
+Next, note that $Y=|X|$ is a function that is defined as follows:
+
+$$
+\begin{aligned}
+Y &= \begin{cases}
+-X & \text{if } X < 0 \\
+X & \text{if } X \geq 0 \\
+\end{cases}
+\end{aligned}
+$$
+
+Note, since $Y=|X|$, $Y$ takes the same value for both negative and positive values pf $X$ (e.g. for $X=-0.5$ and also for $X=0.5$, $Y=0.5$). Since the PDF of $X$ is symetric, we also know that $f(x) = f(-x)$ for some $x$ between 0 and 1. Therefore, expectation $Y$ for the "positive half" of $X$ should be the same as the expectation for the "negative half" of $X$. We therefore just calculate the expectation for the "positive half" of $X$ and multiply it by 2:
+
+$$
+\begin{aligned}
+E(Y) &= 2\int_0^1 x \cdot f(x) dx \\
+&= 2\int_0^1 x \cdot \frac{3}{2}x^2 dx \\
+&= 3 \int_0^1 x^3 dx \\
+&= 3 \left[\frac{x^4}{4}\right]_0^1 \\
+&= 3 \left[\frac{1}{4} - \frac{0}{4}\right] \\
+&= \frac{3}{4}
+\end{aligned}
+$$
+
+
+## 5.4 (0.5 points)
+
+Suppose that a point is chosen at random on a stick of length 1 and that the stick is broken into two pieces at that point. Find the expected value of the length of the longer piece.
+
+**Answer:**
+
+The breakpoint is a uniform random variable:
+
+$$
+\begin{aligned}
+X &\sim U(0,1) \\
+\end{aligned}
+$$
+
+If $X \leq 0.5$, the longer piece is $1-X$. If $X > 0.5$, the longer piece is $X$. Note that, by the definition of the uniform distribution, the two cases are equally likely. We can define a new random variable $Y$ that tells us the length of the longer piece:
+
+$$
+\begin{aligned}
+Y &= \begin{cases}
+1-X & \text{if } X \leq 0.5 \\
+X & \text{if } X > 0.5 \\
+\end{cases}
+\end{aligned}
+$$
+
+Note that $Y$ is a function of $X$. We can therefore use LOTUS to calculate the expected value of $Y$:
+
+$$
+\begin{aligned}
+&= \int_0^{0.5} (1-x) \cdot 1 dx + \int_{0.5}^1 x \cdot  1 dx \\
+&= \left[x - \frac{x^2}{2}\right]_0^{0.5} + \left[\frac{x^2}{2}\right]_{0.5}^1 \\
+&= \left[0.5 - \frac{0.5^2}{2}\right] + \left[\frac{1^2}{2} - \frac{0.5^2}{2}\right] \\
+&= 0.5 - \frac{0.5^2}{2} + \frac{1^2}{2} - \frac{0.5^2}{2} = 0.75\\
+\end{aligned}
+$$
+
+Note that we use LOTUS since $Y=g(X)$, so we can just use the PDF $f(x)=1$ even though we don't consider $X$ directly (however, for the case $X>0.5$, $g(X)$ is simply $X$).
+
+Alternatively, this can also be deduced without integration as follows:
+
+- If $X>0.5$, then $Y$ is a uniform RV on the interval $[0.5,1]$. The expected value of a uniform RV on the interval $[a,b]$ is $\frac{a+b}{2}$. Therefore, $E(Y|X>0.5) = \frac{0.5+1}{2} = 0.75$.
+- If $X \leq 0.5$, then $Y$ is also a uniform RV on the interval $[0.5,1]$. Since $X$ can be at most 0.5, $Y$ can only range from 0.5 to 1. Therefore, $E(Y|X \leq 0.5) = \frac{0.5+1}{2} = 0.75$.
+
+So for both $X>0.5$ and $X \leq 0.5$, $E(Y|X) = 0.75$. As a result, the expected value of $Y$ is also 0.75.
+
+## 5.5 (0.5 points)
+
+Use a simulation to check your answer to question 5.4. 
+
+- First, simulate 1,000 draws to verify whether you answer from the previous question is correct. 
+- Then, write code that simulates $\bar{Y}_n$, which is the mean of $Y$ as a function of the number of draws $n$ from the uniform RV $X$. Here, $n\in\{10, 20, 30,\dots, 500\}$. What do you notice about the relation between $\bar{Y}_n$ and $n$, in particular with respect to $E(Y)$, which you derived in question 5.4?
+
+**Answer:** 
+
+For question 5.4, we can do the following:
+
+```{r}
+
+# Set seed
+set.seed(3)
+
+# Draw 1000 values from a uniform distribution on the interval [0,1]
+x <- runif(1000, min = 0, max = 1)
+
+# Calculate the length of the longer piece
+y <- ifelse(x <= 0.5, 1 - x, x)
+
+# Calculate the mean of the length of the longer piece across all draws
+mean(y)
+
+## Next, do this for n = 10, 20, 30, ..., 500
+
+# Set seed
+
+set.seed(3)
+
+## Function to simulate E(Y_n) given n
+
+simulate <- function(n) {
+  
+  # Draw n values from a uniform distribution on the interval [0,1]
+  x <- runif(n, min = 0, max = 1)
+  
+  # Calculate the length of the longer piece
+  y <- ifelse(x <= 0.5, 1 - x, x)
+  
+  # Calculate the mean of the length of the longer piece across all draws
+  mean(y)
+  
+}
+
+## List of n
+
+n <- seq(10, 500, by = 10)
+
+## Simulate E(Y_n) for each n
+
+y_bar <- sapply(n, simulate)
+
+## To df
+
+df <- data.frame(n, y_bar)
+df$diff = abs(df$y_bar - 0.75)
+
+## Difference between E and 0.75 as a function of n
+
+plot(df$n, df$diff, type = "l", xlab = "n", ylab = "Abs. difference between mean(Y) and 0.75")
+
+```
+
+The first simulation shows that the simulated answer is very close to the analytical answer. The second simulation shows that the mean of $Y_n$ converges to 0.75 as $n$ gets larger.

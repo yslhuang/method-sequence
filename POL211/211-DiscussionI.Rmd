@@ -1,0 +1,325 @@
+---
+title: "211-DiscussionI"
+author: "Yu-Shiuan (Lily) Huang"
+date: "2023-10-03"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(width = 80)
+```
+
+#### Exploring a New Dataset using R (Part I) 
+Note: All these R codes are prepared by Prof. Ryan Hubert.
+
+##### a. Load R packages
+
+There are many useful packages in R that can be installed freely. If it is the first time you are going to use a package, here are the steps:
+
+- Install it
+- library it (which means telling R you are going to use it)
+
+Once you have installed the package, you don’t have to install it every time you open R studio. However, you still have to load it through the `library` function every time.
+
+```{r, warning=FALSE, message=FALSE}
+# Install packages
+# install.packages("tidyverse") # manipulate data 
+# install.packages("Matrix") # calculate rank
+## these are the packages we will use for today 
+
+# load packages
+library(tidyverse)
+library(Matrix) 
+```
+
+The `tidyverse` is a powerful collection  of  R  packages  that are actually  data tools for transforming and visualizing data. All packages of the `tidyverse` share an underlying philosophy and common APls.
+
+![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/ggplot_hive.jpeg){width=60%}
+
+The core packages within the `tidyverse` are: 
+
+- `ggplot2`, which implements the grammar of graphics. You can use it to visualize your data.
+- `dplyr` is a grammar of data. You can use it to solve the most common data manipulation challenges.
+- `tidyr` helps you to create tidy data or data where each variable is in a column, each observation is a row end each value is a column, each observation is a row end each value is a cell. 
+- `readr` is a fast and friendly way to read rectangular
+- `purrr` enhances R's functional programming (FP) toolkit by providing a complete and consistent set of tools for working with functions and vectors.
+- `tibble` is a modern re-imaginging of the data
+- `stringr` provides a cohesive set of functions designed to make working with strings as easy as possible
+- `forcats` provide a suite of useful tools that solve common problems with factors.  
+
+Highly recommend this [data wrangling cheat sheet](https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf) with `dplyr` and `tidyr` in R!
+
+##### b. Import data
+
+For today, we are using `USDC-DATASET-JOP.csv`. You can download this csv file from Canvas or from [here](https://dataverse.harvard.edu/file.xhtml?fileId=4306747&version=1.0.).
+
+```{r, warning=FALSE, message=FALSE}
+# Import data
+df <- read_csv("/Users/yu-shiuanhuang/Desktop/method-sequence/data/USDC-DATASET-JOP.csv") # Here we assign the dataset as an object called “df”
+
+## Note: you create new objects by assigning them with the `<-` phrase. You can also use an equal sign `=`.
+```
+
+Here are some tips for how to find the file path of the data you are going to use.
+
+- First, where did you store your data? In which folder? In my case, I stored the data in the `data` folder within the `method-sequence` folder.
+
+- Second, use `getwd` function to get the grasp of how does a file path look like. `getwd` function returns an absolute file path representing the current working directory of the R process. 
+
+```{r, message=FALSE, warning=FALSE}
+  getwd()
+```
+
+  As you can see, my current working directory is `"/Users/yu-shiuanhuang/Desktop/method-sequence/docs"`. Since I know that I stored the data in the `data` folder within the `method-sequence` folder, I can simply just change the file path to `"/Users/yu-shiuanhuang/Desktop/method-sequence/data/USDC-DATASET-JOP.csv"` and put it in the `read_csv` function so R knows where to read the file you want.
+
+If you import the data successfully, you should be able to see df popping up in the environment section.
+
+![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/environment.png){width=60%}
+
+Sometimes the dataset we are interested in may be stored in a different form, such as `dta`, `spss`, `xlsx`, `rds`, `rdata`, etc. You can find the corresponded codes from [here](https://www.datafiles.samhsa.gov/get-help/format-specific-issues/how-do-i-read-data-r).
+
+##### c. Basic information about the dataset
+
+What is the size of the dataset? 
+
+```{r, message=FALSE, warning=FALSE}
+# the number of row is:
+nrow(df)
+```
+
+How many observations (rows) and variables (columns) we have in the dataset?
+```{r, message=FALSE, warning=FALSE}
+# the number of column is:
+ncol(df)
+```
+
+You can also use `dim` function to get the size of the dataset.
+```{r, message=FALSE, warning=FALSE}
+dim(df) 
+## this function gives you the number of rows and columns at the same time
+```
+
+The size of this dataset is 97,725 x 54.
+
+What does the dataset actually look like?
+
+If you want to just quickly see the first six rows to get a feel for what the dataset looks like:
+
+```{r, message=FALSE, warning=FALSE}
+head(df)
+```
+
+Note that a lot of the variables are not visible because R will try to clean up output.
+
+One convenient thing is that you can see the type of each variable.[Here](https://tibble.tidyverse.org/articles/types.html) is the full list of all the possible types of variables (in tidyverse).
+
+If you want to look at the whole dataset, use `View(df)` command and it will open in a new tab in R.
+
+##### d. Exploring the variables
+
+Most people prefer to look at variables using their names. 
+
+How to ask R to tell us the name of each variables? 
+```{r, message=FALSE, warning=FALSE}
+# Name of each column
+colnames(df)
+```
+
+How to call out one specific variable we are interested in from the dataset?
+There are multiple ways to look at an arbitrary variable:
+```{r, message=FALSE, warning=FALSE, eval=FALSE}
+## Use column number
+df[, 2] 
+df[[2]]
+
+## Use variable name
+df[, "OUTCOME"]
+df[["OUTCOME"]]
+df$OUTCOME ## This is the most common way to do it
+```
+
+```{r, message=FALSE, warning=FALSE}
+head(df$OUTCOME) ## To see the first six rows of this variable
+```
+
+What kind of variable is the `OUTCOME` variable? It looks like a categorical variable!
+
+The next question would be what are the categories (called "levels" in R) of this variable?
+```{r, message=FALSE, warning=FALSE}
+# This asks R to give us a list of all the values used in this variable.
+unique(df$OUTCOME)
+```
+There are 34 categories in this variable.
+
+Here's an issue: when R loaded the dataset, it didn't code this variable as a categorical variable. Since the `OUTCOME` variable is coded as strings/texts in the dataset, in R, the type of this variable is character. 
+```{r, message=FALSE, warning=FALSE}
+# Look at what this says about the variable type:
+type_sum(df$OUTCOME)
+
+# When you summarize it in R, R doesn’t provide you with meaningful information
+summary(df$OUTCOME)
+```
+
+Good news is that we can transform the type of a variable in R.
+```{r, message=FALSE, warning=FALSE}
+# lets's change the type to a categorical variable, known as a "factor" variable in R:
+df$OUTCOME <- as.factor(df$OUTCOME) 
+## In order to override the original variable, we have to assign the new version of the variable to the original one.
+
+# After factorizing, R can summarize in a more meaningful way: what is the number of each category?
+summary(df$OUTCOME)
+```
+##### e. Exploring the observations
+
+Each row (observation) in this dataset is a court case. We can also use R to look at an arbitrary one.
+```{r, message=FALSE, warning=FALSE}
+df[5,] # This means that we want to call out the fifth row of the data.
+
+# If you want to see all the variables for that observation, here are some options:
+t(df[5,]) ## downside: this treats all the values like strings!
+as.data.frame(df[5,]) ## downside: sort of ugly and hard to see
+
+## To draw out an element from a data, you have to specify a row number and a column number.
+df[5, 1]
+```
+
+Usually, you only need to see some of the variables. 
+For example: suppose we want to know which judge heard this case (`jid_anon`), what the case outcome was (`OUTCOME`) and the party of the judge's appointing president (`jrepublican`). 
+
+```{r, message=FALSE, warning=FALSE}
+df[5, c("jid_anon", "OUTCOME", "jrepublican")]
+```
+
+A more neat way to write the code by using `tidyverse` package.
+```{r, message=FALSE, warning=FALSE}
+# using pipes to do the same thing; use select function from tidyverse to pick variables 
+df[5, ] %>% select(jid_anon, OUTCOME, jrepublican)
+```
+
+`%>%` is called "pipes." Pipes take the output from one function and feed it to the first argument of the next function. 
+
+We can also find a row by "filtering" the data based on some criteria. 
+
+What if I want to find a case by its ID number? Eg, "/dockets-cacd/2007/200738-00195.html"
+```{r, message=FALSE, warning=FALSE}
+# use filter function from tidyverse to set the condition 
+df %>% filter(file == "/dockets-cacd/2007/200738-00195.html")
+```
+
+What if I want to find all cases heard by judges appointed by Bush 43?
+```{r, message=FALSE, warning=FALSE}
+df %>% filter(jpresident == "Bush43")
+```
+
+The reason why we need to add quotation mark when setting the condition in the `filter` function is that both of the `file` and `jpresident` variables are coded in character type (categorical) in R. If we filter our cases based on whether the judge of the case is assigned by a Republican president (when `jrepublican` == 1), we don't have to add quotation mark in the condition as this variable is coded as the type of double (dbl) in R, which is a class of numeric.
+
+```{r, message=FALSE, warning=FALSE}
+df %>% filter(jrepublican == 1)
+```
+##### f. Some measurement issues
+
+What kinds of variable do we have? 
+
+There are slight differences between the way a computer stores/understands data and the way we conceptualize it. In this dataset, we have some variables on cardinal scales. 
+
+For example: How many plaintiffs are named in each case? (Why is this on a cardinal scale?)
+```{r, message=FALSE, warning=FALSE}
+head(df$pla_count)
+```
+
+What is the data type? It's "dbl" which means it's a number that need not be an integer (can be fractional number, 3.51)
+```{r, message=FALSE, warning=FALSE}
+type_sum(df$pla_count)
+```
+
+Note: this variable is actually comprised of integers, we could convert it if we want, but this doesn't really matter. (Why? 11.0 = 11)
+```{r, message=FALSE, warning=FALSE}
+df$pla_count <- as.integer(df$pla_count)
+type_sum(df$pla_count)
+```
+
+We also have some variables that are ordinal.
+
+For example, in what years were cases filed? (Why is this on an ordinal scale?)
+```{r, message=FALSE, warning=FALSE}
+head(df$YEAR)
+```
+
+What is the data type? It's also "dbl".
+```{r, message=FALSE, warning=FALSE}
+type_sum(df$YEAR)
+```
+
+Acknowledge, this is bad! We do not want R to treat this as a cardinal variable. 
+
+For example, it (incorrectly) allows us to add them:
+```{r, message=FALSE, warning=FALSE}
+df$YEAR[1] + df$YEAR[2]
+
+## Notice here the change in indexing! Remember that when you call out one variable from the data, it is a vector. To draw out an element from a vector, you only have to specify one number inside [ ].
+```
+
+So, we should change it to a factor variable so that we don't make this mistake.
+```{r, message=FALSE, warning=FALSE}
+df$YEAR <- as.factor(df$YEAR)
+df$YEAR[1] + df$YEAR[2] 
+```
+
+We got an error when we tried to do something silly, which is good!
+
+In the analysis for Ryan’s paper, they had to convert the `OUTCOME` variable to dummies. How can we do it in R? 
+
+Recall that there are 34 unique categories in the `OUTCOME` variable. 
+```{r, message=FALSE, warning=FALSE}
+unique(df$OUTCOME) 
+```
+
+When we want to make each category of this variable into dummies, it means that we need to create 34 new dummy variables (34 new columns for the dataset). For example, the new dummy variable `dism_other` will be coded as 1 if the `OUTCOME` variable is coded as dism_other. Let's use `ifesle` function to create this dummy!
+```{r, message=FALSE, warning=FALSE}
+df$dism_other <- ifelse(df$OUTCOME == "dism_other", 1, 0)
+```
+Let's check if we did it correctly.
+```{r, message=FALSE, warning=FALSE}
+df %>% select(OUTCOME, dism_other) %>% head()
+```
+
+But there is a total of 34 categories in the `OUTCOME` variable, it would be a waste of time to generate all 34 dummies if we have to retype the above one by one for each category. Luckily, R is here to help us! We can run a `forloop` function to ask R to do the same thing for all the 34 categories.
+
+```{r, message=FALSE, warning=FALSE}
+for(v in levels(df$OUTCOME)){
+  print(v)
+  df[[v]] <- ifelse(df$OUTCOME == v, 1, 0) ## df[[v]] is a way to call out/create a variable
+} ## This is called "forloop."
+```
+
+```{r, message=FALSE, warning=FALSE}
+ncol(df)
+```
+
+You can find that the number of columns increased to 88 from 54 after creating 34 dummies.
+
+##### g. The rank of a matrix
+The rank of a dataset is the number of “linearly independent” variables.
+```{r, message=FALSE, warning=FALSE}
+library(Matrix) ## This package has a function for calculating the rank of a matrix
+
+# Let's create a fake dataset
+df2 <- data.frame(var1 = seq(1, 100, 3)) ## Creates 34 rows
+
+df2$var2 <- (df2$var1/pi) ## create a new variable called var2 in df2
+pi ## pi is an inbuilt R constant whose value is 3.141593
+
+df2$var3 <- 6 
+df2
+```
+
+What is the rank of this matrix (the fake dataset we created)?
+
+```{r, message=FALSE, warning=FALSE}
+rankMatrix(as.matrix(df2)) ## The input must be a numeric matrix, which means we have to covert df2 from a dataframe to a matrix
+```
+
+There are 3 variables in df2, but there are only 2 linearly independent variables since the generation of var2 is based on var1.

@@ -1,0 +1,214 @@
+---
+title: "UC Davis PoliSci Bridge Materials"
+author: "Yu-Shiuan (Lily) Huang"
+output:
+  html_document: 
+    theme: paper
+    toc: true
+  pdf_document: default
+fontsize: 12pt
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      tidy.opts=list(width.cutoff = 80),
+                      tidy = FALSE)
+options(width = 80)
+
+htmltools::tagList(
+  xaringanExtra::use_clipboard(
+    button_text = "<i class=\"fa fa-clipboard\" style=\"color: #4D5656\" ></i>",
+    success_text = "<i class=\"fa fa-check\" style=\"color: #4D5656\"></i>",
+    error_text = "<i class=\"fa fa-times-circle\" style=\"color: #4D5656\"></i>"
+  ),
+  rmarkdown::html_dependency_font_awesome()
+)
+```
+
+### Preamble
+
+Hello, to-be-political scientists! As you may already know, in the last
+20 years, political science research has come to increasingly rely on
+quantitative and formal methods. To help our graduate students to be
+better prepared for this trend, the department has designed Math Camp
+for every incoming Ph.D. student to first review/learn some basic
+underlying mathematical concepts before starting the methods sequence
+(POL211-213, 215) in the Fall quarter.
+
+Here is an overview of Math Camp and the methods sequence. In Math Camp,
+Ryan will cover topics such as mathematical objects and reasoning,
+basics of calculus, optimization, linear algebra, and the introduction
+of basic computer programming (mostly R). In method sequences, you will
+be taught more about statistics, how to interpret results from different
+types of linear regression models, visualizations (mostly in R), and
+most importantly, how to incorporate this skill set into your own
+research of interests.
+
+We do understand that some of you might have not been in a math class in
+a while and maybe feel a bit nervous about the incoming quantitative
+training. To ease your concerns, we have prepared some bridge materials
+to hopefully navigate you to the math world more smoothly. This website
+is created as a "resource repository" for your first two years in the
+program. You are **NOT** required to go over all the materials we
+provide on this website before the program starts, so don't worry! This
+website aims to help students who would like to have reliable resources
+to self-learn some topics and skills you are interested in developing.
+
+Since we have provided a variety of materials we think may be useful for
+your early Ph.D. journey, some of you might feel a bit lost when
+deciding which topics should be prioritized. Don't worry! Here is a
+suggested timeline and check box for you to incorporate these materials
+into your summer plan. Again, this is **NOT** a requirement! You are
+more than welcome to pick any topic you are interested in the most to
+start with or just utilize this website as your reference after school
+starts.
+
+-   Before the Math Camp (July-August)
+
+    -   Those who would like to refresh their memories on math:
+        -   [ ] Check [BestMaths
+            Online](https://bestmaths.net/online/index.php/year-levels/year-12/year-12-topic-list/)
+            and focus on *Differentiation, Integration, and
+            Sequences/Series/Functions*, areas that will be covered in
+            the Math Camp. For more details, please see *Section I*
+            below.
+        -   [ ] Check *Section III* to download and install R and R
+            Studio and try to start getting familiar with them.
+    -   Those who are already familiar with basic mathematical concepts
+        and would like to start learning some basic concepts of
+        statistics:
+        -   [ ] Check [BestMaths
+            Online](https://bestmaths.net/online/index.php/year-levels/year-12/year-12-topic-list/)
+            and focus on *Statistics, Probability, and Sampling* areas.
+            For more details, please see *Section I* in below.
+        -   [ ] Check [Statistics for the Social Sciences on Apple
+            Podcasts](https://podcasts.apple.com/us/podcast/statistics-for-the-social-sciences/id597583061).
+            For more details, please see *Section I* below.
+        -   [ ] Check *Section III* to download and install R and R
+            Studio and try to start getting familiar with them.
+    -   Those who would like to start to get in touch with more advanced
+        statistics:
+        -   [ ] Check [Quantitative Social Science Methods,
+            I](https://youtube.com/playlist?list=PL0n492lUg2sgSevEQ3bLilGbFph4l92gH).
+            For more details, please see *Section I* below.
+        -   [ ] Check *Section III* to download and install R and R
+            Studio and try to start getting familiar with them.
+
+-   During the Math Camp (August-September)
+
+    -   [ ] Focus on the Math Camp materials on Canvas.
+    -   [ ] Since there are three topics that focus on calculus-related
+        materials in the Math Camp, we recommend those who would like to
+        go deeper in calculus check [Calculus for
+        Beginners](https://math.mit.edu/~djk/calculus_beginners/). Also,
+        here is [Calculus Cheat
+        Sheet](https://drive.google.com/file/d/1gCCEih-PCTO97jpbHvpsUVesVPKnnZDt/view?usp=sharing)
+        in case you need it when doing Math Camp calculus quizzes. For
+        more details, please see *Section I* below.
+    -   [ ] Keep playing around with R on DataCamp. For more details,
+        please see *Section III* below.
+
+-   After the Math Camp - First Two Weeks of the Fall Quarter
+
+    -   [ ] Check [Reading a Regression Table: A Guide for
+        Students](http://svmiller.com/blog/2014/08/reading-a-regression-table-a-guide-for-students/).
+        For more details, please see *Section II* below.
+    -   [ ] Since probability distribution is the basis of statistics,
+        we recommend students go through [Probability for the
+        Enthusiastic
+        Beginner](https://drive.google.com/file/d/1uGO4F8xMnyyTNYG0E03sV2Ct1HZsR8_x/view?usp=sharing),
+        especially focusing on Chapters 3 & 4, before taking POL211.
+    -   [ ] Keep playing around with R on DataCamp. For more details,
+        please see *Section III* below.
+    -   [ ] Check *Section IV* below to start getting familiar with
+        LaTeX.
+        
+*** Just a reminder, *Sections I-VI* are not in order, per se. It is just a list to lay out different topics we would like you to start to get familiar with.
+
+### Section I. Some Mathematical & Statistics Materials
+
+- For those who would like to refresh their memories on math, we recommend you go through some basic topics first on [BestMaths Online](https://bestmaths.net/online/index.php/year-levels/year-12/year-12-topic-list/). There are 100 topics of math that are covered on BestMaths and are split into fourteen general areas of a typical mathematics curriculum: differentiation, integration, algebra, complex numbers, trigonometry, statistics, probability, sampling, time series, sequences, series, functions, motion, and equations. BestMaths also provided little [quizzes](https://bestmaths.net/online/media/quiz/Year12/) on each area for you to check if you understand the materials properly. Because there are too many topics in BestMaths, we suggest you first focus on *Differentiation, Integration, Sequences/Series/Functions, Statistics, Probability, and Sampling*, areas that will be covered in the Math Camp or POL211. **
+    - If you would like to go deeper in calculus, [Calculus for Beginners](https://math.mit.edu/~djk/calculus_beginners/) is a very organized website to understand derivatives and integrals step by step.
+    - [Calculus Cheat Sheet](https://drive.google.com/file/d/1gCCEih-PCTO97jpbHvpsUVesVPKnnZDt/view?usp=sharing) (in case you need it when doing Math Camp calculus quizzes)
+- For those who are already familiar with basic mathematical concepts and would like to start learning some basic concepts of statistics, we recommend you go through [Statistics for the Social Sciences on Apple Podcasts](https://podcasts.apple.com/us/podcast/statistics-for-the-social-sciences/id597583061). This podcast is launched by Prof. Brad Fulton and covers topics regarding the structure of data, sampling, descriptive statistics, distribution, hypothesis testing, multiple comparison, and linear regression.
+    - [Syllabus](https://drive.google.com/file/d/1jvKS3mLrkBKcBOhO9eeOBwMje5LzWSNV/view?usp=sharing)
+    - [Lecture Slides](https://drive.google.com/drive/folders/1HtXdjxDmA6m5fN4J_iK080Pmkit2Y2Ea?usp=sharing)
+    - Textbook: [Statistics: Unlocking the Power of Data](https://drive.google.com/file/d/1o-q94Kc2LlOLKdmv37ms06mQ2PJQq2lk/view?usp=sharing) by Lock, Lock, Morgan, Lock, and Lock (second edition)
+    - [Simulator](https://www.lock5stat.com/StatKey/) that is used a lot in the course
+- For those who would like to start to get in touch with more advanced statistics or just want to get a first glance at what a method course looks like in the Political Science program, Prof. Gary King from Harvard University generously uploaded all his recordings of [Quantitative Social Science Methods, I](https://youtube.com/playlist?list=PL0n492lUg2sgSevEQ3bLilGbFph4l92gH) to youtube. Here are the [syllabus and slides](https://projects.iq.harvard.edu/gov2001/lecture-videos).
+    - Since probability distribution is the basis of statistics, we also recommend students go through [Probability for the Enthusiastic Beginner](https://drive.google.com/file/d/1uGO4F8xMnyyTNYG0E03sV2Ct1HZsR8_x/view?usp=sharing), especially focusing on Chapters 3 & 4.
+    
+### Section II. How to Read a Regression Table?
+
+Besides taking POL211 in the first quarter, you will also have to take another two seminars in which you will be assigned to read many journal articles that are heavily quantitative based. For those who have little experience in reading quantitative articles before, we recommend you go over this blog post from Prof. Steven Miller: [Reading a Regression Table: A Guide for Students](http://svmiller.com/blog/2014/08/reading-a-regression-table-a-guide-for-students/). We hope this will help you get through substantive seminars more smoothly during your first quarter. 
+
+### Section III. R Tutorials
+
+In the methods sequence, most of your assignments will require you to use R to do the computation or analysis. R is a very useful computational tool and allows you to generate cool visualizations. Most importantly, R is open-source, which means it is free and a lot of brilliant coders share their codes online that you can use. Here are the steps for you to download R and RStudio if you have never used them before:
+
+1.  Download & Install R 
+    - [Windows](https://mirror.las.iastate.edu/CRAN/)
+    - [macOS](https://mirror.las.iastate.edu/CRAN/)
+    
+    *To install: Doubleclick on the downloaded file (check your Downloads folder if you cannot see it directly). Click yes through all the prompts to install like any other program.
+    
+2. Download & Install R Studio
+    - [Windows](https://www.rstudio.com/products/rstudio/download/#download)
+    - [macOS](https://www.rstudio.com/products/rstudio/download/#download)
+
+We are planning to apply for “DataCamp for Classrooms” to allow grad students to have a period of 6 months of free access to most of the contents on [DataCamp](https://www.datacamp.com/). We will inform you about how to get free access after we all set up. DataCamp has a variety of R courses, including basic R programming skills, how to do data wrangling and summarizing in R, how to apply different regression models in R, how to generate graphs in R, etc. Here are some recommended courses for you to get started (these courses were also assigned in Rachel’s POL281):
+
+- R Programming
+    - [Introduction to R](https://www.datacamp.com/courses/free-introduction-to-r)
+    - [Intermediate R](https://www.datacamp.com/courses/intermediate-r)
+    - [Writing Efficient R Code](https://www.datacamp.com/courses/writing-efficient-r-code)
+- Data Manipulation
+    - [Data Manipulation with dplyr](https://www.datacamp.com/courses/data-manipulation-with-dplyr)
+    - [Joining Data with dplyr](https://www.datacamp.com/courses/joining-data-with-dplyr)
+    - [Case Study: Exploratory Data Analysis in R](https://www.datacamp.com/courses/case-study-exploratory-data-analysis-in-r)
+    - [Data Manipulation with data.table in R](https://www.datacamp.com/courses/data-manipulation-with-datatable-in-r)
+    - [Joining Data with data.table in R](https://www.datacamp.com/courses/joining-data-in-r-with-datatable)
+- Data Visualization
+    - [Introduction to Data Visualization with ggplot2](https://www.datacamp.com/courses/introduction-to-data-visualization-with-ggplot2)
+    - [Intermediate Data Visualization with ggplot2](https://www.datacamp.com/courses/intermediate-data-visualization-with-ggplot2)
+    - [Visualization Best Practices in R](https://www.datacamp.com/courses/data-visualization-with-ggplot2-part-3)
+
+Meanwhile, we also collect some online resources that we think are handy to have around during quarters. Remember, whenever you have questions regarding R, Google will have answers to your questions 99% of the time! 
+
+- General
+    - [R cheat sheets](https://www.rstudio.com/resources/cheatsheets/)
+    - [General R Tutorial](https://www.statmethods.net/r-tutorial/index.html)
+    - [R for Data Science](https://r4ds.had.co.nz/)
+    - [Advanced R](https://adv-r.hadley.nz/)
+    - [Matthew Blackwell’s Gov 51](http://gov51.mattblackwell.org/resources/)
+    - [DataCamp Introduction to R](https://www.datacamp.com/courses/free-introduction-to-r?utm_source=adwords_ppc&utm_medium=cpc&utm_campaignid=1565610606&utm_adgroupid=64773273492&utm_device=c&utm_keyword=datacamp%20r&utm_matchtype=p&utm_network=g&utm_adpostion=&utm_creative=295213453331&utm_targetid=kwd-561394200948&utm_loc_interest_ms=&utm_loc_physical_ms=9032521&gclid=Cj0KCQiAuP-OBhDqARIsAD4XHpeVS5qDqJ0U5YxoXQ8qyNQP_ceXaQD1SRuHoBU3Tw2-mBCSs2iRcFsaAvaBEALw_wcB) (this course is free on DataCamp)
+    - [POL51 Introduction to R (Section Materials)](https://www.notion.so/954816484411467e890898ef2e55f08d?pvs=21)
+- Regression
+    - [Linear Regression in R](https://www.scribbr.com/statistics/linear-regression-in-r/)
+    - [Marginal effects](https://cran.r-project.org/web/packages/margins/vignettes/Introduction.html)
+- Visualizations (ggplot2)
+    - [Programming & Methods Resources Workshop](https://calgara.github.io/UCD_PS_ggplot_tutorial.html)
+    - [Plotly graphing library for ggplot2 in ggplot2](https://plotly.com/ggplot2/#basic-charts)
+    - [Create Elegant Data Visualisations Using the Grammar of Graphics • ggplot2](https://ggplot2.tidyverse.org/index.html)
+    - [The R Graph Gallery – Help and inspiration for R charts](https://www.r-graph-gallery.com/index.html)
+- Highly Recommended Site:
+    - [USC Applied Data Science Training](https://www.uscspec.org/applied-data-science-trainings)
+    - [Applied Causal Analysis (with R)](https://bookdown.org/paul/applied-causal-analysis/)
+    
+### Section IV. LaTeX Tutorials
+
+Since for most assignments in the methods sequence, the write-up may have to be done in LaTeX and submitted as a pdf, we provide an installation guide and short tutorials here for your future reference. Here is a brief introduction to [what is LaTeX](https://www.latex-project.org/). 
+
+- Installation: [LaTeX installation guide](https://projects.iq.harvard.edu/files/gov2001/files/r_and_latex_installation.pdf)
+- Short Tutorials: [LaTeX tutorial from Gov department PreFresher](https://projects.iq.harvard.edu/prefresher/additional-latex-resources)
+
+If you prefer not to download the LaTeX compiler and editor to your laptop, you can use [Overleaf](https://www.overleaf.com/), which is an online LaTeX editor that is very easy to use and work on projects with multiple collaborators. It also provides many [templates](https://www.overleaf.com/latex/templates) for you to choose from. Here is a brief [introduction video](https://www.youtube.com/watch?v=xcTN4F3l9Ds) of how to use Overleaf. 
+
+- To create a nice table output in Overleaf, [TablesGenerator](https://www.tablesgenerator.com/) is very helpful. You can also use stargazer in R to create regression tables in LaTeX form and copy them into Overleaf. Here is a [handout](https://ignacioriveros1.github.io/r/2021/03/25/stargazer-for-amazing-academic-tables.html) of how to use the stargazer package.
+- To insert math equations in Overleaf, [LaTeX Equation Editor](https://latex.codecogs.com/eqneditor/editor.php) would be your go-to.
+
+*** I’d like to thank Alice, Forrest, Haley, Jill, Julian, Paige, and Patrick for kindly sharing their thoughts and brilliant ideas and Amber and Ryan for giving wonderful feedback!
+
+
+
+
