@@ -2469,7 +2469,7 @@ The linearity assumption can be checked by inspecting the Residuals vs Fitted pl
 
 This plot displays the predicted values of the outcome variable on the horizontal axis, and the residuals (i.e., the difference between the observed and predicted values of the outcome variable) on the vertical axis. Ideally, the residual plot will show no fitted pattern. That is, the red line should be approximately horizontal at zero, which suggests that the expected (mean) value of the disturbance term is 0. The presence of a pattern may indicate a problem with some aspect of the linear model.
 
-As you can observe in the first plot, the red line shows that there is a nonlinear relationship existing between one of our explainable variables and the outcome variable.
+As you can observe in the first plot, the red line shows that there is a nonlinear relationship existing between one of our explanatory variables and the outcome variable.
 
 What if we run the model without violating the linearity assumption (which means we set up our model in a better way to capture the relationship between $x_1$ and $y$) ?
 
