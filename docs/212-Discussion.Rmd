@@ -2383,17 +2383,17 @@ In other words, under certain conditions, the ordinary least squares (OLS) estim
 
 3.  Homoskedasticity: constant error variance across values of $X_i$ (i.e., $Var(\varepsilon)=\sigma^2$).
 
-    One instance where heteroskedasticity is often violated is cross-sectional studies (Berry, 1993: 73). For example, because more developed countries can have better data accuracy, measurement error could be correlated with the level of development. Thus, in a study that includes the level of development as one of the independent variables, the variance of error term may not be constant (Berry, 1993: 73). In such circumstances, Fox (2016) suggests that we can run weighted-least-squares (WLS) regression to overcome such probelm (304). Other solutions include transformation of the dependent variable and correction of coefficient standard errors (e.g. robust standard errors and clustered standard errors) for heteroskedasticity (Fox, 2016: 307).
+    One instance where homoskedasticity is often violated is cross-sectional studies (Berry, 1993: 73). For example, because more developed countries can have better data accuracy, measurement error could be correlated with the level of development. Thus, in a study that includes the level of development as one of the independent variables, the variance of error term may not be constant (Berry, 1993: 73). In such circumstances, Fox (2016) suggests that we can run weighted-least-squares (WLS) regression to overcome such probelm (304). Other solutions include transformation of the dependent variable and correction of coefficient standard errors (e.g. robust standard errors and clustered standard errors) for heteroskedasticity (Fox, 2016: 307).
 
 4.  Independence: the observations are sampled independently. no autocorrelation between disturbances (i.e., $cov(u_i, u_j)=0$ for $i \neq j$).
 
-    The independence assumption is important for time-series analysis, where the assumption of spherical errors is often violated. To overcome this, Beck & Katz (1995) propose panel-correlated standard errors to when analyzing time-series data.
+    The independence assumption is important for time-series analysis, where the assumption of spherical errors is often violated. To overcome this, Beck & Katz (1995) propose to use panel-correlated standard errors when analyzing time-series data.
 
 5.  Normality: errors are distributed normally (i.e.,$\varepsilon \sim N(0, \sigma^2)$).
 
 Assumptions of 1 and 2 are related to the bias of the estimator, whereas assumptions of 3 and 4 are related to the efficiency of the estimator: when the assumption of 1 or 2 is violated, the OLS estimator is no longer unbiased; when the assumption of 3 or 4 is violated, the OLS estimator is no longer efficient. With these weak set of assumptions (1-4), according to the Gauss-Markov theorem, the OLS estimator is BLUE.
 
-    -- In statistics, efficiency is a measure of the quality of an estimator, which can be characterized by having a smaller possible variance.
+- In statistics, efficiency is a measure of the quality of an estimator, which can be characterized by having a smaller possible variance.
 
 With the fifth assumption, normality, the OLS estimator is the most efficient among all the unbiased estimators, not just linear estimators. Adding this fifth assumption makes the Gauss-Markov theorem a strong set. This last assumption is important when we aim to make a causal inference using the OLS estimator. With the normal distribution of the errors assumption, we can also infer that the OLS estimators also have normal sampling distributions. As a result, it allows us to apply statistical tests such as t-tests even for small sample size studies.
 
@@ -2422,7 +2422,7 @@ y <- 7 + 3*x1 + 2*x1^2 + 3*x2 + e # set the true y
 df <- data.frame(y = y, x1 = x1, x2 = x2, e = e)
 ```
 
-In the above chunk, I specify the true $y$ to be a function of $x1$, $x2$, and $e$. The true values of the regression coefficients are 3 for $x1$ and 3 for $x2$. The term $2*x1^2$ represents a quadratic effect of $x1$. The intercept is 7. Let's first plot the true relationship between $x1$ and $y$!
+In the above chunk, I specify the true $y$ to be a function of $x_1$, $x_2$, and $e$. The true values of the regression coefficients are 3 for $x_1$ and 3 for $x_2$. The term $2*x_1^2$ represents a quadratic effect of $x_1$. The intercept is 7. Let's first plot the true relationship between $x_1$ and $y$!
 
 ```{r, message=F, fig.align='center', fig.width=5, fig.height=4}
 library(tidyverse)
@@ -2432,9 +2432,9 @@ ggplot(data = df, aes(y = y, x = x1)) +
   theme_bw()
 ```
 
-As you can see in the above figure, in the true model we set up, the effect of $x1$ on $y$ is in a quadratic form (concave): when $x1$ increases by more units, the effect of $x1$ on $y$ becomes greater!
+As you can see in the above figure, in the true model we set up, the effect of $x_1$ on $y$ is in a quadratic form (concave): when $x_1$ increases by more units, the effect of $x_1$ on $y$ becomes greater!
 
-Now, let's run a model that violates the linearity assumption (i.e., when regressing $x1$ on $y$, do not include the quadratic term `I(x1^2)` inside the `lm` function).
+Now, let's run a model that violates the linearity assumption (i.e., when regressing $x_1$ on $y$, do not include the quadratic term `I(x_1^2)` inside the `lm` function).
 
 ```{r, message=F, warning=F}
 fit <- lm(y ~ x1 + x2, data = df) 
@@ -2446,7 +2446,7 @@ sjPlot::tab_model(fit, string.pred = "Variables",
                   file = "output.html")
 ```
 
-As you can see from the above regression table, the estimated value of constant/intercept (-170.54) is very far from what we have set in the true model (7). The coefficient of $x1$ is also very biased (we set it to be 3 in our true model). Let's add this estimated regression line onto our scatterplot of $x1$ and $y$. 
+As you can see from the above regression table, the estimated value of constant/intercept (-170.54) is very far from what we have set in the true model (7). The coefficient of $x_1$ is also very biased (we set it to be 3 in our true model). Let's add this estimated regression line onto our scatterplot of $x_1$ and $y$. 
 
 ```{r, message=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
 ggplot(data = df, aes(y = y, x = x1)) +
@@ -2456,7 +2456,7 @@ ggplot(data = df, aes(y = y, x = x1)) +
   theme_bw()
 ```
 
-You can see that our estimated regression line is very different from the lowess line. Our model did not capture the nonlinear relationship between $x1$ and $y$.
+You can see that our estimated regression line is very different from the lowess line. Our model did not capture the nonlinear relationship between $x_1$ and $y$.
 
 Now, assess this nonlinearity by plotting residuals vs fitted values.
 
@@ -2464,13 +2464,14 @@ Now, assess this nonlinearity by plotting residuals vs fitted values.
 par(mfrow = c(2, 2))
 plot(fit)
 ```
+
 The linearity assumption can be checked by inspecting the Residuals vs Fitted plot (first plot).
 
 This plot displays the predicted values of the outcome variable on the horizontal axis, and the residuals (i.e., the difference between the observed and predicted values of the outcome variable) on the vertical axis. Ideally, the residual plot will show no fitted pattern. That is, the red line should be approximately horizontal at zero, which suggests that the expected (mean) value of the disturbance term is 0. The presence of a pattern may indicate a problem with some aspect of the linear model.
 
 As you can observe in the first plot, the red line shows that there is a nonlinear relationship existing between one of our explainable variables and the outcome variable.
 
-What if we run the model without violating the linearity assumption (which means we set up our model in a better way to capture the relationship between $x1$ and $y$) ?
+What if we run the model without violating the linearity assumption (which means we set up our model in a better way to capture the relationship between $x_1$ and $y$) ?
 
 ```{r, message=F, warning=F}
 fit2 <- lm(y ~ x1 + I(x1^2) + x2, data = df) 
@@ -2506,7 +2507,7 @@ y <- 7 + 3*x1 + x2 + e # set the true y
 df <- data.frame(y = y, x1 = x1, x2 = x2, e = e)
 ```
 
-In the above chunk, I set the error variance to be more pronounce: as $x1$ gets larger, the error variance gets larger by multiplying $x1$. You can see this relationship in the below figure.
+In the above chunk, I set the error variance to be more pronounce: as $x_1$ gets larger, the error variance gets larger by multiplying $x_1$. You can see this relationship in the below figure.
 
 ```{r, message=F, warning=F, fig.align='center', fig.width=5, fig.height=4}
 ggplot(data = df, aes(x = x1, y = e)) +
@@ -2526,7 +2527,7 @@ sjPlot::tab_model(fit3, string.pred = "Variables",
                   file = "output.html")
 ```
 
-According to the regression table, you can see that the standard error of $x2$ is very large, which is due to the heteroskedasticity problem in our data. The estimate of the effect of $x2$, therefore, is very inefficient.
+According to the regression table, you can see that the standard error of $x_2$ is very large, which is due to the heteroskedasticity problem in our data. The estimate of the effect of $x_2$, therefore, is very inefficient.
 
 
 ```{r, message=F, warning=F, fig.align='center', fig.width=8, fig.height=7}
