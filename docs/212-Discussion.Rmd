@@ -2441,7 +2441,8 @@ fit <- lm(y ~ x1 + x2, data = df)
 ```
 
 ```{r, message=FALSE, echo=FALSE}
-sjPlot::tab_model(fit, string.pred = "Variables", show.se = TRUE, 
+sjPlot::tab_model(fit, string.pred = "Variables", show.se = TRUE,
+                  string.se = "S.E.",
                   string.ci = "C.I. (95%)", p.style = "stars", 
                   file = "output.html")
 ```
@@ -2478,7 +2479,7 @@ fit2 <- lm(y ~ x1 + I(x1^2) + x2, data = df)
 ```
 
 ```{r, message=FALSE, echo=FALSE}
-sjPlot::tab_model(fit, fit2, string.pred = "Variables", show.se = TRUE,
+sjPlot::tab_model(fit, fit2, string.pred = "Variables", show.se = TRUE, string.se = "S.E.",
                   string.ci = "C.I. (95%)", p.style = "stars", 
                   file = "output.html")
 ```
@@ -2523,6 +2524,7 @@ fit3 <- lm(y ~ x1 + x2, data = df)
 
 ```{r, message=FALSE, echo=FALSE}
 sjPlot::tab_model(fit3, string.pred = "Variables", show.se = TRUE,
+                  string.se = "S.E.",
                   string.ci = "C.I. (95%)", p.style = "stars", 
                   file = "output.html")
 ```
@@ -2561,6 +2563,7 @@ fit4 <- lm(y ~ x1 + x2, data = df)
 
 ```{r, message=FALSE, echo=FALSE}
 sjPlot::tab_model(fit4, string.pred = "Variables", show.se = TRUE,
+                  string.se = "S.E.",
                   string.ci = "C.I. (95%)", p.style = "stars", 
                   file = "output.html")
 ```
@@ -2638,7 +2641,7 @@ mod4 <- lm(score ~ STR + english + english_hc2 , data = CASchools) # with less h
 ```
 
 ```{r, message=FALSE, echo=FALSE}
-sjPlot::tab_model(mod1, mod2, mod3, mod4, show.se = TRUE,
+sjPlot::tab_model(mod1, mod2, mod3, mod4, show.se = TRUE, string.se = "S.E.",
                   dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4"),
                   string.pred = "Variables", string.ci = "C.I. (95%)", p.style = "stars", file = "output.html")
 ```
