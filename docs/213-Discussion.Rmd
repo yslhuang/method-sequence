@@ -1,0 +1,128 @@
+---
+title: "213-Discussion"
+author: "Yu-Shiuan (Lily) Huang"
+date: "Spring 2024"
+output:
+  html_document: 
+    theme: paper
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      tidy.opts=list(width.cutoff = 80),
+                      tidy = FALSE)
+options(width = 80)
+
+htmltools::tagList(
+  xaringanExtra::use_clipboard(
+    button_text = "<i class=\"fa fa-clipboard\" style=\"color: #4D5656\" ></i>",
+    success_text = "<i class=\"fa fa-check\" style=\"color: #4D5656\"></i>",
+    error_text = "<i class=\"fa fa-times-circle\" style=\"color: #4D5656\"></i>"
+  ),
+  rmarkdown::html_dependency_font_awesome()
+)
+```
+
+```{css, echo=FALSE}
+pre {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 200px;
+}
+```
+
+```{css, echo=FALSE}
+.scroll-100 {
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: inherit;
+}
+```
+
+#  {.tabset .tabset-fade .tabset-fill}
+
+## Discussion I
+
+For today's discussion, we will review the distinction between parametric and nonparametric regression models, as well as some key properties of simple linear regression. If you wish to review materials from POL 211 & 212, you can access them through the following links: [POL 211 Discussion](https://yslhuang.github.io/method-sequence/211-Discussion.html), [POL 212 Discussion](https://yslhuang.github.io/method-sequence/212-Discussion.html).
+
+1. Parametric versus nonparametric Regression Models
+2. Simple Linear Regression
+3. Properties of Least Squares Estimator
+
+### 1. Parametric versus nonparametric Regression Models
+
+When it comes to regression analysis, choosing the right approach is crucial for accurate predictions and meaningful insights. Two common methods used are parametric, like linear regression, and semi/non-parametric, like smoothing spline regression or Kernal regression. Each has its own advantages and disadvantages, and the choice between them largely depends on the nature of the data and the underlying relationships.
+
+#### a. What is parametric and semi/nonparametric regression?
+
+**Parametric Regression** Linear regression is a well-known parametric method that assumes a linear functional form for the relationship between the predictors ($X$) and the target variable ($Y$). This approach has several benefits, such as ease of estimation with a small number of coefficients. In linear regression, these coefficients have straightforward interpretations, and statistical significance tests are readily applicable. However, parametric methods come with a significant limitation — they rely on the assumption that the specified functional form is a close approximation to the true relationship. If this assumption is far from reality, linear regression can perform poorly and yield unreliable results.
+
+**Nonparametric Regression** On the other hand, non-parametric methods like K-Nearest Neighbors (KNN) regression do not make explicit assumptions about the functional form of the relationship between $X$ and $Y$. Instead, they provide a more flexible approach for regression. KNN regression identifies the K training observations closest to a prediction point and estimates the target variable by averaging their values. While this approach is more versatile and can handle complex relationships, it can suffer from high variance when K is small, leading to overfitting. Conversely, when K is large, KNN regression can underfit the data.
+
+##### Example
+
+Assume that we have a outcome variable $Y$ and two explanatory variables, $x_1$ and $x_2$. In general, the regression model that describes the relationship can be written as:
+
+$$Y = f_1(x_1) + f_2(x_2) + \epsilon$$
+
+- Some parametric regression models:
+
+    - Multiple linear regression model: $Y = \beta_0 + \beta_1x_1 + \beta_2x_2 + \epsilon$
+    - Polynomial regression model of second order: $Y = \beta_0 + \beta_{10}x_1 + \beta_{11}{x_1}^2 + \beta_{20}x_2 + \beta_{21}{x_2}^2 + \epsilon$
+    - Nonlinear regression model: $Y = \beta_0 + \beta_1x_1 + \beta_2e^{\beta_3x_2} + \epsilon$
+    - Poisson regression with $Y$ is count: $log(\mu) = \beta_0 + \beta_1x_1 + \beta_2x_2 + \epsilon$
+
+- If we do not know $f_1$ and $f_2$ functions, we need to use a Nonparametric regression model.
+
+#### b. Nonparametric regression estimation methods
+
+1. K-Nearest Neighbors (KNN) regression
+
+K-Nearest Neighbors (KNN) regression is one of the simplest and best-known nonparametric methods.
+
+Given a value for K and a prediction point x0, KNN regression first identifies the K training observations that are closest to x0, represented by N0. It then estimates f(x0) using the average of all the training responses in N0. In other words,
+
+2. Local Regression
+
+
+
+
+
+#### c. When should we use parametric or nonparametric regression?
+
+The key question is when to choose a parametric approach like linear regression over a non-parametric one such as KNN regression. The answer is straightforward: a parametric approach performs better when the chosen functional form is a close match to the true relationship, particularly in the presence of a linear relationship. If the specified functional form is far from the truth, and
+prediction accuracy is our goal, then the parametric method will perform
+poorly. For instance, if we assume a linear relationship between X and Y
+but the true relationship is far from linear, then the resulting model will
+provide a poor fit to the data, and any conclusions drawn from it will be
+suspect.
+
+In contrast, non-parametric methods do not explicitly assume a parametric
+form for $f(X)$, and thereby provide an alternative and more flexible
+approach for performing regression.
+
+To illustrate this point, let’s consider a few scenarios:
+
+1. **Linear Relationship**: When the true relationship between $X$ and $Y$ is linear, linear regression outperforms nonparametric regression. Linear regression provides an almost perfect fit in this situation, as it closely matches the underlying relationship.
+
+##### KNN Regression
+
+##### Local Regression
+
+
+
+## Discussion II
+
+TBD
+
+## Discussion III
+
+TBD
+
+## Discussion IV
+
+TBD
