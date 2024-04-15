@@ -78,43 +78,669 @@ $$Y = f_1(x_1) + f_2(x_2) + \epsilon$$
 
 - If we do not know $f_1$ and $f_2$ functions, we need to use a Nonparametric regression model.
 
-#### b. Nonparametric regression estimation methods
+#### b. Nonparametric regression estimation methods: K-Nearest Neighbors (KNN) regression
 
-1. K-Nearest Neighbors (KNN) regression
+K-Nearest Neighbors (KNN) regression is one of the simplest and best-known nonparametric methods. Given a value for $K$ and a prediction point $x_0$, KNN regression first identifies the $K$ training observations that are closest to $x_0$, represented by $N_0$. It then estimates $f(x_0)$ using the average of all the training responses in $N_0$. In other words,
 
-K-Nearest Neighbors (KNN) regression is one of the simplest and best-known nonparametric methods.
+$$\hat{f}(x_0)=\frac{1}{K}\sum_{x_i \in N_0}y_i$$
 
-Given a value for K and a prediction point x0, KNN regression first identifies the K training observations that are closest to x0, represented by N0. It then estimates f(x0) using the average of all the training responses in N0. In other words,
+<center>
+![](https://miro.medium.com/v2/resize:fit:1400/format:webp/1*joeNdWj6_H3rhAtZ5FXy1w.png){width=50%}
+</center>
+    
+When using KNN as a regressor with a continuous dependent variable, data points are scattered across the coordinate plane. When a new data point is introduced, the number of neighbors ($K$) is determined using any of the distance metrics.Usually, the **Euclidean distance** is used as the distance metric. Once the neighbors are identified, the predicted value of the new data point is calculated as the average of all the neighbors' values combined.
 
-2. Local Regression
+<center>
+![](https://miro.medium.com/v2/resize:fit:1400/format:webp/1*_i1PCxvSDw5TIfzyq90aag.png
+){width=50%}
+</center>
 
+The below figure illustrates two KNN fits on a data set with $p = 2$ predictors. The fit with $K = 1$ is shown in the left-hand panel, while the right-hand panel corresponds to $K = 9$.We see that when $K = 1$, the KNN fit perfectly interpolates the training observations, and consequently takes the form of a step function. When $K = 9$, the KNN fit still is a step function, but averaging over nine observations results in much smaller regions of constant prediction, and consequently a smoother fit. In general, the optimal value for $K$ will depend on the *bias-variance tradeoff*, which Chris introduced in POL 212. A small value for $K$ provides the most flexible fit, which will have low bias but high variance. This variance is due to the fact that the prediction in a given region is entirely dependent on just one observation. In contrast, larger values of $K$ provide a smoother and less variable fit; the prediction in a region is an average of several points, and so changing one observation has a smaller effect. However, the smoothing may cause bias by masking some of the structure in $f(X)$.
 
+<center>
+![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/knn.png){width=60%}
+</center>
 
+The bias-variance tradeoff is a fundamental concept in machine learning that deals with the balance between the bias (error from overly simplistic assumptions) and variance (sensitivity to fluctuations in the training data) of a model. In the context of KNN (K-Nearest Neighbors), adjusting the value of K can help control this tradeoff.
+
+- Low $K$ (e.g., $K=1$): Low bias, high variance. The model closely follows the training data, leading to high variance and sensitivity to noise. It can capture complex patterns but may overfit the training data.
+
+- High $K$ (e.g., large $K$): High bias, low variance. The model averages over more data points, resulting in smoother predictions with lower variance but potentially higher bias. It may underfit the data by oversimplifying the underlying patterns.
+
+Choosing an appropriate value for $K$ involves finding a balance between bias and variance to achieve optimal model performance. This tradeoff influences the model's ability to generalize to **unseen data**.
+
+<center>
+![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/bias_variance.png){width=50%}
+</center>
+
+There are no pre-defined statistical methods to find the most favorable value of $K$, but here is a typical way of how to choose an optimal $K$:
+
+1. Initialize a random $K$ value and start computing.
+2. Choosing a small value of $K$ leads to unstable decision boundaries.
+3. The substantial $K$ value is better for classification as it leads to smoothening the decision boundaries.
+4. Derive a plot between error rate and $K$ denoting values in a defined range. Then choose the $K$ value as having a minimum error rate.
 
 
 #### c. When should we use parametric or nonparametric regression?
 
-The key question is when to choose a parametric approach like linear regression over a non-parametric one such as KNN regression. The answer is straightforward: a parametric approach performs better when the chosen functional form is a close match to the true relationship, particularly in the presence of a linear relationship. If the specified functional form is far from the truth, and
-prediction accuracy is our goal, then the parametric method will perform
-poorly. For instance, if we assume a linear relationship between X and Y
-but the true relationship is far from linear, then the resulting model will
-provide a poor fit to the data, and any conclusions drawn from it will be
-suspect.
+The key question is when to choose a parametric approach like linear regression over a non-parametric one such as KNN regression. The answer is straightforward: a parametric approach performs better when the chosen functional form is a close match to the true relationship, particularly in the presence of a linear relationship. If the specified functional form is far from the truth, and prediction accuracy is our goal, then the parametric method will perform poorly. For instance, if we assume a linear relationship between $X$ and $Y$ but the true relationship is far from linear, then the resulting model will provide a poor fit to the data, and any conclusions drawn from it will be suspect.
 
-In contrast, non-parametric methods do not explicitly assume a parametric
-form for $f(X)$, and thereby provide an alternative and more flexible
-approach for performing regression.
+In contrast, non-parametric methods do not explicitly assume a parametric form for $f(X)$, and thereby provide an alternative and more flexible approach for performing regression.
 
-To illustrate this point, let’s consider a few scenarios:
+To illustrate this point, let’s consider a few scenarios and use R to simulate them:
 
 1. **Linear Relationship**: When the true relationship between $X$ and $Y$ is linear, linear regression outperforms nonparametric regression. Linear regression provides an almost perfect fit in this situation, as it closely matches the underlying relationship.
 
-##### KNN Regression
+    ```{r, message=F}
+set.seed(1234) # for replication
+N <- 1000 # set up the sample size
+x1 <- rnorm(N, mean = 10, sd = 3)
+e <- rnorm(N, mean = 0, sd = 3) # set the errors to be normally distributed 
+y <- 7 + 3*x1 + e # set the true y
+df <- data.frame(id = 1:N, y = y, x1 = x1, e = e)
+    ```
 
-##### Local Regression
+    In the above chunk, I specify the true $y$ to be a function of $x_1$ and $e$. The true values of the regression coefficients is 3 for $x_1$. The intercept is 7. Let's first plot the true relationship between $x_1$ and $y$!
+
+    ```{r, message=F, fig.align='center', fig.width=5, fig.height=4}
+library(tidyverse)
+ggplot(data = df, aes(y = y, x = x1)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth() +
+  theme_bw()
+    ```
+
+    Let's begin by splitting the generated data into a training set, comprising 80% of the data, and a test set, comprising the remaining 20%.
+
+    ```{r, message=F}
+set.seed(1234) # set the seed to make the partition reproducible
+train <- df %>% sample_frac(0.8) # should have 800 obs
+test <- anti_join(df, train, by = 'id') # should have 200 obs
+    ```
+
+    Now, let's first apply the `lm()` function to our training set. We'll then use the coefficients estimated from this model to predict the y-values in the test set, followed by computing the mean squared error (MSE).
+
+    ```{r, message=F}
+fit <- lm(y ~ x1, data = train)
+    ```
+
+    ```{r, message=FALSE, echo=FALSE}
+sjPlot::tab_model(fit, show.se = TRUE, string.se = "S.E.",
+                  dv.labels = c("OLS"), string.pred = "Variables", 
+                  string.ci = "C.I. (95%)", p.style = "stars", 
+                  file = "output.html")
+    ```
+
+    ```{r, message=F}
+test$y_hat <- predict(fit, newdata = data.frame(x1 = test$x1))
+
+# compute mean squared error (MSE)
+MSE_ols <- sum((test$y - test$y_hat)^2)/nrow(test)
+
+MSE_ols
+    ```
+
+    The mean squared error (MSE) obtained by using OLS regression to estimate the relationship between $y$ and $x_1$ in the training set and then using the estimated coefficients to predict $y$ in the test set is 8.770813. Now, let's proceed to use KNN regression with various values of $K$ to observe how the MSE varies. 
+
+    We will use the `knn.reg()` function from the `FNN` package for KNN regression. This function requires four arguments to be specified:
+
+    - `train`: the predictors of the training data
+    - `test`: the predictor values, $x$, at which we would like to make predictions
+    - `y`: the response for the training data
+    - `k`: the number of neighbors to consider
+
+    ```{r, message=F, warning=F, error=F}
+# install.packages("FNN")
+library(FNN)
+train_no_y <- train %>% select(x1) 
+test_no_y <- test %>% select(x1) 
+train_y <- train %>% select(y) 
+
+yhat_k1 <- knn.reg(train = train_no_y, test = test_no_y, y = train_y, k = 1)
+yhat_k1
+    ```
+
+    As observed from the above results, when setting $K = 1$ in `knn.reg()`, it provides the predicted $y$ values for the test set. Now, let's calculate the MSE for this prediction.
+
+    ```{r, message=F}
+MSE_k1 <- sum((test$y - yhat_k1$pred)^2)/nrow(test)
+MSE_k1
+    ```
+
+    As you can see, the MSE when employing KNN regression with $K = 1$ is significantly higher than the MSE observed with OLS regression. Let's create a for loop and repeat this process for various values of $K$ to determine whether the MSE improves or worsens compared to the MSE when using OLS.
+
+    ```{r, message=F, warning=F, error=F}
+MSE_KNN <- c()
+
+for (i in seq(1, 100, by = 2)){
+  yhat_k <- knn.reg(train = train_no_y, test = test_no_y, y = train_y, k = i)
+  MSE_k <- sum((test$y - yhat_k$pred)^2)/nrow(test)
+  MSE_KNN <- c(MSE_KNN, MSE_k)
+}
+
+MSE_KNN
+    ```
+
+    ```{r, message=F, fig.align='center', fig.width=5, fig.height=4}
+ggplot(data = data.frame(K = seq(1, 100, by = 2), MSE = MSE_KNN), 
+       aes(y = MSE, x = K)) +
+  geom_line(alpha = 0.4, color = "darkgreen") +
+  geom_point(alpha = 0.3, color = "darkgreen") +
+  geom_hline(yintercept = MSE_ols, color = "darkgray", 
+             alpha = 0.8, linetype = "dashed") +
+  annotate("text", x = 90, y = 18, label = "KNN", color = "darkgreen", alpha = 0.5) +
+  annotate("text", x = 90, y = 17, label = "OLS", color = "darkgray") +
+  theme_bw()
+    ```
+
+    After simulation, it's evident that when the true relationship between the variables of interest is linear, KNN regression doesn't offer superior predictions compared to OLS regression.
+
+2. **Slight Non-Linearity**: In cases of slight non-linearity, where the true relationship deviates slightly from linearity, KNN regression can perform nearly as well as linear regression. It still provides reasonable results without a substantial reduction in prediction accuracy.
+
+3. **Strong Non-Linearity**: However, in situations with a strong non-linear relationship, KNN regression outperforms linear regression. This is because KNN can adapt to complex relationships, providing more accurate predictions.
+
+    ```{r, message=F}
+set.seed(1234) # for replication
+N <- 1000 # set up the sample size
+x1 <- rnorm(N, mean = 1, sd = 10)
+e <- rnorm(N, mean = 3, sd = 10) # set the errors to be normally distributed 
+y <- 3 + 4*(x1+3)^2*(x1-1)^3 + e # set the true y
+df <- data.frame(id = 1:N, y = y, x1 = x1, e = e)
+    ```
+
+    For example, let's now generate a relationship between $x_1$ and $y$ that is strongly non-linear. I specify the true $y$ to be a function of $x_1$ and $e$. Overall, the formula, $y = 3+4(x_1+3)^2(x_1-1)^3+e$,  describes a relationship where $y$ is influenced by $x_1$ in a nonlinear way, with two distinct "bumps" or curves, along with some random variability represented by $e$. 
+
+    ```{r, message=F, fig.align='center', fig.width=5, fig.height=4}
+library(tidyverse)
+ggplot(data = df, aes(y = y, x = x1)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth() +
+  theme_bw()
+    ```
+
+    Following our previous approach, let's now compare the MSE obtained from OLS regression, used to estimate the relationship between $y$ and $x_1$, with the MSE derived from KNN regression, employing different values of $K$.
+
+      - Step 1: Split the Sample in to Training and Test Set
+
+        ```{r, message=F}
+set.seed(1234) # set the seed to make the partition reproducible
+train <- df %>% sample_frac(0.8) # should have 800 obs
+test <- anti_join(df, train, by = 'id') # should have 200 obs
+fit2 <- lm(y ~ x1, data = train)
+        ```
+
+      - Step 2: Run OLS Regression and Compute the MSE
+    
+        ```{r, message=F}
+fit2 <- lm(y ~ x1, data = train)
+        ```
+    
+        ```{r, message=FALSE, echo=FALSE}
+sjPlot::tab_model(fit2, show.se = TRUE, string.se = "S.E.",
+                  dv.labels = c("OLS"), string.pred = "Variables", 
+                  string.ci = "C.I. (95%)", p.style = "stars", 
+                  file = "output.html")
+        ```
+
+        ```{r, message=F}
+test$y_hat <- predict(fit, newdata = data.frame(x1 = test$x1))
+MSE_ols <- sum((test$y - test$y_hat)^2)/nrow(test)
+
+MSE_ols
+        ```
+
+      - Step 3: Run KNN and Compute the MSE
+    
+        ```{r, message=F, warning=F, error=F}
+train_no_y <- train %>% select(x1) 
+test_no_y <- test %>% select(x1) 
+train_y <- train %>% select(y) 
+        ```
+
+        ```{r, message=F, warning=F, error=F}
+MSE_KNN <- c()
+
+for (i in seq(1, 100, by = 2)){
+  yhat_k <- knn.reg(train = train_no_y, test = test_no_y, y = train_y, k = i)
+  MSE_k <- sum((test$y - yhat_k$pred)^2)/nrow(test)
+  MSE_KNN <- c(MSE_KNN, MSE_k)
+}
+
+MSE_KNN
+        ```
+
+      - Step 4: Compare the MSE obtained from OLS and with that from KNN
+    
+        ```{r, message=F, fig.align='center', fig.width=5, fig.height=4}
+ggplot(data = data.frame(K = seq(1, 100, by = 2), MSE = MSE_KNN), 
+       aes(y = MSE, x = K)) +
+  geom_line(alpha = 0.4, color = "darkgreen") +
+  geom_point(alpha = 0.3, color = "darkgreen") +
+  geom_hline(yintercept = MSE_ols, color = "darkgray", 
+             alpha = 0.8, linetype = "dashed") +
+  annotate("text", x = 90, y = 4e+13, label = "KNN", color = "darkgreen", alpha = 0.5) +
+  annotate("text", x = 90, y = 3.7e+13, label = "OLS", color = "darkgray") +
+  theme_bw()
+        ```   
+
+        As observed, regardless of the choice of $K$ in our KNN regression, the MSE obtained from KNN is consistently much smaller than that from OLS.
+
+4. **Curse of Dimensionality**: When dealing with high-dimensional data (i.e., when you have a lot of predictors), KNN regression may suffer from the “curse of dimensionality.” In such cases, the performance of KNN deteriorates significantly as the dimensionality of the data increases. In the case of KNN regression, as the number of dimensions increases, the distance between data points becomes less meaningful. This is because in high-dimensional spaces, the concept of distance becomes less discriminating, as most data points are located far apart from each other. Consequently, KNN may struggle to find relevant neighbors, leading to poor predictive performance and increased computational complexity. On the other had, linear regression, with its fewer parameters, is less affected by this issue.
+
+    <center>
+    ![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/curse_dimensionality.png){width=60%}
+    </center>
+
+    Even in problems in which the dimension is small, we might prefer linear regression to KNN from an interpretability standpoint. If the test MSE of KNN is only slightly lower than that of linear regression, we might be willing to forego a little bit of prediction accuracy for the sake of a simple model that can be described in terms of just a few coefficients, and for which p-values are available.
+
+### 2. Simple Linear Regression
+
+Below is a population regression line equation, assuming that we are the god and know the data-generating process of the relationship between $X$ (independent/explanatory variable) and $Y$ (dependent/response/outcome variable).
+
+<center>![](https://miro.medium.com/max/1400/1*tZaCUZ2YuhIQfQmm5ltPEw.webp){width="60%"}</center>
+
+However, since we usually don't have the population data but only have access to a sample of it, we can only use the sample dataset to estimate the population regression line. In the below figure, $b_0$ is the estimate of the regression intercept $\beta_0$, while $b_1$ is the estimate of the regression coefficient/slope $\beta_1$.
+
+<center>![](https://miro.medium.com/v2/format:webp/1*csk8XTXy0j__hm_kbkwxCw.jpeg){width="60%"} </center>
+
+The Ordinary Least Squares (OLS) approach aims to fit a line that minimizes the sum of the squared residuals, which means that the goal is to find a pair of $b_0$ and $b_1$ that can minimize the difference between our observed $Y_i$ and estimated $\hat{Y_i}$.
+
+$$S(A, B) = min \Sigma E_i = min \Sigma (Y_i-\hat{Y_i})^2=min \Sigma (Y_i-(A+BX_i))^2$$
+
+$$S(A, B) = \Sigma (Y_i-A-BX_i)^2$$
 
 
+To find a pair of $b_0$ and $b_1$ that can minimize the difference between our observed $Y_i$ and estimated $\hat{Y_i}$ is an *optimization problem*. All we have to do is to take the partial derivatives of the above equation with respect to $b_0$ and $b_1$, respectively, set them equal to zero, and then solve it.
 
+
+$$\frac{\partial S(A, B)}{\partial A}=\Sigma (-1)(2)(Y_i-A-BX_i)=0$$
+
+$$\frac{\partial S(A, B)}{\partial B}=\Sigma (-X_i)(2)(Y_i-A-BX_i)=0$$
+
+By solving the above two equations, you will get:
+
+$$A = \bar{Y}-B\bar{X}$$
+
+$$B = \frac{\Sigma (X_i-\bar{X})(Y_i-\bar{Y})}{\Sigma (X_i-\bar{X})^2}$$
+
+#### a. Gauss-Markov Theorem
+
+Gauss Markov theorem states that "if the errors are independently distributed with zero expectation and constant variance, then the least-squares estimator **b** is the most efficient linear unbiased estimator of $\beta$. That is, of all unbiased estimators that are linear functions of the observations, the least-squares estimator has the smallest sampling variance and, hence, the smallest mean-squared error. For this reason, the least-squares estimator is sometimes termed BLUE, an acronym for best linear unbiased estimator" (Fox 2016: 212).
+
+In other words, under certain conditions, the ordinary least squares (OLS) estimates are thought to be the **best linear unbiased estimator (BLUE)**. Here, I review a set of assumptions (known as Gauss-Markov assumptions) that leads to a BLUE estimator.
+
+1. Linearity: the expected (mean) value of the disturbance term is 0 (i.e., $E(u_i)=0$).
+
+    Fox (2016) explains that a violation of this assumption implies "that the model fails to capture the systematic pattern of relationship between the response and explanatory variables" (307). This assumption could be broken in two ways: one, the mean of error could be a constant across all values of $X_i$, two, it could vary. In the former case, the intercept term will be consistently off by the error amount. A uniform measurement error across all observations would be a cause of such an error (Berry 1993: 42). A common cause of the latter case will be **omitted variable bias**. Omitted variable bias deserves particular attention because it can cause the OLS estimate to be both biased and inconsistent. Another common cause is the wrong functional form (e.g., specifying a linear relation instead of a quadratic relation). Thus, when nonlinearity is detected, we should explore not only variable transformations and different model specifications (Fox, 2016: 317), but also the possibility of omitted variables. In short, before running OLS, reseachers should make sure that the inclusion of relevant variables in the model and the setting of the function are resonable and are based on the theoretical understanding.
+
+2. Nonstochastic regressors: $X$ values are independent of the error term (i.e., $cov(X_i, u_i)=0$).
+
+    The violation of this assumption suggests that there is an **endogeneity** problem between the explanatory and outcome variables, which can arise from measurement error on $X$, omitted confounders, or reciprocal causation between $X$ and $Y$. Again, if the main goal of the research is to provide an unbiased and consistent estimator to explain how a social phenomenon works in a real-life setting, to provide a convincing explanation requires us to make sure that the effect of our explanatory variable is actually exogenous.Fortunately, scholars have developed many methods to address this issue. For example, researchers could employ an instrumental variable or matching to improve the unbiasedness of the estimated effect.
+
+3. Homoskedasticity: constant error variance across values of $X_i$ (i.e., $Var(\varepsilon)=\sigma^2$).
+
+    One instance where heteroskedasticity is often violated is cross-sectional studies (Berry, 1993: 73). For example, because more developed countries can have better data accuracy, measurement error could be correlated with the level of development. Thus, in a study that includes the level of development as one of the independent variables, the variance of error term may not be constant (Berry, 1993: 73). In such circumstances, Fox (2016) suggests that we can run weighted-least-squares (WLS) regression to overcome such probelm (304). Other solutions include transformation of the dependent variable and correction of coefficient standard errors (e.g. robust standard errors and clustered standard errors) for heteroskedasticity (Fox, 2016: 307).
+
+4. Independence: the observations are sampled independently. no autocorrelation between disturbances (i.e., $cov(u_i, u_j)=0$ for $i \neq j$).
+
+    The independence assumption is important for time-series analysis, where the assumption of spherical errors is often violated. To overcome this, Beck & Katz (1995) propose panel-correlated standard errors to when analyzing time-series data.
+
+5.  Normality: errors are distributed normally (i.e.,$\varepsilon \sim N(0, \sigma^2)$).
+
+Assumptions of 1 and 2 are related to the bias of the estimator, whereas assumptions of 3 and 4 are related to the efficiency of the estimator: when the assumption of 1 or 2 is violated, the OLS estimator is no longer unbiased; when the assumption of 3 or 4 is violated, the OLS estimator is no longer efficient. With these weak set of assumptions (1-4), according to the Gauss-Markov theorem, the OLS estimator is BLUE.
+
+(In statistics, efficiency is a measure of the quality of an estimator, which can be characterized by having a smaller possible variance.)
+
+With the fifth assumption, normality, the OLS estimator is the most efficient among all the unbiased estimators, not just linear estimators. Adding this fifth assumption makes the Gauss-Markov theorem a strong set. This last assumption is important when we aim to make a causal inference using the OLS estimator. With the normal distribution of the errors assumption, we can also infer that the OLS estimators also have normal sampling distributions. As a result, it allows us to apply statistical tests such as t-tests even for small sample size studies.
+
+One important caveat is that when there is perfect multicollinearity (i.e. when two or more independent variables are perfectly correlated), we cannot even get an estimate using the OLS method. However, even when there is high multicollinearity, the OLS estimate is still BLUE (Berry 1993: 27). In such cases, standard errors will be very high, making the estimates fluctuate considerably from sample to sample (Berry 1993: 27).
+
+The below table presents the consequences of the violation of Gauss-Markov assumptions and corresponded suggested solutions.
+
+| Assumption               | Violation                     | Solution                                      |
+|-------------------|----------------------|-------------------------------|
+| Linearity                | Biased/inconsistent estimates | Transformations, polynomials, different model |
+| Nonstochastic regressors | Biased/inconsistent estimates | Instrumental variables                        |
+| Homoskedasticity         | Biased standard errors        | Robust standard errors                        |
+| Independence             | Biased standard errors        | Fixed effects                                 |
+| Perfect collinearity     | cannot run OLS                | Omit one collinear term                       |
+
+#### b. Properties of Least Squares Estimator
+
+The sample least squares coefficients are unbiased estimators of the population regression coefficients.
+
+Here are some reviews before demonstrating the unbiasedness of the least-squares estimators $A$ and $B$ for $\alpha$ and $\beta$:
+
+- The assumed model: $Y_i=\alpha+\beta X_i+\varepsilon_i$
+- Linearity assumption: $E(\varepsilon_i)=0$
+- Normality assumption: $\varepsilon_i\sim N(0, \sigma_\varepsilon^2)$
+- Independence assumption: $Cov(\varepsilon_i, \varepsilon_j)=0,  for i\neq j$
+- The expectation of linear combination: $E(a+bY)=a+bE(Y)$
+- The variance of linear combination: 
+    - $Var(a+bY)=b^2Var(Y)$
+    - $Var(X+Y)=Var(X)+Var(Y)+2Cov(X, Y)$
+- For the below demonstration, the $X_i$ are assumed to be fixed, not random.
+    - $B=\frac{\Sigma(X_i-\bar{X})(Y_i-\bar{Y})}{\Sigma(X_i-\bar{X})^2}=\frac{\Sigma(X_i-\bar{X})Y_i-\Sigma(X_i-\bar{X})\bar{Y}}{\Sigma(X_i-\bar{X})^2}=\frac{\Sigma(X_i-\bar{X})Y_i-\bar{Y}\Sigma(X_i-\bar{X})}{\Sigma(X_i-\bar{X})^2}=\frac{\Sigma(X_i-\bar{X})Y_i}{\Sigma(X_i-\bar{X})^2}$
+    - $\Sigma(X_i-\bar{X})^2=\Sigma(X_i-\bar{X})(X_i-\bar{X})=\Sigma X_i(X_i-\bar{X})-\bar{X}\Sigma(X_i-\bar{X})=\Sigma X_i(X_i-\bar{X})$ 
+
+1. Demonstrate the unbiasedness of the least-squares estimators $B$ for $\beta$ in simple regression (i.e., $E(B) = \beta$).
+
+    $E(B)=\frac{\Sigma(X_i-\bar{X})(Y_i-\bar{Y})}{\Sigma(X_i-\bar{X})^2}$
+    
+    $=\frac{\Sigma(X_i-\bar{X})Y_i}{\Sigma(X_i-\bar{X})^2}$
+    
+    $=\frac{1}{\Sigma(X_i-\bar{X})^2}E(\Sigma(X_i-\bar{X})Y_i)$
+    
+    $=\frac{1}{\Sigma(X_i-\bar{X})^2}\Sigma(X_i-\bar{X})E(Y_i)$
+    
+    $=\frac{1}{\Sigma(X_i-\bar{X})^2}\Sigma(X_i-\bar{X})E(\alpha + \beta X_i+\varepsilon_i)$
+    
+    $=\frac{1}{\Sigma(X_i-\bar{X})^2}\Sigma(X_i-\bar{X})(\alpha +\beta X_i+E(\varepsilon_i))$
+    
+    $=\frac{1}{\Sigma(X_i-\bar{X})^2}\Sigma(X_i-\bar{X})(\alpha+\beta X_i)$
+    
+    $=\frac{1}{\Sigma(X_i-\bar{X})^2}(\Sigma(X_i-\bar{X})\alpha+\Sigma(X_i-\bar{X})\beta X_i)$
+    
+    $=\frac{\beta}{\Sigma(X_i-\bar{X})^2}(\Sigma(X_i-\bar{X})X_i)$
+    
+    $=\beta$
+
+2. Demonstrate the unbiasedness of the least-squares estimators $A$ for $\alpha$ in simple regression (i.e., $E(A) = \alpha$).
+
+    $E(A)=E(\bar{Y}-B\bar{X})$
+    
+    $=E(\frac{1}{n}\Sigma Y_i-\frac{\Sigma(X_i-\bar{X})(Y_i-\bar{Y})}{\Sigma(X_i-\bar{X})^2}\bar{X})$
+    
+    $=E(\frac{1}{n}\Sigma Y_i-\frac{\Sigma(X_i-\bar{X})Y_i}{\Sigma(X_i-\bar{X})^2}\bar{X})$
+    
+    $=E(\Sigma(\frac{1}{n}-\frac{\bar{X}(X_i-\bar{X})}{\Sigma(X_i-\bar{X})^2})Y_i)$
+    
+    $=E(\Sigma(\frac{1}{n}-\frac{\bar{X}(X_i-\bar{X})}{\Sigma(X_i-\bar{X})^2})(\alpha +\beta X_i +\varepsilon_i))$
+    
+    $=E(\Sigma(\frac{1}{n}-\frac{\bar{X}(X_i-\bar{X})}{\Sigma(X_i-\bar{X})^2}))E(\alpha +\beta X_i +\varepsilon_i)$
+    
+    $=E(\Sigma(\frac{1}{n}-\frac{\bar{X}(X_i-\bar{X})}{\Sigma(X_i-\bar{X})^2}))(\alpha+\beta X_i+E(\varepsilon_i))$
+    
+    $=\Sigma(\frac{1}{n}-\frac{\bar{X}(X_i-\bar{X})}{\Sigma(X_i-\bar{X})^2})(\alpha+\beta X_i)$
+    
+    $=\Sigma \frac{\alpha}{n}+\Sigma \beta \frac{X_i}{n}-\alpha \frac{\bar{X}\Sigma(X_i-\bar{X})}{\Sigma(X_i-\bar{X})^2}-\beta \frac{\bar{X}\Sigma(X_i-\bar{X})X_i}{\Sigma(X_i-\bar{X})^2}$
+    
+    $=\alpha + \beta \bar{X}-\alpha*0-\beta \bar{X}$
+    
+    $=\alpha$
+    
+3. Derive the sampling variances of $A$ in a simple regression.
+
+    $Var(B)=Var(\frac{\Sigma(X_i-\bar{X})Y_i}{\Sigma(X_i-\bar{X})^2})$
+    
+    $=\frac{1}{(\Sigma(X_i-\bar{X})^2)^2}Var(\Sigma(X_i-\bar{X})Y_i)$
+    
+    $=\frac{1}{(\Sigma(X_i-\bar{X})^2)^2}Var(\Sigma(X_i-\bar{X})(\alpha + \beta X_i+\varepsilon_i))$
+    
+    $=\frac{1}{(\Sigma(X_i-\bar{X})^2)^2}Var(\Sigma(X_i-\bar{X}(\alpha + \beta X_i)+\Sigma(X_i-\bar{X})\varepsilon_i)$
+    
+    $=\frac{1}{(\Sigma(X_i-\bar{X})^2)^2}Var(\Sigma(X_i-\bar{X})\varepsilon_i)=\frac{1}{(\Sigma(X_i-\bar{X})^2)^2}\Sigma Var((X_i-\bar{X})\varepsilon_i)$
+    
+    $=\frac{1}{(\Sigma(X_i-\bar{X})^2)^2}(\Sigma (X_i-\bar{X})^2 Var(\varepsilon_i))$
+    
+    $=\frac{1}{(\Sigma(X_i-\bar{X})^2)^2}(\Sigma (X_i-\bar{X})^2 \sigma_\varepsilon^2)$
+    
+    $=\frac{\sigma_\varepsilon^2}{\Sigma(X_i-\bar{X})^2}$
+
+4. Derive the sampling variances of $B$ in a simple regression.
+
+    $Var(A)=Var(\bar{Y}-B\bar{X})$
+    
+    $=Var(\bar{Y})+Var(B\bar{X})-2Cov(\bar{Y},B\bar{X})$
+    
+    $=Var(\bar{Y})+Var(B\bar{X})$
+    
+    $=Var(\frac{\Sigma Y_i}{n})+\bar{X}^2Var(B)$
+    
+    $=\frac{1}{n^2}Var(\Sigma Y_i)+\bar{X}^2Var(B)$
+    
+    $=\frac{1}{n^2}\Sigma Var(Y_i)+\bar{X}^2Var(B)$
+    
+    $=\frac{1}{n^2}\Sigma Var(\alpha+\beta X_i+\varepsilon_i)+\bar{X}^2Var(B)$
+    
+    $=\frac{1}{n^2}\Sigma Var(\varepsilon_i)+\bar{X}^2Var(B)$
+    
+    $=\frac{1}{n^2}n\sigma_\varepsilon^2+\bar{X}(\frac{\sigma_\varepsilon^2}{\Sigma(X_i-\bar{X})^2})$
+    
+    $=\sigma_\varepsilon^2(\frac{1}{n}+\frac{\bar{X}^2}{\Sigma(X_i-\bar{X})^2})$
+    
+    $=\sigma_\varepsilon^2(\frac{\Sigma(X_i-\bar{X})^2 +n\bar{X}^2}{n\Sigma(X_i-\bar{X})^2})$
+    
+    $=\sigma_\varepsilon^2(\frac{\Sigma X_i^2-2\bar{X}\Sigma X_i+\Sigma \bar{X}^2+n\bar{X}^2}{n\Sigma(X_i-\bar{X})^2})$
+    
+    $=\sigma_\varepsilon^2(\frac{\Sigma X_i^2-2\bar{X}\Sigma X_i+2n \bar{X}^2}{n\Sigma(X_i-\bar{X})^2})$
+    
+    $=\sigma_\varepsilon^2(\frac{\Sigma X_i^2-2\frac{\Sigma X_i}{n}\Sigma X_i+2n \bar{X}^2}{n\Sigma(X_i-\bar{X})^2})$
+    
+    $=\sigma_\varepsilon^2(\frac{\Sigma X_i^2-\frac{2\Sigma X_i^2}{n}+2n\frac{\Sigma X_i^2}{n^2}}{n\Sigma(X_i-\bar{X})^2})$
+    
+    $=\frac{\sigma_\varepsilon^2 \Sigma X_i^2}{n\Sigma(X_i-\bar{X})^2}$
+
+#### c. Confidence Interval & Hypothesis Testing
+
+As mentioned earlier, the fifth assumption, normality, allows us to apply statistical inference tests to assess the $\beta$s we estimate. Recall from the lecture that the residual standard error $S_E$ (how closely the regression line we estimate fits the scatter of our data points) is:
+
+$$\hat{\sigma } = SE(E_i) = \sqrt{\frac{\Sigma (E_i)^2}{n-2}} = \sqrt{\frac{\Sigma (Y_i-\hat{Y_i})^2}{n-2}}$$
+
+And the standard error of the sample intercept ($A$) and slope ($B$) are:
+
+$$SE(A) = \hat{\sigma }\sqrt{\frac{\Sigma X_i^2}{n\Sigma (X_i-\bar{X})^2}}$$
+
+$$SE(B) = \frac{\hat{\sigma }}{\sqrt{\Sigma (X_i-\bar{X})^2}}$$
+
+With standard errors, we can construct a $100(1-\alpha)%$ confidence interval for our slope and perform hypothesis testing.
+
+-   Confidence Interval
+
+    $\beta=B+t_{\frac{\alpha}{2}}SE(B)$
+
+-   Hypothesis Test
+
+    Two-tailed test (by defualt, `lm()`function conducts two-tailedtest)
+
+    $H_0: \beta = 0$
+
+    $H_1: \beta \neq 0$
+
+    $t=\frac{b_1-\beta_1}{SE(b_1)}=\frac{b_1-0}{SE(b_1)}$
+
+    Compare this t-statistic with $t_{\frac{\alpha}{2}, df=n-2}$ to see if it is larger or smaller than the critical value or not. If it is larger or smaller than the critical value, we can reject $H_0$ in favor of $H_1$. In addition to calculating t-statistics, we can also calculate p-value based the t-statistics and the critical values to perform hypothesis testing (p-value $= 2*Pr(t \geq |t_c|)$ vs $\alpha$).
+
+    One-tailed test (if your hypotheses are directional, you can also conduct one-tailed test)
+
+    $H_0: \beta = 0$
+
+    $H_1: \beta < or > 0$
+
+    $t=\frac{B-\beta_1}{SE(B)}=\frac{B-0}{SE(B)}$
+
+    When performing a one-tailed test, compare the t-statistic with $t_{\alpha, df=n-2}$ without dividing $\alpha$ by 2. P-value in one-tailed test is calculated as:
+
+    p-value $= Pr(t \geq or \leq t_c)$ vs $\alpha$
+
+    Let's run a simple example of it using the `prestige` data from Problem Set 1. The `prestige` data consists of 10 observations with 2 variables. The description of the variables are as follows:
+    
+    - `prestige`:The average prestige rating for the occupation.
+    
+    - `education`: The average number of years of education for occupational incumbents.
+    
+
+    ```{r, message=FALSE}
+    # load data
+    df <- read.csv("/Users/yu-shiuanhuang/Desktop/method-sequence/data/ps1_prestige.csv") 
+    df
+    ```
+
+    Let's first calculate all the statistics we'll need to perform hypothesis testing.
+
+    1.  Slope: $B$
+
+    $$B=\frac{\Sigma(X_i-\bar{X})(Y_i-\bar{Y})}{\Sigma(X_i-\bar{X})^2}$$
+
+    ```{r, message=FALSE}
+    # calculate the slope b1
+    B <- sum((df$education-mean(df$education))*(df$prestige-mean(df$prestige)))/
+    sum((df$education-mean(df$education))^2)
+    B
+    ```
+
+    2.  Intercept: $A$
+
+    $$A=\bar{Y}-B\bar{X}$$
+
+    ```{r, message=FALSE}
+    # calculate the intercept b0
+    A <- mean(df$prestige)-B*mean(df$education)
+    A
+    ```
+
+    3.  Residual Standard Error: $\hat{\sigma } = SE(E_i)$
+
+    $$\hat{\sigma } = SE(E_i) = \sqrt{\frac{\Sigma (E_i)^2}{n-2}} = \sqrt{\frac{\Sigma (Y_i-\hat{Y_i})^2}{n-2}}$$
+
+    ```{r, message=FALSE}
+    # generate predicted Y
+    df$pred <- A + B*df$education
+
+    # calculate the residual standard error 
+    se <- sqrt(sum((df$prestige-df$pred)^2)/(nrow(df)-2))
+    se
+    ```
+
+    4.  Standard Error of the Estimated Intercept and Slope: $SE(A)$ &
+        $SE(B)$
+
+    $$SE(A) = \hat{\sigma }\sqrt{\frac{\Sigma X_i^2}{n\Sigma (X_i-\bar{X})^2}}$$
+
+    $$SE(B) = \frac{\hat{\sigma }}{\sqrt{\Sigma (X_i-\bar{X})^2}}$$
+
+    ```{r, message=FALSE}
+    # calculate the standard error of the estimated intercept b0
+    se_A <- se*sqrt(sum(df$education^2)/(nrow(df)*sum((df$education-mean(df$education))^2)))
+    se_A
+    ```
+
+    ```{r, message=FALSE}
+    # calculate the standard error of the estimated slope b1
+    se_B <- se/sqrt(sum((df$education-mean(df$education))^2))
+    se_B
+    ```
+
+    Now, let's perform two-tailed hypothesis testing of the slope.
+
+    $H_0: \beta = 0$
+
+    $H_1: \beta \neq 0$
+
+    $t=\frac{b_1-\beta_1}{SE(b_1)}=\frac{b_1-0}{SE(b_1)}=\frac{0.3895028-0}{0.6554015}=0.5942964$
+
+    ```{r, message=FALSE}
+    # calculate the t-statistic
+    t <- B/se_B
+    t
+    ```
+
+    What are the t critical values in both tails? Let's say the level of significance, $\alpha$, is 0.05 in this case.
+
+    $|t_{\frac{\alpha}{2}, df=n-2}|=|t_{\frac{0.05}{2}, df=10-2}|=2.306004$
+
+    ```{r, message=FALSE}
+    # find t critical value
+    qt(p = 0.025, df = 8, lower.tail = TRUE)
+    qt(p = 0.025, df = 8, lower.tail = FALSE)
+    ```
+
+    Now, let's compare our t-statistic of $b_1$ with the t critical value.
+
+    $t=0.5942964 < |t_{\frac{0.05}{2}, df=8}|=2.306004$
+
+    We can also calculate the p-value.
+
+    p-value $= 2*Pr(t \geq 0.5942964)=0.5687352 > 0.05$
+
+    ```{r, message=FALSE}
+    # find p-value
+    2*pt(q = 0.5942964, df = 8, lower.tail = FALSE)
+    ```
+
+    These all suggest that we cannot reject $H_0$, which means that the positive effect of *education* on one's *prestige* is not statistically significant.
+
+    Let's also try perform one-tailed hypothesis testing for this case.
+
+    $H_0: \beta = 0$
+
+    $H_1: \beta > 0$
+
+    $t=\frac{b_1-\beta_1}{SE(b_1)}=\frac{b_1-0}{SE(b_1)}=\frac{0.3895028-0}{0.6554015}=0.5942964$
+
+    What is the t critical values in the right tail?
+
+    $t_{\alpha, df=n-2}=t_{0.05, df=10-2}=1.859548$
+
+    ```{r, message=FALSE}
+    # find t critical value
+    qt(p = 0.05, df = 8, lower.tail = FALSE)
+    ```
+
+    Now again, let's compare our t-statistic of $b_1$ with the t critical value.
+
+    $t=0.5942964 < t_{0.05, df=8}=1.859548$
+
+    And the p-value in the one-tailed test is:
+
+    p-value $=Pr(t \geq 0.5942964)= 0.2843676 > 0.05$
+
+    ```{r, message=FALSE}
+    # find p-value
+    pt(q = 0.5942964, df = 8, lower.tail = FALSE)
+    ```
+
+    In R, `lm()` does all the above calculation for us!
+
+    ```{r, message=FALSE, warning=FALSE}
+    # simple regression
+    fit <- lm(prestige ~ education, data = df)
+    summary(fit)
+    ```
+
+#### d. Evaluating Least Squares Fit
+
+We understand that there will be variability in the variable `prestige` across different occupations, with some having high prestige and others having low prestige. Some of this variability can be attributed to factors not included as variables in our regression model, such as economic conditions and other unmeasured variables. Additionally, differences in the variable `education` may explain some of the differences in `prestige` across occupations. For instance, occupations with a higher average number of years of education among incumbents tend to have higher prestige. However, it's important to quantify how much of the variability in `prestige` can be explained by the variables included in our regression model, and how much remains unexplained by other factors that we have not accounted for.
+
+<center>
+![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/variance_decom.png){width=60%}
+</center>
+
+1.  Explained Variability: Regression Sum of Squares (RegSS)
+
+    The Regression Sum of Squares (RegSS) (sometimes referred to as the Sum of Squares Explained, SSE) is a measure of the variability in the outcome variable that is explained by the explanatory variables, i.e. the x-variables in your regression. It is given by the following sum:
+
+    $$RegSS = \sum_{i=1}^{n}(\hat{y_i}-\bar{y})^2$$
+
+
+2. Residual or Unexplained Variability: Residual Sum of Squares (RSS)
+
+    The Residual Sum of Squares (RSS) is a measure of the variability in the outcome variable that is not explained by your regression, and therefore is due to all the other factors that affect `prestige` besides `education`. It is given by the following sum:
+    
+    $$RSS = \sum_{i=1}^{n}(y_i-\hat{y_i})^2 = \sum_{i=1}^{n}e_i^2$$
+
+3. Total Variability: Total Sum of Squares (TSS)
+
+    You can show mathematically that $RSS + RegSS$ is equal to the following expression, which is referred to as the Total Sum of Squares (TSS):
+
+    $$TSS = \sum_{i=1}^{n}(y_i-\bar{y_i})^2 = \sum_{i=1}^{n}(y_i-\hat{y_i})^2 + \sum_{i=1}^{n}(\hat{y_i}-\bar{y})^2 = RSS + RegSS$$
+
+4. Coefficient of Determination: R-Squared value
+
+    The coefficient of determination, sometimes referred to as the R-Squared value, is a measure of what percentage of the variability in your outcome variable is explained by your explanatory variables. It is given by the expression,
+
+    $$R^2 = \frac{RegSS}{TSS}$$
+    
 ## Discussion II
 
 TBD
