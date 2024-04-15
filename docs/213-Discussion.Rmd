@@ -578,9 +578,9 @@ With standard errors, we can construct a $100(1-\alpha)%$ confidence interval fo
 
     Let's first calculate all the statistics we'll need to perform hypothesis testing.
 
-    1.  Slope: $B$
+    1. Slope: $B$
 
-    $$B=\frac{\Sigma(X_i-\bar{X})(Y_i-\bar{Y})}{\Sigma(X_i-\bar{X})^2}$$
+        $B=\frac{\Sigma(X_i-\bar{X})(Y_i-\bar{Y})}{\Sigma(X_i-\bar{X})^2}$
 
     ```{r, message=FALSE}
     # calculate the slope b1
@@ -589,9 +589,9 @@ With standard errors, we can construct a $100(1-\alpha)%$ confidence interval fo
     B
     ```
 
-    2.  Intercept: $A$
+    2. Intercept: $A$
 
-    $$A=\bar{Y}-B\bar{X}$$
+        $A=\bar{Y}-B\bar{X}$
 
     ```{r, message=FALSE}
     # calculate the intercept b0
@@ -599,25 +599,24 @@ With standard errors, we can construct a $100(1-\alpha)%$ confidence interval fo
     A
     ```
 
-    3.  Residual Standard Error: $\hat{\sigma } = SE(E_i)$
+    3. Residual Standard Error: $\hat{\sigma} = SE(E_i)$
 
-    $$\hat{\sigma } = SE(E_i) = \sqrt{\frac{\Sigma (E_i)^2}{n-2}} = \sqrt{\frac{\Sigma (Y_i-\hat{Y_i})^2}{n-2}}$$
+        $\hat{\sigma } = SE(E_i) = \sqrt{\frac{\Sigma (E_i)^2}{n-2}} = \sqrt{\frac{\Sigma (Y_i-\hat{Y_i})^2}{n-2}}$
 
     ```{r, message=FALSE}
     # generate predicted Y
     df$pred <- A + B*df$education
 
-    # calculate the residual standard error 
+    #calculate the residual standard error 
     se <- sqrt(sum((df$prestige-df$pred)^2)/(nrow(df)-2))
     se
     ```
 
-    4.  Standard Error of the Estimated Intercept and Slope: $SE(A)$ &
-        $SE(B)$
+    4. Standard Error of the Estimated Intercept and Slope: $SE(A)$ & $SE(B)$
 
-    $$SE(A) = \hat{\sigma }\sqrt{\frac{\Sigma X_i^2}{n\Sigma (X_i-\bar{X})^2}}$$
+        $SE(A) = \hat{\sigma }\sqrt{\frac{\Sigma X_i^2}{n\Sigma (X_i-\bar{X})^2}}$
 
-    $$SE(B) = \frac{\hat{\sigma }}{\sqrt{\Sigma (X_i-\bar{X})^2}}$$
+        $SE(B) = \frac{\hat{\sigma }}{\sqrt{\Sigma (X_i-\bar{X})^2}}$
 
     ```{r, message=FALSE}
     # calculate the standard error of the estimated intercept b0
@@ -637,7 +636,7 @@ With standard errors, we can construct a $100(1-\alpha)%$ confidence interval fo
 
     $H_1: \beta \neq 0$
 
-    $t=\frac{b_1-\beta_1}{SE(b_1)}=\frac{b_1-0}{SE(b_1)}=\frac{0.3895028-0}{0.6554015}=0.5942964$
+    $t=\frac{B-\beta_1}{SE(B)}=\frac{B-0}{SE(B)}=\frac{0.3895028-0}{0.6554015}=0.5942964$
 
     ```{r, message=FALSE}
     # calculate the t-statistic
@@ -676,7 +675,7 @@ With standard errors, we can construct a $100(1-\alpha)%$ confidence interval fo
 
     $H_1: \beta > 0$
 
-    $t=\frac{b_1-\beta_1}{SE(b_1)}=\frac{b_1-0}{SE(b_1)}=\frac{0.3895028-0}{0.6554015}=0.5942964$
+    $t=\frac{B-\beta_1}{SE(b_1)}=\frac{B-0}{SE(B)}=\frac{0.3895028-0}{0.6554015}=0.5942964$
 
     What is the t critical values in the right tail?
 
@@ -687,7 +686,7 @@ With standard errors, we can construct a $100(1-\alpha)%$ confidence interval fo
     qt(p = 0.05, df = 8, lower.tail = FALSE)
     ```
 
-    Now again, let's compare our t-statistic of $b_1$ with the t critical value.
+    Now again, let's compare our t-statistic of $B$ with the t critical value.
 
     $t=0.5942964 < t_{0.05, df=8}=1.859548$
 
@@ -720,26 +719,26 @@ We understand that there will be variability in the variable `prestige` across d
 
     The Regression Sum of Squares (RegSS) (sometimes referred to as the Sum of Squares Explained, SSE) is a measure of the variability in the outcome variable that is explained by the explanatory variables, i.e. the x-variables in your regression. It is given by the following sum:
 
-    $$RegSS = \sum_{i=1}^{n}(\hat{y_i}-\bar{y})^2$$
+    $RegSS = \sum_{i=1}^{n}(\hat{y_i}-\bar{y})^2$
 
 
 2. Residual or Unexplained Variability: Residual Sum of Squares (RSS)
 
     The Residual Sum of Squares (RSS) is a measure of the variability in the outcome variable that is not explained by your regression, and therefore is due to all the other factors that affect `prestige` besides `education`. It is given by the following sum:
     
-    $$RSS = \sum_{i=1}^{n}(y_i-\hat{y_i})^2 = \sum_{i=1}^{n}e_i^2$$
+    $RSS = \sum_{i=1}^{n}(y_i-\hat{y_i})^2 = \sum_{i=1}^{n}e_i^2$
 
 3. Total Variability: Total Sum of Squares (TSS)
 
     You can show mathematically that $RSS + RegSS$ is equal to the following expression, which is referred to as the Total Sum of Squares (TSS):
 
-    $$TSS = \sum_{i=1}^{n}(y_i-\bar{y_i})^2 = \sum_{i=1}^{n}(y_i-\hat{y_i})^2 + \sum_{i=1}^{n}(\hat{y_i}-\bar{y})^2 = RSS + RegSS$$
+    $TSS = \sum_{i=1}^{n}(y_i-\bar{y_i})^2 = \sum_{i=1}^{n}(y_i-\hat{y_i})^2 + \sum_{i=1}^{n}(\hat{y_i}-\bar{y})^2 = RSS + RegSS$
 
 4. Coefficient of Determination: R-Squared value
 
     The coefficient of determination, sometimes referred to as the R-Squared value, is a measure of what percentage of the variability in your outcome variable is explained by your explanatory variables. It is given by the expression,
 
-    $$R^2 = \frac{RegSS}{TSS}$$
+    $R^2 = \frac{RegSS}{TSS}$
     
 ## Discussion II
 
