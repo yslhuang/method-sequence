@@ -1,0 +1,136 @@
+---
+title: "213-L3-exercises"
+author: "Lauren Peritz"
+date: "2024-04-18"
+output: html_document
+fontsize: 11pt
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(width = 80)
+```
+
+## Gauss Markov Assumptions with Simulation
+
+#### Assumption 1: The Error Term has Conditional Mean of Zero
+
+This means that no matter which value we choose for X, the error term u must not show any systematic pattern and must have a mean of 0. Consider the case that, unconditionally, E(u)=0, but for low and high values of  X, the error term tends to be positive and for midrange values of X the error tends to be negative. We can use R to construct such an example. To do so we generate our own data using R’s built-in random number generators.
+
+```{r}
+# set a seed to make the results reproducible
+set.seed(321)
+
+# simulate the data 
+X <- runif(50, min = -5, max = 5)
+u <- rnorm(50, sd = 1)  
+
+# the true relation  
+Y <- X^2 + 2 * X + u                
+
+# estimate a simple regression model 
+mod_simple <- lm(Y ~ X)
+
+# predict using a quadratic model 
+prediction <- predict(lm(Y ~ X + I(X^2)), data.frame(X = sort(X)))
+
+# plot the results
+plot(Y ~ X)
+abline(mod_simple, col = "red")
+lines(sort(X), prediction)
+```
+
+The plot shows what is meant by $E(u_i|X)=0$ and why it does not hold for this simulated data.
+
+#### Assumption 2: Independently and Identically Distributed Data
+
+Most sampling schemes used when collecting data from populations produce i.i.d.-samples. For example, we could use R’s random number generator to randomly select student IDs from a university’s enrollment list and record age  X  and earnings Y  of the corresponding students. This is a typical example of simple random sampling and ensures that all the  $(X_i,Y_i)$  are drawn randomly from the same population.
+
+A prominent example where the i.i.d. assumption is not fulfilled is time series data where we have observations on the same unit over time. For example, take  X  as the number of workers in a production company over time. Due to business transformations, the company cuts jobs periodically by a specific share but there are also some non-deterministic influences that relate to economics, politics etc. Using R we can easily simulate such a process and plot it.
+
+We start the series with a total of 5000 workers and simulate the reduction of employment with an autoregressive process that exhibits a downward movement in the long-run and has normally distributed errors.
+
+```{r}
+# set seed
+set.seed(123)
+
+# generate a date vector
+Date <- seq(as.Date("1951/1/1"), as.Date("2000/1/1"), "years")
+
+# initialize the employment vector
+X <- c(5000, rep(NA, length(Date)-1))
+
+# generate time series observations with random influences
+for (i in 2:length(Date)) {
+  
+    X[i] <- -50 + 0.98 * X[i-1] + rnorm(n = 1, sd = 200)
+    
+}
+
+#plot the results
+plot(x = Date, 
+     y = X, 
+     type = "l", 
+     col = "steelblue", 
+     ylab = "Workers", 
+     xlab = "Time")
+```
+
+It is evident that the observations on the number of employees cannot be independent in this example: the level of today’s employment is correlated with tomorrows employment level. Thus, the i.i.d. assumption is violated.
+
+#### Assumption 3: Homoskedasticity in error terms
+
+For a better understanding of heteroskedasticity, we generate some bivariate heteroskedastic data, estimate a linear regression model and then use box plots to depict the conditional distributions of the residuals.
+
+```{r}
+# load scales package for adjusting color opacities
+library(scales)
+
+# generate some heteroskedastic data:
+
+# set seed for reproducibility
+set.seed(123) 
+
+# set up vector of x coordinates
+x <- rep(c(10, 15, 20, 25), each = 25)
+
+# initialize vector of errors
+e <- c()
+
+# sample 100 errors such that the variance increases with x
+e[1:25] <- rnorm(25, sd = 10)
+e[26:50] <- rnorm(25, sd = 15)
+e[51:75] <- rnorm(25, sd = 20)
+e[76:100] <- rnorm(25, sd = 25)
+
+# set up y
+y <- 720 - 3.3 * x + e
+
+# Estimate the model 
+mod <- lm(y ~ x)
+
+# Plot the data
+plot(x = x, 
+     y = y, 
+     main = "An Example of Heteroskedasticity",
+     xlab = "Student-Teacher Ratio",
+     ylab = "Test Score",
+     cex = 0.5, 
+     pch = 19, 
+     xlim = c(8, 27), 
+     ylim = c(600, 710))
+
+# Add the regression line to the plot
+abline(mod, col = "darkred")
+
+# Add boxplots to the plot
+boxplot(formula = y ~ x, 
+        add = TRUE, 
+        at = c(10, 15, 20, 25), 
+        col = alpha("gray", 0.4), 
+        border = "black")
+```
+For this artificial data it is clear that the conditional error variances differ. Specifically, we observe that the variance in test scores (and therefore the variance of the errors committed) increases with the student teacher ratio.
+
+Why do we care about heteroskedasticity? This can be seen when we think about the standard deviation of the estimator $\hat{\beta_1}$. Heteroskedasticity means that the s.e. is inconsistent for the true value of $\sigma^2_{\hat{\beta_1}}$. The implication is that the usual t-statistics do not follow a standard normal distribution, even in large samples. This issue may invalidate inference when using the previously treated tools for hypothesis testing: we should be cautious when making statements about the significance of regression coefficients on the basis of  t-statistics as computed by \texttt{summary()} or confidence intervals produced by \texttt{confint()} if it is doubtful for the assumption of homoskedasticity to hold.
+

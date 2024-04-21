@@ -1,0 +1,72 @@
+---
+title: "213-L3-exercises"
+author: "Lauren Peritz"
+date: "2023-04-17"
+output: html_document
+fontsize: 11pt
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(width = 80)
+```
+
+### OLS Regression with Matrix Algebra
+
+We've shown how to calculate a bivariate linear regression for a dataset by hand ($Y = A + BX + \epsilon $) in which we took the first derivative w.r.t. $A$ and $B$, set equal to zero, and solved two equations with two unknowns.  With multiple explanatory variables ($Y = A + B_1 X_1 + B_2 X_2 + \epsilon$), this closed-form calculation becomes much more difficult using just algebra and calculus. Because it was so difficult, we tried to simulate a solution in R. We did a grid search over possible values of $A$ and $B$ to recover those values that minimize the sum of squared residuals. We showed that R's \texttt{optim()} function could do the search more handily. \\
+
+Now we are going to show what R is actually doing when you tell it to perform a linear regression. It is using \textit{matrix algebra} to perform the calculations we found so very difficult using plain algebra. \\
+
+```{r, results = 'show', message = FALSE}
+
+Y<-c(.808,.817,.568,.571,.421,.673,.724,.590,.251)
+X1 <- rep(1, 9)
+X2<-c(.29,.34,.37,.34,.56,.37,.34,.43,.77)
+X3<-c(4.984,5.073,12.620,-6.443,-5.758,15.603,14.148,0.502,-9.048)
+X<-cbind(X1,X2,X3)
+
+```
+
+We now have a vector $Y$ and a matrix $X$ containing our intercepts and our two explanatory variables. How do we estimate our best fit parameters $\beta_0, \beta_1,$ and $\beta_2$? We derived the OLS estimator: $\hat{\beta} = (X'X)^{-1}X'y$
+
+```{r, results = 'show', message = FALSE}
+
+Y
+X
+
+beta.hat <- solve(t(X)%*%X) %*% t(X) %*%Y
+
+t(beta.hat)
+```
+
+Compare with the canned routine in R to confirm the matrix calculation was correct. 
+
+```{r, results = 'show', message = FALSE}
+
+mod <- lm(Y ~ X-1)
+
+beta.canned <- mod$coefficients
+beta.canned
+```
+
+Now calculate the standard errors. Recall the error variance is unknown but we have available the unbiased estimator $S^2_E = (e'e)/(n-k-1)$, based on the residuals of our model fit. We can extract these residuals, calculate the estimator, and then use it to calculate the variance of the least squares coefficients $\hat{V(b)} = S^2_E (X'X)^{-1}$
+
+```{r, results = 'show', message = FALSE}
+
+e <- Y - X%*%beta.hat
+e
+n <- nrow(X)
+
+S2E <- as.numeric((t(e)%*%e)/(n-3))
+S2E
+v.beta.hat <- S2E*solve(t(X)%*%X)
+v.beta.hat
+sqrt(diag(v.beta.hat))
+
+# Comparison
+summary(mod)
+
+```
+Again, this is what R is doing for you when you run the \texttt{lm()} command. 
+
+

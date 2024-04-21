@@ -742,7 +742,231 @@ We understand that there will be variability in the variable `prestige` across d
     
 ## Discussion II
 
-TBD
+### 1. Multivariate Linear Regression
+
+The central difference between simple and multiple linear regression is
+that the slope coefficients for the explanatory variables in multiple
+regression are **partial coefficients**. That is, it represents the
+"effect" on the response variable of a one-unit increment in the
+corresponding explanatory variable, holding constant the value of the
+other explanatory variable. 
+
+$$Y_i=\hat{\beta_0}+\hat{\beta_1}X_{i1}+\hat{\beta_2}X_{i2}+...+\hat{\beta_k}X_{ik}+\varepsilon_i$$
+
+Recall that the goal of the OLS approach is to minimize the discrepancy between our observed $Y_i$ and estimated $\hat{Y_i}$. To find a set of estimated $\beta$s that can minimize this discrepancy is an *optimization problem*. All we have to do is to take the partial derivatives of the above equation with respect to each coefficient, set them equal to zero, and then solve it. However, as shown in the lecture, adding more and more $X$ variables to our linear regression model makes the calculation more and more tedious. In order to find the estimated $\beta$s more efficiently, we use matrix algebra to help us do the calculation.
+
+To do this, let's first think of our data set as a matrix. The below equations are how each observation in our data set generated.
+
+$$Y_1=\hat{\beta_0}+\hat{\beta_1}X_{11}+\hat{\beta_2}X_{12}+...+\hat{\beta_k}X_{1k}+\varepsilon_1$$
+
+$$Y_2=\hat{\beta_0}+\hat{\beta_1}X_{21}+\hat{\beta_2}X_{22}+...+\hat{\beta_k}X_{2k}+\varepsilon_2$$
+
+.
+
+.
+
+.
+
+$$Y_n=\hat{\beta_0}+\hat{\beta_1}X_{n1}+\hat{\beta_2}X_{n2}+...+\hat{\beta_k}X_{nk}+\varepsilon_n$$
+
+
+Rewrite them into a matrix form.
+
+<center>![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/matrix.png){width="50%"}</center>
+
+The system of equations is summarized as the *y* vector equal to the product of the *X* matrix of data times the *$\hat{\beta}$* vector of parameters plus the vector of disturbances, $\varepsilon$. That said, the fitted linear model we are trying to find is: $y = X\hat{\beta}+\varepsilon$. In the lecture, Lauren showed how to apply what we did when finding a pair of intercept and slope in simple linear regression to solve the **optimization problem**(i.e., minimize RSS) to find the coefficient vector $\hat{\beta}$ using matrix algebra.  
+
+$$
+\begin{aligned}
+S(\hat{\beta}) &= \sum E_i^2 = \varepsilon\varepsilon' = (y- X\hat{\beta})'(y- X\hat{\beta})\\
+&= y'y-y'X\hat{\beta}-\hat{\beta}'X'y+\hat{\beta}'X'X\hat{\beta} \\
+&= y'y-(2y'X)\hat{\beta}+\hat{\beta}'(X'X)\hat{\beta}
+\end{aligned}
+$$
+
+Instead of taking derivative with respect to each coefficient one at a time, we can take derivative directly with respect to the coefficient vector $\hat{\beta}$.
+
+$$
+\begin{aligned}
+S(\hat{\beta}) &= \sum E_i^2 = \varepsilon\varepsilon' = (y- X\hat{\beta})(y- X\hat{\beta})'\\
+&= y'y-y'X\hat{\beta}-\hat{\beta}'X'y+\hat{\beta}'X'X\hat{\beta} \\
+&= y'y-(2y'X)\hat{\beta}+\hat{\beta}'(X'X)\hat{\beta}
+\end{aligned}
+$$
+$$
+\begin{aligned}
+\partial S(\hat{\beta}) &= \frac{\partial}{\partial \hat{\beta}}(y'y-(2y'X)\hat{\beta}+\hat{\beta}'(X'X)\hat{\beta}) \\
+0 &=0-2Xy'+ 2\hat{\beta}X'X \\
+2\hat{\beta}X'X &=2Xy'\\
+\hat{\beta} &= \frac{Xy'}{X'X} \\
+\hat{\beta} &= (X'X)^{-1}Xy'
+\end{aligned}
+$$
+Therefore, the least squares estimator is:
+
+$$\hat{\beta}=(X'X)^{-1}X'y$$
+
+### 2. Find Coefficients using Matrix in R
+
+Let's use the `Anscombe.txt` data set as an example to find the estimated coefficients by using the above matrix equation.
+
+- `education` = per capita education expenditures, dollars
+- `income` = per capita income, dollars
+- `under18` = proportion under 18 years old, per 1000
+- `urban` = proportion urban, per 1000
+
+```{r, warning=FALSE, message=FALSE, fig.align='center', fig.width=6, fig.height=4}
+# load data
+df2 <- read.delim("/Users/yu-shiuanhuang/Desktop/method-sequence/data/Anscombe.txt", sep = "")
+head(df2)
+```
+
+```{r, warning=FALSE, message=FALSE, fig.align='center', fig.width=6, fig.height=4}
+# convert each variable to a vector
+edu <- df2$education
+intercept <- rep(1, nrow(df2)) # remember to crease this vector with 1s!
+inc <- df2$income
+un18 <- df2$under18
+urb <- df2$urban
+X <- cbind(intercept, inc, un18, urb)
+class(X) # this is a matrix
+```
+
+We now have a vector `edu` and a matrix $X$ containing our intercepts and our three explanatory variables (`income`, `under18`, `urban`). Let's estimate our best fit parameters $\beta_0, \beta_1,$, $\beta_2$, and $\beta_3$ by applying the estimator we derived in the lecture: $\hat{\beta} = (X'X)^{-1}X'y$.
+
+```{r, results = 'show', message = FALSE}
+beta.hat <- solve(t(X) %*% X) %*% t(X) %*% edu
+
+t(beta.hat)
+```
+
+Compare with the canned routine in R to confirm the matrix calculation was correct. 
+
+```{r, results = 'show', message = FALSE}
+mod <- lm(edu ~ X-1) # remember to remove the first column in the X matrix bc that's the column with all the 1s we created just for the algebra calculation
+
+beta.canned <- mod$coefficients
+beta.canned
+```
+
+How to come up with the predicted $\hat{y}$?
+$$\hat{y}=Xb$$
+        
+```{r, results = 'show', message = FALSE}
+eduhat <- beta.hat[1] + df2$income*beta.hat[2] + 
+    df2$under18*beta.hat[3] + df2$urban*beta.hat[4]
+eduhat
+```
+
+How to come up with the residuals?
+$$e=y-\hat{y}=y-Xb$$
+```{r, results = 'show', message = FALSE}
+e <- edu - eduhat
+e
+```
+
+Now calculate the standard errors of the vector *$\hat{\beta}$*. Recall the error variance is unknown but we have available the unbiased estimator $S^2_E = (e'e)/(n-k-1)$, based on the residuals of our model fit. We can extract these residuals, calculate the estimator, and then use it to calculate the variance of the least squares coefficients $\hat{V(b)} = S^2_E (X'X)^{-1}$. 
+
+- As a quick refresher of concepts: the variance is a measure of a random variable’s “spread” or variation around its mean (a.k.a. its expected value), while the co-variance measures how correlated are the variations of two random variables with each other.
+
+- The *variance-covariance matrix* is a square matrix (i.e. it has the same number of rows and columns). The elements of the matrix that lie along its main diagonal (i.e. the one that goes from top-left to bottom-right contain the variances while all other elements contain the co-variances). Thus, the variance-covariance matrix of the fitted coefficients of a regression model contains the variances of the fitted model’s coefficient estimates along its main diagonal, and it also contains the pair-wise co-variances between coefficient estimates in the non-diagonal elements.
+
+- Why do we not only calculate the variance of regression coefficients but also the convariance of them?
+    
+    The covariance matrix can be very useful for certain model diagnostics. If two variables are highly correlated, one way to think about it is that the model is having trouble figuring out which variable is responsible for an effect (because they are so closely related). This can be helpful for a whole variety of cases, such as choosing subsets of covariates to use in a predictive model; if two variables are highly correlated, you may only want to use one of the two in your predictive model.
+
+```{r, results = 'show', message = FALSE}
+S2E <- as.numeric((t(e)%*%e)/(nrow(df2)-3-1))
+S2E
+
+v.beta.hat <- S2E*solve(t(X)%*%X)
+v.beta.hat # the diagonal numbers are the variance of each coefficient
+
+sqrt(diag(v.beta.hat)) 
+```
+
+Compare with the canned routine in R to see if we got the same standard errors of coefficients.
+
+```{r, message=FALSE, echo=FALSE}
+sjPlot::tab_model(mod, show.se = TRUE, string.se = "S.E.",
+                  dv.labels = c("OLS"), string.pred = "Variables", 
+                  string.ci = "C.I. (95%)", p.style = "stars", 
+                  file = "output.html")
+```
+
+With the standard errors of each coefficient, we can perform hypothesis testing and construct confidence intervals to determine the significance and reliability of the estimated effects (similar to what we did in the case of simple linear regression).
+
+- What would happen when there is *perfect multicollinearity* in our data (i.e. when two or more independent variables are perfectly correlated)?
+
+    ```{r, warning=FALSE, message=FALSE, fig.align='center', fig.width=6, fig.height=4}
+# convert each variable to a vector
+edu <- df2$education
+intercept <- rep(1, nrow(df2)) # remember to crease this vector with 1s!
+inc <- df2$income
+un18 <- df2$under18
+urb <- df2$urban
+pmc <- 2*inc
+cor(pmc, inc) # pmc is perfectly correlated with inc
+X <- cbind(intercept, inc, un18, urb, pmc)
+class(X) # this is a matrix
+    ```
+
+    ```{r, results = 'show', message = TRUE, error=TRUE}
+beta.hat <- solve(t(X) %*% X) %*% t(X) %*% edu
+```
+
+    As you can see in the result of the above chunk, you cannot calculate the matrix algebra when there is perfect multicollinearity. However, when you run `lm()` in R, R will automatically delete the variable that is perfectly correlated with the other variable(s) in the dataset.
+
+    ```{r, results = 'show', message = FALSE}
+mod2 <- lm(edu ~ X-1) # remember to remove the first column in the X matrix bc that's the column with all the 1s we created just for the algebra calculation
+```
+
+    ```{r, message=FALSE, echo=FALSE}
+sjPlot::tab_model(mod2, show.se = TRUE, string.se = "S.E.",
+                  dv.labels = c("OLS"), string.pred = "Variables", 
+                  string.ci = "C.I. (95%)", p.style = "stars", 
+                  file = "output.html")
+    ```
+    
+    If there is high multicollinearity between variables but not perfectly correlated, the matrix algebra still works, and `lm()` will still spit out the estimates of the highly correlated variable. However, the standard errors of coefficients will be very high.
+
+    ```{r, warning=FALSE, message=FALSE, fig.align='center', fig.width=6, fig.height=4}
+# convert each variable to a vector
+edu <- df2$education
+intercept <- rep(1, nrow(df2)) # remember to crease this vector with 1s!
+inc <- df2$income
+un18 <- df2$under18
+urb <- df2$urban
+set.seed(1234)
+pmc <- 2*inc + rnorm(nrow(df2), 5, 1)
+cor(pmc, inc) # pmc is highly but not perfectly correlated with inc
+X <- cbind(intercept, inc, un18, urb, pmc)
+class(X) # this is a matrix
+```
+
+    ```{r, results = 'show', message = TRUE}
+beta.hat <- solve(t(X) %*% X) %*% t(X) %*% edu
+
+t(beta.hat)
+```
+
+    ```{r, results = 'show', message = FALSE}
+eduhat <- beta.hat[1] + df2$income*beta.hat[2] + 
+    df2$under18*beta.hat[3] + df2$urban*beta.hat[4] + pmc*beta.hat[5]
+e <- edu - eduhat
+S2E <- as.numeric((t(e)%*%e)/(nrow(df2)-4-1))
+v.beta.hat <- S2E*solve(t(X)%*%X)
+sqrt(diag(v.beta.hat))
+```
+
+    ```{r, message=FALSE, echo=FALSE}
+mod3 <- lm(edu ~ X-1)
+
+sjPlot::tab_model(mod, mod3, show.se = TRUE, string.se = "S.E.",
+                  dv.labels = c("OLS"), string.pred = "Variables", 
+                  string.ci = "C.I. (95%)", p.style = "stars", 
+                  file = "output.html")
+    ```
 
 ## Discussion III
 
