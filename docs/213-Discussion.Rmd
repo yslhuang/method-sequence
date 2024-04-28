@@ -742,14 +742,14 @@ We understand that there will be variability in the variable `prestige` across d
     
 ## Discussion II
 
+For today's discussion, we will review concepts regarding how to find a set of $\hat{\beta}$s that can minimize the squared residual errors of our multivariate linear model using matrix algebra.
+
+1. Multivariate Linear Regression
+2. Find Coefficients using Matrix in R
+
 ### 1. Multivariate Linear Regression
 
-The central difference between simple and multiple linear regression is
-that the slope coefficients for the explanatory variables in multiple
-regression are **partial coefficients**. That is, it represents the
-"effect" on the response variable of a one-unit increment in the
-corresponding explanatory variable, holding constant the value of the
-other explanatory variable. 
+The central difference between simple and multiple linear regression is that the slope coefficients for the explanatory variables in multiple regression are **partial coefficients**. That is, it represents the "effect" on the response variable of a one-unit increment in the corresponding explanatory variable, holding constant the value of the other explanatory variable. 
 
 $$Y_i=\hat{\beta_0}+\hat{\beta_1}X_{i1}+\hat{\beta_2}X_{i2}+...+\hat{\beta_k}X_{ik}+\varepsilon_i$$
 
@@ -970,8 +970,598 @@ sjPlot::tab_model(mod, mod3, show.se = TRUE, string.se = "S.E.",
 
 ## Discussion III
 
-TBD
+For today's discussion, we will review some diagnostic techniques to detect influential data points that could affect our model and ensure our model adheres to Gauss-Markov assumptions, addressing any violations as needed.
+
+1.  Unusual and Influential Data
+2.  Diagnostics for Errors and Linearity
+
+### 1. Unusual and Influential Data
+
+When dealing with observational or experimental data, it's common to encounter **outliers**, which are data points that behave differently than the rest of the data for some reason. Outliers can greatly influence the analysis and interpretation of the data. In today's discussion, we'll examine what outliers are, how they can affect data analysis and interpretation, and use simple linear regression as an example to explore situations where individual data points significantly impact the model. Lastly, we will also 
+
+#### 1.1 Leverage, discrepancy and influence
+
+Although many researchers discuss outliers in a broad sense, it's important to recognize that there are different types of unusual data points. A data point may be unusual in terms of its predictor behavior (the $x$-value in simple regression), its outcome (the $y$-value in simple regression), or both.
+
+-   **leverage**: A data point that differs significantly from the rest of the dataset in terms of its predictor behavior is known as a leverage point. In the case of simple linear regression, this means that the x-value of the data point is much higher or lower than the mean of the predictor variable.
+
+-   **discrepancy**: When a data point has an uncommon y-value for its corresponding x-value, it is said to have high discrepancy. Within the context of regression analysis, such an unusual point is called an outlier.
+
+-   **influence**: Having either a high leverage or a high discrepancy does not necessarily make a data point influential in a linear model. In fact, a single data point's influence is determined by **leverage × discrepancy**. Therefore, having only high leverage or high discrepancy may not be enough to significantly alter the model parameters.
+
+The figure below illustrates the three characteristics discussed above. In each of the three panels, the red line represents the line of best fit without the data point in question (marked by the triangle), while the blue line shows the line of best fit with it.
+
+-   In panel A, the data point with the triangle has a high leverage - its $x$-value is much higher than the rest.
+-   In panel B, it has a high discrepancy - it lies far away from the line of best fit. 
+
+    However, neither of the above characteristics alone exerts a lot of influence on our model parameters, as the red line does not diverge significantly from the blue line.
+
+-   In panel C, we see a data point that has both high leverage and high discrepancy, and as a result, it exerts high influence: the blue line is noticeably different from the red line.
+
+<center>![](https://tillbe.github.io/figure/outlier-influence-identification/unnamed-chunk-2-1.png){width="90%"}</center>
+
+###### Example Data
+
+For today's discussion, we will use a data set based on an example in Field, Miles, and Field (2012). The dataset includes eight samples, where the $x$-value represents the number of pubs within a borough (district) of London, and the $y$-value represents the number of deaths in that borough over a specific period of time. We are interested in investigating the relationship between the number of deaths and the number of pubs in each borough.
+
+```{r, message=FALSE}
+pubs <- data.frame(name = c(1, 2, 3, 4, 5, 6, 7, 8), 
+                   pubs = c(10, 25, 40, 55, 70, 85, 100, 500), 
+                   deaths = c(1043.822, 2086.934, 2951.086, 3992.459, 5088.003, 
+                              6095.645, 6923.497, 10000.000))
+pubs
+```
+
+Let's plot the line of best fit of this data:
+
+```{r, warning=FALSE, message=FALSE, fig.align='center', fig.width=6, fig.height=4}
+library(tidyverse)
+ggplot(data = pubs, aes(x = pubs, y = deaths, label = name)) +
+    geom_point(alpha = 0.8) +
+    geom_text(hjust = 2, vjust = 0) +
+    geom_smooth(method = lm, se = FALSE, colour = "darkorange") +
+    xlab("Number of Pubs") + 
+    ylab("Deaths") +
+    theme_bw()
+```
+
+Both the raw data and the linear regression plot indicate that data point 8 is significantly different from the other samples. This particular data point not only has a much higher number of pubs compared to the others, but it also appears to have a distinct relationship between the number of pubs and the number of deaths, unlike the other boroughs.
+
+Since we have some concerns about this specific data point, let's determine whether it exhibits a) high leverage, b) high discrepancy, and c) high influence.
+
+#### 1.2 Assessing Leverage
+
+Recall that leverage quantifies the degree to which a predictor value differs from the other predictor values. In the case of simple linear regression, we can compute the distance between each predictor point ($X_i$) and the mean predictor value ($\bar{X}$) to measure leverage.
+
+A standardized version of this distance is called *hat-value* and denoted by $h_i$ (for $i = {1,..., n}$):
+
+$$h_i = \frac{1}{n}+\frac{(X_i-\bar{X})^2}{\sum_{j=1}^{n}(X_j-\bar{X})^2}$$
+
+The average hat value ($\bar{h}$) is defined as $\frac{k+1}{n}$, in which $k$ is the number of predictors and $n$ the number of observations. Values of $h$ are bound between $\frac{1}{n}$ and 1, with 1 denoting highest leverage (highest distance from mean).
+
+Based on our sample data, it's obvious that data point 8 has the highest leverage among all the points. Let's apply the formula above to compute the leverage value ($h_8$) for this data point.
+
+```{r, message=FALSE}
+# number of cases
+n = nrow(pubs)
+
+# distance to mean of point 8
+numerator = (pubs$pubs[8] - mean(pubs$pubs))^2
+
+# distance to mean of all the other points
+denominator = sum((pubs$pubs - mean(pubs$pubs))^2)
+
+# putting it together
+h_8 = 1/n + numerator/denominator
+
+h_8
+```
+
+The resulting *hat-value* is 0.969302. This is quite high - in fact, it's very close to 1, the highest possible value.
+
+You don't need to manually calculate all of the hat values because R offers a convenient `hatvalues` function that can be applied to any linear model. To take advantage of this feature, we will begin by fitting a simple linear model using `lm` and then extracting the hat value of each data point.
+
+```{r, warning=FALSE, message=FALSE, fig.align='center', fig.width=6, fig.height=4}
+# fitting linear model
+mod <- lm(deaths ~ pubs, data = pubs)
+
+# getting hatvalues and plotting them
+plot(hatvalues(mod))
+```
+
+Remember that leverage alone does not mean a point exerts high influence, but it certainly means it's worth investigating. Hat values are open to interpretation, but a cut-off value that is common is twice or three times the average $\bar{h}$, meaning anything above that value should be looked at closer.
+
+Let's add a cut-off line into the above hatvalue figure.
+
+```{r, warning=FALSE, message=FALSE, fig.align='center', fig.width=6, fig.height=4}
+# the average of hat-values
+mean_h <- (1+1)/8
+
+# adding a cut-off line
+plot(hatvalues(mod))
+abline(h = 2*mean_h, lty = 2)
+abline(h = 3*mean_h, lty = 2)
+```
+
+As illustrated in the figure above, we can see that the value of $h_8$ is greater than twice and three times the mean hat values ($\bar{h}$). Based on this observation, we can safely conclude that the value of $h_8$ is highly unusual. In this case, $h_8$ is definitely unusual!
+
+After having assessed leverage, let's look at discrepancy. How unusual is the $y$-value given its $x$-value?
+
+#### 1.3 Assessing Discrepancy
+
+As we learned earlier, data points that do not fit well to the linear regression line are referred to as outliers, or high-discrepancy points. Typically, we assess the fit of the regression line using residuals, which measure the distance between a predicted value and the actual value. While we already know that point 8 has high leverage, it is worth noting that the line of best fit is quite close to its predicted value (see the left panel). Additionally, when we examine the residuals, point 8 does not appear to be further from the regression line than any other points (see the right panel).
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.width=8, fig.height=4}
+p1 <- ggplot(data = pubs, aes(x = pubs, y = deaths, label = name)) +
+    geom_point(alpha = 0.8) +
+    geom_text(hjust = 2, vjust = 0) +
+    geom_smooth(method = lm, se = FALSE, colour = "darkorange") +
+    xlab("Number of Pubs") + 
+    ylab("Deaths") +
+    theme_bw()
+
+pubs2 <- pubs %>% mutate(residuals = residuals(mod))
+
+p2 <- ggplot(data = pubs2, aes(x = pubs, y = residuals, label = name)) +
+    geom_point(alpha = 0.8) +
+    geom_text(hjust = 2, vjust = 0) +
+    geom_hline(yintercept = 0, linetype = 2) +
+    xlab("Number of Pubs") + 
+    ylab("Residuals") +
+    theme_bw()
+
+ggpubr::ggarrange(p1, p2)
+```
+Instead, we can look at standardized or studentized residuals. 
+
+- Standardized residuals are formed by calculating:
+
+    $$E_i'=\frac{E_i}{S_E\sqrt{1-h_i}}$$
+    <center>where $S_E=\sqrt{\frac{\sum E_i^2}{n-k-1}}$</center>
+    
+    Let's calculate the standardized residual for our example data by hand (the 8th data point is the one we're interested in):
+    
+    ```{r, message=FALSE}
+# residual for data point in original model
+Ei <- as.numeric(residuals(mod)[8])
+
+# estimate of sigma (standard deviation) for residuals
+S_E <- summary(mod)$sigma
+
+# hatvalue for point 8
+hi <- as.numeric(hatvalues(mod)[8])
+
+# putting it together
+Eprime <- Ei/(S_E*sqrt(1-hi))
+Eprime
+```
+    
+    You can also just let R do the maths by calling rstandard on the original model:
+    
+    ```{r, message=FALSE}
+rstandard(mod)
+```
+
+    Note that the last value is the same as the one we calculated by hand! Let's compare the residuals and the studentized residuals in plots side by side:
+
+    ```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.width=8, fig.height=4}
+pubs3 <- pubs %>% mutate(rstandard = rstandard(mod))
+
+p3 <- ggplot(data = pubs3, aes(x = pubs, y = rstandard, label = name)) +
+    geom_point(alpha = 0.8) +
+    geom_text(hjust = 2, vjust = 0) +
+    geom_hline(yintercept = 0, linetype = 2) +
+    xlab("Number of Pubs") + 
+    ylab("Standardized Residuals") +
+    theme_bw()
+
+ggpubr::ggarrange(p2, p3)
+```
+
+    The standardized residuals provide a better measure of discrepancy and can reveal outliers that were not detected by the normal residual plot. In our case, by looking at the standardized residual plot below, we can confirm that point 8 has a high discrepancy compared to the other points.
+
+
+- Studentized residuals are calculated by fitting a model without the case for which the residual is calculated, and then scaling the resulting residual ($E_i$) by an estimate of the standard deviation of the residuals ($S_{E(-i)}$) and the point's hat value ($h_i$):
+
+    $$E_i^*=\frac{E_i}{S_{E(-i)}\sqrt{1-h_i}}$$
+
+    Let's calculate the studentized residual for our example data by hand (the 8th data point is the one we're interested in):
+
+    ```{r, message=FALSE}
+# model excluding point 8
+mod.red <- lm(deaths ~ pubs, data = pubs[-8,]) 
+
+# residual for data point in original model
+Ei <- as.numeric(residuals(mod)[8])
+
+# estimate of sigma (standard deviation) for residuals
+S_E <- summary(mod.red)$sigma
+
+# hatvalue for point 8
+hi <- as.numeric(hatvalues(mod)[8])
+
+# putting it together
+Estar <- Ei/(S_E*sqrt(1-hi))
+Estar
+```
+
+    You can also just let R do the maths by calling rstudent on the original model:
+
+    ```{r, message=FALSE}
+rstudent(mod)
+```
+
+    Note that the last value is the same as the one we calculated by hand! Let's compare the residuals and the studentized residuals in plots side by side:
+
+    ```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.width=8, fig.height=4}
+pubs4 <- pubs %>% mutate(rstudent = rstudent(mod))
+
+p4 <- ggplot(data = pubs4, aes(x = pubs, y = rstudent, label = name)) +
+    geom_point(alpha = 0.8) +
+    geom_text(hjust = 2, vjust = 0) +
+    geom_hline(yintercept = 0, linetype = 2) +
+    xlab("Number of Pubs") + 
+    ylab("Studentized Residuals") +
+    theme_bw()
+
+ggpubr::ggarrange(p2, p4)
+```
+
+    The studentized residuals reveal clearly that point 8 has a high discrepancy, while this was not possible to see from the normal residual plots. You can also perform *Bonferroni adjustment* to test the statistical significance of the $E_8^*$ to check if we can confidently say that point 8 is an outlier. Observations are considered outliers if their `Bonferroni p` is less than .05.
+
+    ```{r, message=FALSE}
+library(car)
+outlierTest(mod)
+```
+
+    According to the above test, we can say that point 8 can be considered an outlier (high discrepancy).
+
+
+#### 1.4 Assessing Influence
+
+As mentioned earlier, having high leverage or discrepancy alone does not necessarily mean a data point will have a high influence on the linear regression model. However, since our point of interest (point 8) has both high leverage and discrepancy, it is likely to have high influence on the model.
+
+We'll use something called *Cook's D*, which relies on the standardized residuals to assess influence. A similar measure is *DFFITS*,  which instead is based on studentized residuals. Another measure we won't go into are *DFBETAS*, which measures the influence on each individual parameter, instead of the overall model.
+
+Observations that combine high leverage with large studentized residual
+exert substantial influence on regression coeffcients. Cook's D statistic
+provides a summary index of influence.
+
+<center> $D_i=\frac{E_i'^2}{k+1}\times \frac{h_i}{1-h_i}$ </center>
+
+where the first term, the standardized residual, is a measure of discrepancy
+and the second is a measure of leverage.The higher the leverage and residuals, the higher the Cook’s distance.
+
+Several interpretations for Cook’s distance exist. There isn’t a universally accepted rule for cut off points.
+
+- One interpretation is to investigate any point over $\frac{4}{n}$, where $n$ is the number of observations.
+- Other scholars suggest that any "large" $D_i$ should be investigated. How large is "too large"? The consensus seems to be that a $D_i$ value of more than 1 indicates an influential value, but you may want to look at values above 0.5.
+
+Let's use `influencePlot()` in the `car` package to check Cook's D statistics!
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.width=6, fig.height=4}
+library(car)
+influencePlot(mod)
+```
+
+#### 1.5 Added-variable Plot (AV Plot)
+
+All the above techniques can also be applied to multivariate linear regression models. Additionally, we introduce another very useful influence graph for visually detecting outliers in multivariate linear models, known as an **added-variable plot** or **partial-regression plot**.
+
+A limitation of using the typical residual plots in a multivariate linear regression model, such as plotting residuals against the values of a predictor variable, is that they may not fully illustrate the "additional contribution" of a predictor variable when considering other variables already in the model. Added-variable plots offer a more refined visualization, providing graphic insights into the marginal importance of a predictor variable, taking into account the presence of other variables in the model. The following materials are sourced from Fox's [slides](https://socialsciences.mcmaster.ca/jfox/Misc/CANSSI/Fox-CANSSI-notes.pdf) and [lecture](https://www.youtube.com/watch?v=cY1n-s3qE3c).
+
+- Let $y_i^{(1)}$ represent the residuals from the least-squares regression of $y$ on all of the $x$s with the exception $x_1$, that is, the residuals from the fitted model:
+
+    $$y_i = b_0^{(1)} + b_2^{(1)}x_{i2} + ...+ b_k^{(1)}x_{ik} + y_i^{(1)}$$
+    
+- Likewise, $x_i^{(1)}$ are residuals from the least-squares regression of $x_1$ on the other $x$s:
+
+    $$x_{1i} = c_0^{(1)} + c_2^{(1)}x_{i2} + ...+ c_k^{(1)}x_{ik} + x_i^{(1)}$$
+
+- The notation emphasizes the interpretation of the residuals $y_i^{(1)}$ and $x_i^{(1)}$ as the parts of $y$ and $x_1$ that remain when the linear dependence of these variables on $x_2, ..., x_k$ is removed.
+
+The AV plot for $x_1$ is then the scatterplot of $y_i^{(1)}$ versus $x_i^{(1)}$, and we repeat the procedure for each $x_j$, $j =0, 1, ..., k$ (where $x_0 = 1$). In effect, the $(k+1)$-dimensional scatterplot for $y$ and $x_1, ..., x_k$ is reduced to a sequence of $k+1$ 2D AV plots. By doing so, the AV plots visualize leverage and influence on each of the regression coefficients.
+
+The added-variable plot for $x_1$ has the following very interesting properties:
+
+- The slope of the least-squares simple-regression line of of $y_i^{(1)}$ on $x_i^{(1)}$ is the same as the least-squares slope $b_1$ for $x_1$ in the full multiple regression.
+
+- The residuals from this simple regression are the same as the residuals $e_i$ from the full regression.
+
+- Consequently, the standard deviation of the residuals in the added-variable plot is the same as the multiple regression.
+
+- The standard error of $b_1$ from this simple regression is also the same as the standard error from the full regression
+
+- Because the $x_i^{(1)}$ are residuals, they are less variable than $x_1$ if $x_1$ is correlated with the other $x$s. The added-variable plot therefore show how collinearity can degrade the precision of the estimation by decreasing the conditional variation of an $x$.
+
+**NOTE:** You may find these concepts very familiar as in POL 212, we have actually covered the Frisch-Waugh-Lovell Theorem (you can review the materials of *Discussion IV* in [POL 212 Discussion](https://yslhuang.github.io/method-sequence/212-Discussion.html)), in which we showed how to decompose a regression of $Y$ on a set of variables $X$ into two pieces. The coefficient of one of the variables in multiple linear regression model can be obtained by netting off effect of other variables in the regression model from both dependent and independent variables. The FWL Theorem shows that it is important to partial one set of covariates out of the other in order to obtain the ceteris paribus effect. For example, in order to get the effect of $X1$ on $Y$, $X2$ needs to be held constant, which involves removing the portion of $X1$ that is correlated with $X2$. Likewise, when identifying outliers among explanatory variables in a multivariate linear regression model, it's crucial to first hold all other variables constant.
+
+##### Example
+
+For this example, we will use the `Duncan` data frame, which has 45 rows and 4 columns. This is a dataset on the prestige and other characteristics of 45 U.S. occupations in 1950.
+
+```{r, warning=FALSE, message=FALSE, fig.align='center', fig.width=6, fig.height=4}
+library(car)
+library(carData)
+
+knitr::kable(head(Duncan)) # from carData package
+```
+
+These are the description of each variable:
+
+- `type`: Type of occupation. A factor with the following levels: prof, professional and managerial; wc, white-collar; bc, blue-collar.
+
+- `income`: Percentage of occupational incumbents in the 1950 US Census who earned $3,500 or more per year (about $36,000 in 2017 US dollars).
+
+- `education`: Percentage of occupational incumbents in 1950 who were high school graduates (which, were we cynical, we would say is roughly equivalent to a PhD in 2017).
+
+- `prestige`: Percentage of respondents in a social survey who rated the occupation as “good” or better in prestige.
+
+
+Let's begin by regressing `prestige` on all explanatory variables `income` and `education`, then plot the added-variable plots to visually inspect for any potential outliers.
+
+```{r, warning=FALSE, message=FALSE, fig.align='center', fig.width=6, fig.height=4}
+m.duncan <- lm(prestige ~ income + education, data = Duncan)
+```
+
+```{r, message=FALSE, echo=FALSE}
+sjPlot::tab_model(m.duncan, show.se = TRUE, string.se = "S.E.",
+                  dv.labels = c("OLS"), string.pred = "Variables", 
+                  string.ci = "C.I. (95%)", p.style = "stars", 
+                  file = "output.html")
+```
+
+```{r, warning=FALSE, message=FALSE, fig.align='center', fig.width=8, fig.height=4}
+avPlots(m.duncan)
+```
+
+Note that the slope of the blue regression line in both plots corresponds to the estimated coefficient of income and education in our multivariate regression model.
+
+
+In the AV plots, we can observe the impact (or lack thereof) of these unusual cases on the regression coefficients. Let's first examine the left-hand side of the figure. We notice that the case of the minister pulls up on the left side, while the case of the conductor pulls down on the right side. This influential pair is widely separated, affecting the coefficient of income by making it smaller than it would otherwise be. The case of railroad engineers appears as a very high leverage point due to their unusual income given their education level, but it aligns more or less with the trend observed throughout the data. Similarly, the case of the reporter also follows the overall trend.
+
+Similarly, in the education AV plots, we observe a similar trend except for the effect of the minister's case, which pulls up on the left side, leading to a larger coefficient of education than it would otherwise be. Again, the cases of railroad engineers and reporters seem to align with the general trend of the data, requiring less concern.
+
+Overall, based on the AV plots, we may speculate that the case of the minister could be an influential data point affecting our model's estimation. We can proceed by updating our original regression model and then comparing the coefficients between the models to validate this hypothesis.
+
+```{r, warning=FALSE, message=FALSE, fig.align='center', fig.width=8, fig.height=4}
+m.duncan2 <- lm(prestige ~ income + education, 
+                data = subset(Duncan, !(rownames(Duncan) %in% c("minister"))))
+
+```
+
+```{r, message=FALSE, echo=FALSE}
+sjPlot::tab_model(m.duncan, m.duncan2, show.se = TRUE, 
+                  string.se = "S.E.", dv.labels = c("Model 1", "Model 2"), 
+                  string.pred = "Variables", string.ci = "C.I. (95%)",
+                  p.style = "stars", file = "output.html")
+```
+
+Indeed, after excluding the case of the minister, the coefficient of income increases from 0.6 to 0.73, while the coefficient of education decreases from 0.55 to 0.43.
+
+We can also run the `influencePlot()` to check if the Cook's distance of the minister's case is indeed very problematic or not.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.align='center', fig.width=5, fig.height=4}
+influencePlot(m.duncan)
+```
+
+### 2. Diagnostics for Linearity and Errors
+
+#### 2.1 Violation of Linearity Assumption
+
+Recall the linearity assumption is that the expected (mean) value of the disturbance term is 0 (i.e., $E(u_i)=0$). The average regression error is 0 everywhere implies that the regression surface captures the dependency of the conditional mean of $y$ on $x$s. Violating the linearity assumption implies "that the model fails to capture the systematic pattern of relationship between the response and explanatory variables" (Fox, 2016: 307). For example, a partial relationship specified to be linear may be nonlinear, or two explanatory variables specified to have additive partial effects may interact in determining $y$. While a fitted model may sometimes provide a useful approximation to the true regression surface $E(y)$, there are instances where the model can be highly misleading. You can think of nonlinearity (fitting the wrong equation to the data) as potentially the most serious problem with a regression model.
+
+When performing a linear regression with a single explanatory variable, a scatterplot of the response variable against the explanatory variable provides a good indication of the nature of the relationship. If there is more than one explanatory variable, things become more complicated. Although it can still be useful to generate scatterplots of the response variable against each of the explanatory variables, this does not take into account the effect of the other explanatory variables in the model. After all, our interest centers on the partial relationship between $y$ and each $x$, controlling for the other $x$s, not on the *marginal* relationship between y and a single $x$.
+
+Furthermore, while plotting residuals against each $x$ is helpful for detecting departures from linearity, residual plots cannot distinguish between monotone and nonmonotone nonlinearity.
+
+<center>![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/crplots.png){width="60%"}</center>
+
+In the above figure from the Fox textbook, case (a) might be modeled by $y = \beta_0 + \beta_1\sqrt{x} + \varepsilon$ (a transformation of $x$), but case (b) cannot be linearied by a transformation of $x$ and might instead be dealt with a quadratic regression, $y = \beta_0 + \beta_1x + \beta_2x^2  + \varepsilon$.
+
+Component + residual (C+R) plots, an extension of partial residual plots, are a good way to see if each predictor you include in the multivariate linear model have a linear relationship to the dependent variable. A partial residual plot essentially attempts to model the residuals of one predictor against the dependent variable. The partial residual for the $j$th explanatory variables is defined as:
+
+$$E_{i}^{(j)}= E_i+B_jX_{ij}$$
+
+In words, add back the linear component of the partial relationship between $Y$ and $X_j$ to the least-squares residuals, which may include an **unmodeled nonlinear component**. Then plot $E^{(j)}$ versus $X_j$.
+
+##### Example
+
+Let's do a simulation example to see how C+R plots can help distinguish monotone and nonmonotone nonlinearity.
+
+```{r, message=F}
+set.seed(1234) # for replication
+N <- 100 # set up the sample size
+x1 <- rnorm(N, mean = 4, sd = 5)
+x2 <- runif(N, min = -5, max = 5)
+x3 <- rnorm(N, mean = 10, sd = 2)*(x1/2)
+cor(x1, x3)
+e <- rnorm(N, mean = 0, sd = 1) # set the errors to be normally distributed 
+y <- 7 + x1^2 + x2 + 5*x2^2 - 7*x3 + e # set the true y
+df <- data.frame(y = y, x1 = x1, x2 = x2, x3 = x3, e = e)
+```
+
+In the above chunk, I define the true value $y$ as a function of $x_1$, $x_2$, $x_3$, and the error term ($e$). Specifically, the true regression coefficients are set as follows: $1$ for the squared transformation of $x_1$, $1$ for $x_2$, and $-7$ for $x_3$. Additionally, the term $5 \cdot x_2^2$ signifies a quadratic effect of $x_2$, while the intercept is fixed at $7$. Note, I sepcifically set $x_3$ to be highly correlated with $x_1$. To visualize the underlying relationship between $x_1$, $x_2$, $x_3$, and $y$, let's start by plotting scatterplots for each pair of $y$ and $x$, then running a multivariate regression, and plotting residuals against each $x$.
+
+```{r, warning=FALSE, message=FALSE, fig.align='center', fig.width=6, fig.height=8}
+fit <- lm(y ~ x1 + x2 + x3, data = df)
+df$residual <- fit$residuals
+
+library(tidyverse)
+
+p1 <- ggplot(data = df, aes(x = x1, y = y)) +
+  geom_point(color = "gray37", alpha = 0.7) +
+  geom_smooth(color = "salmon2", alpha = 0.3) +
+  labs(subtitle = "Scatterplot between y and each x") +
+  theme_bw()
+  
+p2 <- ggplot(data = df, aes(x = x1, y = residual)) +
+  geom_point(color = "gray37", alpha = 0.7) +
+  geom_smooth(method = "lm", color = "steelblue2", alpha = 0.3) +
+  labs(subtitle = "Residuals against each x") +
+  theme_bw()
+
+p3 <- ggplot(data = df, aes(x = x2, y = y)) +
+  geom_point(color = "gray37", alpha = 0.7) +
+  geom_smooth(color = "salmon2", alpha = 0.3) +
+  theme_bw()
+  
+p4 <- ggplot(data = df, aes(x = x2, y = residual)) +
+  geom_point(color = "gray37", alpha = 0.7) +
+  geom_smooth(method = "lm", color = "steelblue2", alpha = 0.3) +
+  theme_bw()
+
+p5 <- ggplot(data = df, aes(x = x3, y = y)) +
+  geom_point(color = "gray37", alpha = 0.7) +
+  geom_smooth(color = "salmon2", alpha = 0.3) +
+  theme_bw()
+  
+p6 <- ggplot(data = df, aes(x = x3, y = residual)) +
+  geom_point(color = "gray37", alpha = 0.7) +
+  geom_smooth(method = "lm", color = "steelblue2", alpha = 0.3) +
+  theme_bw()
+  
+ggpubr::ggarrange(p1, p2, p3, p4, p5, p6, ncol = 2, nrow = 3)
+
+```
+From the scatterplots of $y$ against $x_1$ and $x_2$, as well as their respective residual plots, it's evident that while plotting residual plots can indicate whether our model violates the linearity assumption, it doesn't provide insight into the underlying reasons for the violation. Notably, the residuals plotted against both $x_1$ and $x_2$ exhibit a similar convex pattern. Moreover, scatterplots of $y$ against $x_1$ and $x_2$ do not accurately depict their partial relationship. Simply plotting scatterplots between variables fails to consider the influence of other variables in the model, particularly when there are high correlations among predictors. Let's do the C+R plots instead.
+
+```{r, warning=FALSE, message=FALSE, fig.align='center', fig.width=6, fig.height=6}
+crPlots(fit)
+```
+
+The magenta line represents a smooth curve through the C+R plots, while the blue dashed line represents the regression coefficient of each $x$ from the multivariate regression model. A notable disparity between the residual line and the component line suggests that the predictor does not exhibit a linear relationship with the response variable. Once again, the advantage of using C+R plots is that they provide information about the partial relationship between $y$ and each $x$ while controlling for all other variables. Additionally, they offer insight into how to address nonlinearity. To address the nonlinearity in $x_1$, applying a square transformation often resolves the issue effectively. As for $x_2$, we need to consider the quadratic relationship between $y$ and $x_2$.
+
+```{r, warning=FALSE, message=FALSE, fig.align='center', fig.width=6, fig.height=6}
+df$x1_square <- (df$x1)^2
+fit_update <- lm(y ~ x1_square + poly(x2, 2, raw = TRUE) + x3, data = df)
+crPlots(fit_update)
+```
+
+#### 2.2 Violation of Homoskedasticity Assumption 
+
+Note: the materials for this section draw from [Penn State STAT 501](https://online.stat.psu.edu/stat501/lesson/13/13.1) and [here](https://www.statology.org/weighted-least-squares-in-r/).
+
+The method of ordinary least squares assumes that there is constant variance in the errors (which is called homoscedasticity). The method of **weighted least squares** can be used when the ordinary least squares assumption of constant variance in the errors is violated (which is called heteroscedasticity). The model under consideration is:
+
+$$Y = X\beta + \epsilon^*$$
+where $\epsilon^*$ is assumed to be (multivariate) normally distributed with mean vector 0 and nonconstant variance-covariance matrix.
+
+$$\begin{equation*} \left(\begin{array}{cccc} \sigma^{2}_{1} & 0 & \ldots & 0 \\ 0 & \sigma^{2}_{2} & \ldots & 0 \\ \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & \ldots & \sigma^{2}_{n} \\ \end{array} \right) \end{equation*}$$
+
+If we define the reciprocal of each variance, $\sigma_i^2$, as the weights, $w_i = 1/\sigma_i^2$, then let matrix W be a diagonal matrix containing these weights:
+
+$$\begin{equation*}\textbf{W}=\left( \begin{array}{cccc} w_{1} & 0 & \ldots & 0 \\ 0& w_{2} & \ldots & 0 \\ \vdots & \vdots & \ddots & \vdots \\ 0& 0 & \ldots & w_{n} \\ \end{array} \right) \end{equation*}$$
+The weighted least squares estimate is then:
+
+$$\begin{align*} \hat{\beta}_{WLS}&=\arg\min_{\beta}\sum_{i=1}^{n}\epsilon_{i}^{*2}\\ &=(\textbf{X}^{T}\textbf{W}\textbf{X})^{-1}\textbf{X}^{T}\textbf{W}\textbf{Y} \end{align*}$$
+With this setting, we can make a few observations:
+
+- Since each weight is inversely proportional to the error variance, it reflects the information in that observation. So, an observation with a small error variance has a large weight since it contains relatively more information than an observation with a large error variance (small weight).
+- The weights have to be known (or more usually estimated) up to a proportionality constant.
+- Weighted least squares estimates of the coefficients will usually be nearly the same as the "ordinary" unweighted estimates. In cases where they differ substantially, the procedure can be iterated until estimated coefficients stabilize (often in no more than one or two iterations); this is called iteratively reweighted least squares.
+- The use of weights will (legitimately) impact the widths of statistical intervals.
+
+##### Example
+
+Let's simulate the violation of homoskedasticity assumption and apply the method of weighted least squares to address it.
+
+```{r, message=F, warning=F}
+set.seed(1234) # for replication
+N <- 1000 # set up the sample size
+x1 <- 1:N
+x2 <- rnorm(N, mean = 10, sd = 3)
+sd <- runif(N, min = 0, max = 2)
+e <- rnorm(N, mean = 0, sd = 2*x1) # set the errors to be normally distributed but not at a constant variance
+y <- 7 + 3*x1 + x2 + e # set the true y
+df <- data.frame(y = y, x1 = x1, x2 = x2, e = e)
+```
+
+In the above chunk, I set the error variance to be more pronounce: as $x1$ gets larger, the error variance gets larger by multiplying $x1$. You can see this relationship in the below figure.
+
+```{r, message=F, warning=F, fig.align='center', fig.width=6, fig.height=4}
+ggplot(data = df, aes(x = x1, y = e)) +
+  geom_point(color = "gray37", alpha = 0.7) +
+  theme_bw()
+```
+
+Let's now run the regression and test it to see if it violates the homoskedasticity assumption.
+
+```{r, message=F, warning=F}
+fit <- lm(y ~ x1 + x2, data = df) 
+```
+
+```{r, message=FALSE, echo=FALSE}
+sjPlot::tab_model(fit, show.se = TRUE, string.se = "S.E.",
+                  dv.labels = c("OLS"), string.pred = "Variables", 
+                  string.ci = "C.I. (95%)", p.style = "stars", 
+                  file = "output.html")
+```
+
+According to the regression table, you can see that the standard error of $x2$ is very large, which is due to the heteroskedasticity problem in our data. The estimate of the effect of $x2$, therefore, is very inefficient.
+
+```{r, message=F, warning=F, fig.align='center', fig.width=6, fig.height=6}
+par(mfrow = c(2, 2))
+plot(fit)
+```
+
+Let's take a look at the third plot. Scale-Location is used to check the homogeneity of variance of the residuals (homoscedasticity). Horizontal line with equally spread points is a good indication of homoscedasticity. This is not the case in our example, where we have a heteroscedasticity problem. It can be seen that the variability (variances) of the residual points increases with the value of the fitted outcome variable, suggesting non-constant variances in the residuals errors.
+
+To formally test for heteroscedasticity, we can perform a **Breusch-Pagan test**:
+
+```{r, message=F, warning=F, fig.align='center', fig.width=6, fig.height=6}
+# load lmtest package
+library(lmtest)
+
+# perform Breusch-Pagan test
+bptest(fit)
+```
+
+The Breusch-Pagan test uses the following null and alternative hypotheses:
+
+- Null Hypothesis ($H_0$): Homoscedasticity is present (the residuals are distributed with equal variance)
+- Alternative Hypothesis ($H_A$): Heteroscedasticity is present (the residuals are not distributed with equal variance)
+
+Since the p-value from the test is < 2.2e-16, we will reject the null hypothesis and conclude that heteroscedasticity is a problem in this model.
+
+Since heteroscedasticity is present, we will perform weighted least squares by defining the weights in such a way that the observations with lower variance are given more weight:
+
+```{r, message=F, warning=F, fig.align='center', fig.width=6, fig.height=6}
+# define weights to use
+wt <- 1 / lm(abs(fit$residuals) ~ fit$fitted.values)$fitted.values^2
+
+head(lm(abs(fit$residuals) ~ fit$fitted.values)$fitted.values)
+head(wt)
+```
+
+
+```{r, message=F, warning=F, fig.align='center', fig.width=6, fig.height=6}
+# perform weighted least squares regression
+wls_fit <- lm(y ~ x1 + x2, data = df, weights = wt)
+```
+
+
+```{r, message=FALSE, echo=FALSE}
+sjPlot::tab_model(fit, wls_fit, show.se = TRUE, string.se = "S.E.",
+                  dv.labels = c("No WLS", "WLS"), 
+                  string.pred = "Variables", 
+                  string.ci = "C.I. (95%)", p.style = "stars", 
+                  file = "output.html")
+```
+
+The weighted least squares model yields a coefficient for $x_2$ much closer to its true value compared to the original model. Additionally, the residual standard error in the WLS model is smaller than that in the original multivariate linear regression model. These results suggest that the predicted values generated by the weighted least squares model are much closer to the actual observations than those produced by the original model.
+
+The weighted least squares model also has an R-squared of 0.648 compared to 0.371 in the original multivariate linear regression model. This indicates that the weighted least squares model is able to explain more of the variance in y compared to the original multivariate linear regression model.
 
 ## Discussion IV
+
+TBD
+
+## Discussion V
+
+TBD
+
+## Discussion VI
 
 TBD
