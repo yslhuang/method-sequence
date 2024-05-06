@@ -1556,8 +1556,11 @@ The weighted least squares model also has an R-squared of 0.648 compared to 0.37
 
 ## Discussion IV
 
-1.  (Multi)collinearity Problem
-2.  Detecting Collinearity
+For today’s discussion, we will review what multicollinearity is, how to detect it, and introduce Principal Component Analysis (PCA) as one of the methods to handle it.
+
+1. (Multi)collinearity Problem
+2. Detecting Collinearity
+3. Principle Component Analysis (PCA)
 
 ### 1. (Multi)collinearity Problem
 
