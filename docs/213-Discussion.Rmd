@@ -1556,7 +1556,324 @@ The weighted least squares model also has an R-squared of 0.648 compared to 0.37
 
 ## Discussion IV
 
-TBD
+1.  (Multi)collinearity Problem
+2.  Detecting Collinearity
+
+### 1. (Multi)collinearity Problem
+
+In multivariate linear regression, it is possible for two or more predictor variables to be correlated with each other. This scenario is referred to as collinearity. In extreme cases, where collinearity exists between three or more variables, even if no pair of variables has a particularly high correlation, this is known as multicollinearity. Multicollinearity indicates redundancy between predictor variables.
+
+The presence of multicollinearity can cause the solution of the regression model to become unstable. 
+
+- coefficient standard errors are large reflecting imprecision 
+- broad confidence intervals 
+- hypothesis test have low power
+
+Therefore, it is important to detect and address multicollinearity before building a regression model to ensure the model's reliability and accuracy.
+
+#### 1.1 Example of Perfect Multicollinearity Problem
+
+Let's first review what Lauren discussed in the lecture regarding why it's not feasible to include all the dummies of a categorical variable .
+
+```{r, warning = FALSE, message = FALSE}
+library(AER)
+library(MASS)
+data(CASchools)
+
+# define variables
+CASchools$STR <- CASchools$students/CASchools$teachers 
+CASchools$score <- (CASchools$read + CASchools$math)/2 
+
+# set seed for reproducibility
+set.seed(1)
+
+# generate artificial data on location
+CASchools$direction <- sample(c("West", "North", "South", "East"), 420, replace = T)
+head(CASchools[, c("score", "STR", "english", "direction")])
+```
+
+In this example, our response variable is `score`, and explanatory variables are `STR`(student-teacher ratio), `english` (the share of English learning students), and `direction` (artificial location of a
+school).
+
+```{r, warning = FALSE, message = FALSE}
+mod1 <- lm(score ~ STR + english + direction, data = CASchools)
+```
+
+```{r, message=FALSE, echo=FALSE}
+sjPlot::tab_model(mod1, show.se = TRUE, string.se = "S.E.",
+                  dv.labels = c("Score"), 
+                  string.pred = "Variables", 
+                  string.ci = "C.I. (95%)", p.style = "stars", 
+                  file = "output.html")
+```
+
+In the regression table above, you'll notice that R has included only three of the dummies for the direction variable and has designated the category `East` as the reference group in the model. What this means is that when interpreting the coefficients of the remaining three categories of the `direction` variable, we are comparing their effects to the category `East`. For instance, we can infer that schools located in the North have, on average, 1.66 higher test scores than schools located in the East. Although this difference is not statistically significant, as the variable was artificially generated.
+
+In addition, since the category `East` was designated as the reference group, the value of the intercept reflects that the baseline test score of a school is when schools have a student-teacher ratio of 0, no English learning students, and are located in the East. The modelpredicts that the average test score of such schools is 684.80.
+
+What would happen if we intentionally include four dummies of the `direction` variable in the model?
+
+```{r, message=FALSE, warning=FALSE}
+library(fastDummies)
+CASchools <- dummy_cols(CASchools, select_columns = "direction")
+head(CASchools[,c("score", "STR", "english", "direction_East", 
+                  "direction_North", "direction_South", "direction_West")])
+```
+
+```{r, warning = FALSE, message = FALSE}
+mod2 <- lm(score ~ STR + english + direction_North + direction_South + 
+               direction_West + direction_East , data = CASchools)
+```
+
+
+```{r, message=FALSE, echo=FALSE}
+sjPlot::tab_model(mod1, mod2, show.se = TRUE, string.se = "S.E.",
+                  dv.labels = c("Model 1", "Model 2"), 
+                  string.pred = "Variables", 
+                  string.ci = "C.I. (95%)", p.style = "stars", 
+                  file = "output.html")
+```
+
+
+As you can observe in model 2, R automatically dropped one of the dummies of the `direction` variable (`East`). R does this to solve the perfect multicollinearity problem. Where is the perfect
+multicollinearity problem in this case? 
+
+Recall from the materials in Discussion II, we talk about how to think of our data set as a matrix. The below equations are how each observation in our data set generated.
+
+<center>
+
+$Y_1=\beta_0+\beta_1X_{11}+\beta_2X_{12}+...+\beta_kX_{1k}+\varepsilon_1$
+
+$Y_2=\beta_0+\beta_1X_{21}+\beta_2X_{22}+...+\beta_kX_{2k}+\varepsilon_2$
+
+.
+
+.
+
+.
+
+$Y_n=\beta_0+\beta_1X_{n1}+\beta_2X_{n2}+...+\beta_kX_{nk}+\varepsilon_n$
+
+</center>
+
+Rewrite them into a matrix form.
+
+<center>![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/matrix.png){width="50%"}</center>
+
+The system of equations is summarized as the *y* vector equal to the product of the *X* matrix of data times the *$\beta$* vector of parameters plus the vector of disturbances, $\varepsilon$. In the lecture, Lauren showed how to apply what we did when finding a pair of intercept and slope in simple linear regression to solve the optimization problem to find the coefficient vector *b* using matrix algebra. Instead of taking derivative with respect to each coefficient one at a time, we can take derivative directly with respect to the coefficient vector *b*. Therefore, the least squares estimator is:
+
+<center>
+
+$\hat{\beta}=(X'X)^{-1}X'y$
+
+</center>
+
+In the matrix algebra for estimating $\beta$ coefficients using the above equation, it is necessary for the first column of the $X$ matrix to be composed of 1s. This is because the first column represents the intercept term in the regression model. Therefore, including all the dummies of a categorical variable in a regression model would result in a perfect multicollinearity problem beacuse they are the linear combination of the intercept term.
+
+Let's relook at the `CASchools` again.
+
+```{r, message=FALSE, warning=FALSE}
+head(CASchools[,c("score", "STR", "english", "direction_East", 
+                  "direction_North", "direction_South", "direction_West")])
+```
+
+The linear combination of the intercept term equals to the sum of `direction_East`, `direction_North`, `direction_South`, `direction_West`, resulting in a perfect multicollinearity problem.
+
+```{r, message=FALSE, warning=FALSE}
+CASchools$intercept <- CASchools$direction_East + CASchools$direction_North + 
+    CASchools$direction_South + CASchools$direction_West
+
+head(CASchools[,c("score", "STR", "english", "direction_East", 
+                  "direction_North", "direction_South", "direction_West", "intercept")])
+```
+
+#### 1.2 Example of Imperfect Multicollinearity Problem
+
+If there is high multicollinearity between variables but not perfectly correlated, `lm()` will still spit out the estimates of the highly correlated variable. However, the standard errors of coefficients will be very high, which means that our estimates will be highly unstable.
+
+```{r, warning=FALSE, message=FALSE}
+set.seed(1234)
+
+# generate a highly correlated variable
+CASchools$english_hc1 <- 2*CASchools$english + rnorm(nrow(CASchools), 10, 5)
+
+cor(CASchools$english_hc1, CASchools$english) # english_hc is highly but not perfectly correlated with english
+```
+
+```{r, warning=FALSE, message=FALSE}
+set.seed(1234)
+
+# generate a less highly correlated variable
+CASchools$english_hc2 <- 2*CASchools$english + rnorm(nrow(CASchools), 10, 20)
+
+cor(CASchools$english_hc2, CASchools$english) 
+```
+
+
+```{r, warning = FALSE, message = FALSE}
+mod3 <- lm(score ~ STR + english , data = CASchools) # without highly correlated term
+mod4 <- lm(score ~ STR + english + english_hc1 , data = CASchools) # with highly correlated term
+mod5 <- lm(score ~ STR + english + english_hc2 , data = CASchools) # with less highly correlated term
+```
+
+```{r, message=FALSE, echo=FALSE}
+sjPlot::tab_model(mod3, mod4, mod5, show.se = TRUE, 
+                  string.se = "S.E.",
+                  dv.labels = c("Model 1", "Model 2", "Model 3"), 
+                  string.pred = "Variables", 
+                  string.ci = "C.I. (95%)", p.style = "stars", 
+                  file = "output.html")
+```
+
+The regression output indicates that in models 2 and 3, there is an imperfect multicollinearity problem, which is reflected by an increase in the standard error of the coefficient estimates. Specifically, the estimated effect of `english` becomes increasingly unstable as the correlation between `english` and the correlated term (which we artificially generated) becomes stronger.
+
+### 2. Detecting Collinearity 
+
+Multicollinearity in a regression model can be assessed by computing the **variance inflation factor (VIF)** for each predictor variable. VIF measures how much of the variation in one variable is explained by the other variable. This is done by running a regression using one of the correlated $x$ variables as the dependent variable against the other variables as predictor variables. The VIF is calculated as one divided by the tolerance, which is defined as one minus R-squared.
+
+<center>$VIF_j = \frac{1}{1-R_j^2}$ </center>
+
+A VIF value of 1 indicates an absence of multicollinearity, while values exceeding 5 or 10 suggest problematic collinearity (James et al., 2014). When multicollinearity is detected, it is recommended to remove one or more of the correlated variables from the model. This is because the presence of multicollinearity implies that the information provided by the correlated variables about the response variable is redundant in the presence of other variables (James et al., 2014; P. Bruce & Bruce, 2017).
+
+The R function `vif()` in the `car` package can be used to detect multicollinearity in a regression model:
+
+```{r, warning = FALSE, message = FALSE}
+library(car)
+vif(mod3) # without highly correlated term
+```
+
+```{r, warning = FALSE, message = FALSE}
+vif(mod4) # with highly correlated term
+```
+
+```{r, warning = FALSE, message = FALSE}
+vif(mod5) # with less highly correlated term
+```
+
+As anticipated, when we include a highly correlated term in the model, both `english` and `english_hc1` exhibit extremely high VIF scores. 
+
+### 3. Principal Components Analysis (PCA)
+
+Principal Components Analysis (PCA), which is an unsupervised machine learning technique, can help handle multicollinearity problems by creating new features that are orthogonal to each other, meaning that they have zero correlation. This eliminates the problem of having features that are redundant or that inflate the variance of your model coefficients.
+
+The goal of PCA is to explain most of the variability in a dataset with fewer variables than the original dataset. PCA offers a way to find a low-dimensional representation of a dataset that captures as much of the variation in the data as possible. If we’re able to capture most of the variation in just two dimensions, we could project all of the observations in the original dataset onto a simple scatterplot.
+
+The way we find the principal components is as follows:
+
+Given a dataset with $p$ predictors: $X_1$, $X_2$,..., $X_p$, calculate $Z_1$,..., $Z_M$ to be the $M$ linear combinations of the original $p$ predictors where:
+
+- $Z_m = \Sigma \Phi_{jm}X_j$ for some constants $\Phi_{1m}$, $\Phi_{2m}$,..., $\Phi_{pm}$, $m = 1, 2,...,M$.
+- $Z_1$ is the linear combination of the predictors that captures the most variance possible.
+- $Z_2$ is the next linear combination of the predictors that captures the most variance while being orthogonal (i.e. uncorrelated) to $Z_1$.
+- $Z_3$ is then the next linear combination of the predictors that captures the most variance while being orthogonal to $Z_2$.
+- And so on.
+
+In practice, we use the following steps to calculate the linear combinations of the original predictors:
+
+1. Scale each of the variables to have a mean of 0 and a standard deviation of 1.
+
+2. Calculate the covariance matrix for the scaled variables.
+
+3. Calculate the eigenvalues of the covariance matrix.
+
+Using linear algebra, it can be shown that the eigenvector that corresponds to the largest eigenvalue is the first principal component. In other words, this particular combination of the predictors explains the most variance in the data.
+
+The eigenvector corresponding to the second largest eigenvalue is the second principal component, and so on.
+
+#### Example
+
+For this example, we will use the "Communities and Crime" dataset from the UCI Machine Learning Repository, created by Michael Redmond. This dataset includes various socio-economic, law enforcement, and crime data. A cleaned version is available in the `mogavs` package under the name `crimeData`, which has been simplified by removing all columns identified as redundant by the dataset's author, reducing the number of columns from 128 to 123.
+
+We will use this dataset from the `mogavs` package for our analysis. The outcome variable we are focusing on is violent crimes per capita, while the independent variables include aspects of law enforcement, socio-economic factors, and crime data. A detailed description of all these variables can be found [here](http://archive.ics.uci.edu/ml/datasets/communities+and+crime).
+
+```{r, warning=FALSE, message=FALSE, fig.align='center', fig.width=6, fig.height=8}
+library(mogavs)
+dim(crimeData)
+colnames(crimeData)
+```
+
+```{r, warning=FALSE, message=FALSE, fig.align='center', fig.width=6, fig.height=8}
+# initialize
+crimeData.y <- crimeData$y # set y as a vector out of the original data  
+crimeData.X <- crimeData[, -123] # takeout y
+```
+
+By plotting the correlation matrix among predictors, we observe significant correlations between some variables, suggesting potential multicollinearity issues if all variables are included in the model.
+
+```{r, warning=FALSE, message=FALSE, fig.align='center', fig.width=6, fig.height=4}
+res <- cor(crimeData.X, method = "pearson")
+corrplot::corrplot(res, method= "color", 
+                   order = "hclust", tl.pos = 'n')
+```
+
+As you compute the Variance Inflation Factor (VIF) for each predictor, you will notice that many variables have VIF scores exceeding 5 or 10, indicating potentially problematic multicollinearity.
+
+```{r, warning=FALSE, message=FALSE, fig.align='center', fig.width=6, fig.height=4}
+fit <- lm(y ~ ., data = crimeData)
+summary(fit)$r.squared
+round(vif(fit), 2)
+```
+
+Instead of arbitrarily dropping variables from our model to address multicollinearity, we can perform principal component analysis (PCA). This approach allows us to identify principal components that capture most of the variance in the data with fewer variables, thus avoiding multicollinearity and leading to more efficient estimates.
+
+Now, the first procedure for PCA is to scale and center the data using `prcomp` command. This command is both convenient and useful, helping you to subtract each observation value by its mean and then divide the result by the standard deviation. Then, we can use `print` and `summary` commands to see the rotation, standard deviation and proportion of variance each component contributes to the dataset, and use `fviz_fig` in package `factoextra` to plot a nice formatted scree plot.
+
+```{r, warning=FALSE, message=FALSE, fig.align='center', fig.width=6, fig.height=4}
+pca <- prcomp(crimeData.X, center = TRUE, scale. = TRUE)
+summary(pca)
+```
+
+In the summary part, the line Proportion of Variance represents how much percentage of the variance is explained by each component. Here the first component explains 21.54% of the variability, the second component explains 15.05% of the variance and so on… Then the line Cumulative Proportion represents the percentage of variance explained by first k elements. Specifically, PC41 column gives the value 0.95138, which means if we include the first 41 components, then 95.14% of the variance is explained.
+
+Note that the principal components scores for each observation are stored in `pca$x`. 
+
+```{r, warning=FALSE, message=FALSE, fig.align='center', fig.width=6, fig.height=4}
+# display principal components
+head(pca$x)
+```
+
+Let’s revisit the correlation plot. As the principal components are orthogonal, they exhibit no correlation. Consequently, the correlation plot appears perfectly white, except for instances of autocorrelation.
+
+```{r, warning=FALSE, message=FALSE, fig.align='center', fig.width=6, fig.height=4}
+res2 <- cor(pca$x, method = "pearson")
+corrplot::corrplot(res2, method= "color", 
+                   order = "hclust", tl.pos = 'n')
+```
+
+One challenge of using PCA is deciding how many principal components to retain. Retaining too many may not sufficiently reduce dimensionality, potentially maintaining multicollinearity. Conversely, keeping too few can lead to significant information loss, reducing the accuracy of your model. A widely used method to determine the optimal number of principal components is the scree plot. This plot displays the eigenvalues of the principal components in descending order and identifies where an abrupt change in the slope occurs, signaling a drop in the importance of subsequent components. The ideal pattern is a steep curve, followed by a bend, and then a straight line. Use the components in the steep curve before the first point that starts the line trend.
+
+```{r, warning=FALSE, message=FALSE, fig.align='center', fig.width=6, fig.height=4}
+factoextra::fviz_eig(pca, barfill = "gray73", barcolor = "gray73",
+                     linecolor = "steelblue2", xlab = "Principle Component", ncp = 30)
+```
+
+As shown in the scree plot above, at first glance, it appears that the curve starts to level off from PC10, suggesting that including the first 9 components may be optimal. According to the summary results of the PCA object, including these first 9 components explains 70.85% of the variance.
+
+Now let's rerun the model with 9 principal components and compute the VIF scores for each component. As shown below, all the VIF scores are 1, confirming the absence of multicollinearity as previously indicated by the correlation matrix. Instead of including numerous correlated variables, which could lead to inefficient estimates, the revised model now offers a more efficient set of estimates. Moreover, it still explains a significant portion of the variance in the outcome variable, with an $R^2$ of 0.6261, only slightly lower than the 0.6979 of the original model.
+
+```{r, warning=FALSE, message=FALSE, fig.align='center', fig.width=6, fig.height=4}
+crimeData.pca <- as.data.frame(cbind(y = crimeData.y, pca$x[, 1:9]))
+fit_pca <- lm(y ~ ., data = crimeData.pca)
+summary(fit_pca)$r.squared
+round(vif(fit_pca), 2)
+```
+
+For a more stringent method to determine how many principal components should be included in the linear regression model, please see [here](https://jbhender.github.io/Stats506/F17/Projects/G18.html) for an example.
+
+Another challenge of using PCA is to interpret the meaning of the principal components. Unlike the original features, which may have a clear definition and unit, the principal components are abstract and hard to explain. One way to interpret the principal components is to look at the coefficients of the linear combination that forms each component. These coefficients indicate how much each original feature contributes to the component and what is the direction of the relationship. For example, if a component has a high positive coefficient for a feature, it means that the component increases with the feature. 
+
+The function `fviz_contrib` function from `factoextra` package can be used to draw a bar plot of variable contributions. If your data contains many variables, you can decide to show only the top contributing variables. The R code below shows the top 50 variables contributing to the first principal component we have in this example:
+
+```{r, warning=FALSE, message=FALSE, fig.align='center', fig.width=8, fig.height=4}
+factoextra::fviz_contrib(pca, choice = "var", axes = 1, top = 50, 
+                         fill = "gray73", color = "gray73")
+
+
+```
+The red dashed line on the graph above indicates the expected average contribution. If the contribution of the variables were uniform, the expected value would be 1/length(variables) = 1/122 = 0.82%. For a given component, a variable with a contribution larger than this cutoff could be considered as important in contributing to the component.
+
+For instance, in the linear regression model where we include principal components instead of the original variables, there is a negative relationship between our outcome variable, violent crimes per capita, and PC1. According to the contribution plot, variables such as x.V25, x.V18, x.V50, and others above the red dashed line indicate that the relationship between our outcome variable and these variables is likely negative.
+
 
 ## Discussion V
 
