@@ -1880,7 +1880,262 @@ For instance, in the linear regression model where we include principal componen
 
 ## Discussion V
 
-TBD
+Today's discussion will begin by examining the critiques of utilizing ordinary least squares for regression modeling when the outcome variable is categorical rather than continuous. Subsequently, we will explore the appropriate methods for modeling a categorical outcome variable.
+
+1. Linear Probability Model
+2. Logistic Regression Model
+
+### 1. Linear Probability Model
+
+#### 1.1 What is the Linear Probability Model?
+
+In an ordinary least square (OLS) linear model, the output of the model is a conditional expectation of $Y$ given on $X_i$, which is $E(Y|X_i)$, in which $Y$ is our continuous outcome variable and $X_i$ are explanatory variables. If we use OLS to estimate the effect on a dichotomous outcome variable, the original target, $E(Y|X_i)$, becomes $Pr(Y=1|X_i)$. Since now the outcome variable is a vector that only could be either 0 or 1, intuitively thinking, when we apply OLS under such circumstance, we are estimating the proportion of 1s at different values of our explanatory variables. This is known as the linear probability model, which can be written in the following equation:
+
+
+$$Pr(Y=1|X_i)=\alpha + \beta_1x_{1i} + \beta_2x_{2i} + ... + \beta_kx_{ki} + \varepsilon_i$$
+
+#### 1.2 Statistical Critiques about the Linear Probability Model
+
+Some critiques regarding the problems of using OLS to estimate the effect on dichotomous dependent variables can be classified into two branches.
+
+- Violation of Homoskedasticity Assumption
+
+    First, the misuse of OLS on dichotomous outcome variables would violate one of the Gauss-Markov assumptions – homoskedasticity. Homoskedasticity assumption suggests that error variance across values of $X_i$ should be constant (i.e., $Var(\varepsilon_i)=\sigma^2$). The violation of this assumption indicates that the error variance is not constant and heteroskedastic. While such violation will only produce biased standard errors but not affect the estimate of the regression coefficients, the test of significance of the estimates is still affected. The OLS estimator under such violation will be no longer efficient. Larger standard errors would make us not reject the null hypothesis more often. The reason why adopting linear probability model would frequently cause the violation of homoskedasticity happen is due to the fact that the conditional distribution of the error term $\varepsilon_i$ in such model is dichotomous. Recall the Chilean voters example from the lecture.
+
+    ```{r, message=FALSE, warning=FALSE}
+# read in data
+mydata <- read.delim("/Users/yu-shiuanhuang/Desktop/year#3/SPRING/TA-POL213/data/Chile3.txt", header=TRUE, sep="\t")
+
+# recode voting intention
+mydata$vote2 <- 0
+mydata$vote2[mydata$vote == "Y"] <- 1
+mydata$vote2[mydata$vote == "N"] <- 0
+mydata$vote2[mydata$vote == "U"] <- NA
+mydata$vote2[mydata$vote == "A"] <- NA
+
+mydata2 <- subset(mydata, vote2 != "NA")
+```
+
+    ```{r, message=FALSE, warning=FALSE, fig.align='center', fig.width=5, fig.height=4}
+# scatterplot of voting intention against support for status quo
+ggplot(data = mydata2, aes(x = statusquo, y = vote2)) +
+  geom_jitter(width = 0.1, height = 0.1, alpha = 0.7, col = "gray66") +
+  geom_hline(yintercept = 1, col = "salmon2", alpha = 0.7, linetype = "dashed") +
+  geom_hline(yintercept = 0, col = "salmon2", alpha = 0.7, linetype = "dashed") +
+  scale_y_continuous(breaks = seq(0, 1, 0.2), labels = seq(0, 1, 0.2)) +
+  scale_x_continuous(breaks = seq(-1.5, 1.5, 0.5), labels = seq(-1.5, 1.5, 0.5)) +
+  labs(x = "Support for Status Quo", y = "Voting Intention") +
+  theme_bw()
+```
+
+    ```{r, message=FALSE, warning=FALSE}
+# linear probability model
+ols.chile <- lm(vote2 ~ statusquo, data = mydata2)
+```
+
+    ```{r, message=FALSE, echo=FALSE}
+sjPlot::tab_model(ols.chile, show.se = TRUE, string.se = "S.E.",
+                  dv.labels = c("OLS"), string.pred = "Variables", 
+                  string.ci = "C.I. (95%)", p.style = "stars", 
+                  file = "output.html")
+```
+
+    ```{r, message=FALSE, warning=FALSE, fig.align='center', fig.width=5, fig.height=4}
+# plot residuals
+mydata2$residuals <- ols.chile$residuals
+    
+ggplot(data = mydata2, aes(x = statusquo, y = residuals)) +
+  geom_jitter(width = 0.1, height = 0.1, alpha = 0.7, col = "gray66") +
+  geom_hline(yintercept = 0, col = "salmon2", alpha = 0.7, linetype = "dashed") +
+  scale_y_continuous(breaks = seq(-1, 1, 0.5), labels = seq(-1, 1, 0.5)) +
+  scale_x_continuous(breaks = seq(-1.5, 1.5, 0.5), labels = seq(-1.5, 1.5, 0.5)) +
+  labs(x = "Support for Status Quo", y = "Residuals") +
+  theme_bw()
+```
+
+    Specifically, because $Y_i$ is either 0 or 1, the conditional distribution of $\varepsilon_i$ is also dichotomous.
+
+    <center>
+$Y_i = 1:$ $\varepsilon_i = 1-E(Y_i) = 1-(\alpha+\beta X)$
+</center>
+
+    <center>
+$Y_i = 0:$ $\varepsilon_i = 0-E(Y_i) = 0-(\alpha+\beta X)$
+</center>
+
+- Inaccurate Estimated Effects at the Extremes
+
+    The second branch of critique lies in that the effect on the dichotomous outcome variable estimated by the linear probability model would be inaccurate at the extremes. Recall that, in a dichotomous dependent variable, the potential outcomes a unit could receive are either 1 or 0. If we use OLS to estimate the effect, the linear coefficients could generate meaningless results because the predicted values (i.e., probabilities) based on such model would easily fall outside the interval between 0 and 1. This could impact the interpretation and implication of the findings. For example, how would we be able to justify why there is a hypothetical voter that has a probability of 110% voting for a candidate? Let's recall the Chile voters example again. The fitted values based on the linear probability model show that there are predictions lie outside the (0, 1) interval. The minimum of the fitted values is -0.18799, and the maximum is 1.16744.
+
+    ```{r, message=FALSE, warning=FALSE}
+summary(ols.chile$fitted.values)
+```
+
+    ```{r, message=FALSE, warning=FALSE, fig.align='center', fig.width=5, fig.height=4}
+# scatterplot of voting intention against support for status quo and the fitted regression line
+mydata2$fitted.values <- ols.chile$fitted.values
+    
+ggplot(data = mydata2, aes(x = statusquo, y = vote2)) +
+  geom_jitter(width = 0.1, height = 0.1, alpha = 0.7, col = "gray66") +
+  geom_hline(yintercept = 1, col = "salmon2", alpha = 0.7, linetype = "dashed") +
+  geom_hline(yintercept = 0, col = "salmon2", alpha = 0.7, linetype = "dashed") +
+  geom_line(data = mydata2, aes(x = statusquo, y = fitted.values), col = "steelblue2", alpha = 0.7, lwd = 1) +
+  scale_y_continuous(breaks = seq(0, 1, 0.2), labels = seq(0, 1, 0.2)) +
+  scale_x_continuous(breaks = seq(-1.5, 1.5, 0.5), labels = seq(-1.5, 1.5, 0.5)) +
+  labs(x = "Support for Status Quo", y = "Voting Intention") +
+  theme_bw()
+```
+
+### 2. Logistic Regression Model
+
+Due to the above two main statistical critiques on the linear probability model, we use the cdf of the **logistic distribution** to transform and restrict the lower bound of the prediction to 0 and an upper bound to  1, in which we estimate our parameters through maximum likelihood approach (unlike the least squares estimation approach we've been using to solve the optimization problem for our models so far).
+
+The logistic regression model we are going to estimate can be written as the following equation:
+
+$$\pi_i \equiv Pr(Y_i=1|X_i) = \Lambda(\alpha+\beta_1 x_{1i}+...+\beta_k x_{ki}) = \frac{1}{1+exp(-(\alpha+\beta_1 x_{1i}+...+\beta_k x_{ki}))}=\frac{exp(\alpha+\beta_1 x_{1i}+...+\beta_k x_{ki})}{1+exp(\alpha+\beta_1 x_{1i}+...+\beta_k x_{ki})}$$
+
+in which $\Lambda()$ is a function that can transform and map predicted values to probabilities by constraining them to the unit interval (0, 1). The above equation can be further linearized by the following transformation:
+
+$$logit(\pi_i)=log\frac{\pi_i}{1-\pi_i}=\alpha+\beta_1 x_{1i}+...+\beta_k x_{ki}$$
+
+The left-hand side is termed the logit, which stands for “logistic unit”. It is also known as the log odds. In this case, our model will produce values on the log scale and with the logistic equation above, we can transform the values to the 0-1 range. Now, the question remains: How do we find the best parameter estimates for our model? (i.e., how to find $\alpha$ and $\beta$s?) By applying the maximum likelihood framework!
+
+The best parameter estimates are the ones that maximize the likelihood of the statistical model actually producing the observed data. You can think of this fitting as a probability distribution to an observed data set. The parameters of the probability distribution should maximize the likelihood that the observed data came from the distribution in question.
+
+In logistic regression, the response variable is modeled with a binomial distribution or its special case Bernoulli distribution. For a response variable $Y_i$ that takes on two values {0, 1} with probability $\pi_i$ and $(1-\pi_i)$, we can summarize the probability distribution of $Y_i$ simply as:
+
+$$p(y_i) \equiv Pr(Y_i=y_i)=\pi_i^{y_i}(1-\pi_i)^{1-y_i}$$
+
+For a sample of N independent observations, the joint probability for the data can be written as:
+
+$$p(y_1, y_2,...,y_N)=Pr(Y|\pi)=\prod_{i=1}^{N}\pi_i^{y_i}(1-\pi_i)^{1-y_i}$$
+
+substituting from the logit model ($\pi_i$ is dependent on parameters $\alpha$ and $\beta$ and also on the values of predictor variables $x_i$):
+
+$$Pr(Y|\alpha, \beta)=\prod_{i=1}^{N}(\frac{1}{1+exp(-(\alpha+\beta_1 x_{1i}+...+\beta_k x_{ki}))})^{y_i}(1-\frac{1}{1+exp(-(\alpha+\beta_1 x_{1i}+...+\beta_k x_{ki}))})^{1-y_i}$$
+
+$$=\prod_{i=1}^{N}(1+exp(-(\alpha+\beta_1 x_{1i}+...+\beta_k x_{ki})))^{-y_i}(1+exp(\alpha+\beta_1 x_{1i}+...+\beta_k x_{ki}))^{y_i-1}$$
+
+We can find the parameters that are most likely to have produced the results you observed by maximizing the above joint probability function. Thinking of this equation as a function of the parameters while treating the data ($y_1, y_2, ..., y_N$) as fixed gives us the likelihood function for the logit model $L(\alpha, \beta|Y)$, which is proportional to $Pr(Y|\alpha, \beta)$. For an easier computation, let's take a log of it to further transform it to a log-likelihood function (the logarithms are good to reduce the numerical value of big numbers; for example, they enable us to simplify calculations by reducing the exponent of a number, and also allow us to transform products into sums). The log-likelihood function can be written as:
+
+$$lnL(\alpha, \beta|y)=\Sigma_{i=1}^{N}[-y_i ln[1+exp(-(\alpha+\beta_1 x_{1i}+...+\beta_k x_{ki}))]-(1-y_i)ln[1+exp(\alpha+\beta_1 x_{1i}+...+\beta_k x_{ki})]]$$
+
+By employing the log-likelihood function with our dataset, we can utilize numerical computation in R to find the values of $\alpha$ and $\beta$ that maximize this function. Typically, the computation begins by forming an initial guess for the parameters and subsequently adjusting them based on the log-likelihood function's output, aiming to reach the maximum. Consequently, multiple iterations of the numerical process are involved.
+
+#### Example: Chilean voters
+
+Let's now run a logistic regression model on our Chilean voters data.
+```{r, message=FALSE, warning=FALSE}
+logit.chile <- glm(vote2 ~ statusquo, data = mydata2, 
+                   family = binomial(link = "logit"))
+
+stargazer::stargazer(logit.chile, digits = 5, type = "text")
+```
+
+
+What does the coefficient of statusquo mean? The regression output here is in such form: 
+
+<center>
+$log \frac{\pi_i}{1-\pi_i}=\alpha + \beta X_i=0.21531+3.20554X_i$
+
+where $\pi_i$=Pr(voted yes for supporting Pinochet)
+</center>
+
+The coefficient of the "statusquo" variable is found to be significantly positive, suggesting that a one-unit increase in "statusquo" is associated with a 3.20554 unit increase in the log-odds. What does this even mean?
+
+To have a more understandable interpretation, we can transform the regression output into odds ratio (i.e., $\frac{\pi_i}{1-\pi_i}$; the odds of a voter supports Pinochet versus against Pinochet). How to transform log-odds into odds ratio? Exponentiate the log-odds!
+
+```{r, message=FALSE, warning=FALSE}
+exp(coef(logit.chile))
+```
+
+The odds ratio of the statusquo variable means that, for a one-unit increase in the statusquo variable, we expect to see about 2367% ((24.67-1)*100%) increase in the odds of a voter supports Pinochet versus against Pinochet, meaning that a voter is more likely to vote for Pinochet when he/she is more prone to maintain the status quo.
+
+We can also confirm this interpretation by looking at the predicted values using the estimated coefficients and then calculating the probability:
+
+<center>
+$log \frac{\pi_i}{1-\pi_i}=0.21531+3.20554*statusquo$
+
+where $\pi_i$=Pr(voted yes for supporting Pinochet)
+
+$\pi_i = \frac{exp(0.21531+3.20554*statusquo)}{1+exp(0.21531+3.20554*statusquo)}$
+</center>
+
+Let's first see the range of the statusquo variable:
+```{r, message=FALSE, warning=FALSE}
+summary(mydata2$statusquo)
+```
+
+The probability that a voter holds the status quo at a value of 0 supports/against Pinochet is 0.5536205/0.4463795. The odds ratio that a voter holds the status quo at a value of 0 supports Pinochet versus against Pinochet is then 1.240246.
+
+```{r, message=FALSE, warning=FALSE}
+pi_0 <- exp(0.21531 + 3.20554*0) / (1 + exp(0.21531 + 3.20554*0))
+pi_0
+1 - pi_0
+or_0 <- pi_0 / (1 - pi_0); or_0
+```
+
+The probability that a voter holds the status quo at a value of 1 supports/against Pinochet is 0.9683498/0.03165017. The odds ratio that a voter holds the status quo at a value of 1 supports Pinochet versus against Pinochet is then 30.59541.
+
+```{r, message=FALSE, warning=FALSE}
+pi_1 <- exp(0.21531 + 3.20554*1) / (1 + exp(0.21531 + 3.20554*1))
+pi_1
+1 - pi_1
+or_1 <- pi_1 / (1 - pi_1); or_1
+```
+
+By dividing `or_1` by `or_0`, we find that a one-unit increase in statuquo is associated with 2367% ((24.67-1)*100%) increase in the odds of a voter supports Pinochet compared to being against Pinochet.
+
+```{r, message=FALSE, warning=FALSE}
+or_1 / or_0
+```
+
+Plot the fitted probabilities based on the logistic regression model.
+
+```{r, message=FALSE, warning=FALSE, fig.align='center', fig.width=5, fig.height=4}
+# scatterplot of voting intention against support for status quo and the fitted logistic regression line
+x <- seq(-1.7, 1.8, 0.1)
+predict.df <- data.frame(x = x,
+                         prob = faraway::ilogit(0.21531 + 3.20554*x))
+
+ggplot(data = mydata2, aes(x = statusquo, y = vote2)) +
+  geom_jitter(width = 0.1, height = 0.1, alpha = 0.7, col = "gray66") +
+  geom_hline(yintercept = 1, col = "salmon2", alpha = 0.7, linetype = "dashed") +
+  geom_hline(yintercept = 0, col = "salmon2", alpha = 0.7, linetype = "dashed") +
+  geom_line(data = predict.df, aes(x = x, y = prob), col = "darkseagreen", alpha = 0.7, lwd = 1) +
+  scale_y_continuous(breaks = seq(0, 1, 0.2), labels = seq(0, 1, 0.2)) +
+  scale_x_continuous(breaks = seq(-1.5, 1.5, 0.5), labels = seq(-1.5, 1.5, 0.5)) +
+  labs(x = "Support for Status Quo", y = "Voting Intention") +
+  theme_bw()
+```
+
+`ilogit()` computes the inverse logit transformation (i.e., $\frac{exp(x)}{1+exp(x)}$).
+
+You can also use the `predict()` function we discussed before to compute fitted probabilities based on your model.
+
+```{r, message=FALSE, warning=FALSE, fig.align='center', fig.width=5, fig.height=4}
+# scatterplot of voting intention against support for status quo and the fitted logistic regression line
+x <- data.frame(statusquo = seq(-1.7, 1.8, 0.1))
+predict.df2 <- data.frame(x = x,
+                         prob = predict(logit.chile, newdata = x, type = "response", se.fit = TRUE))
+predict.df2 <- predict.df2 %>%
+  mutate(upr = prob.fit + (1.96 * prob.se.fit),
+         lwr = prob.fit - (1.96 * prob.se.fit))
+
+ggplot(data = mydata2, aes(x = statusquo, y = vote2)) +
+  geom_jitter(width = 0.1, height = 0.1, alpha = 0.7, col = "gray66") +
+  geom_hline(yintercept = 1, col = "salmon2", alpha = 0.7, linetype = "dashed") +
+  geom_hline(yintercept = 0, col = "salmon2", alpha = 0.7, linetype = "dashed") +
+  geom_line(data = predict.df2, aes(x = statusquo, y = prob.fit), col = "darkseagreen", alpha = 0.7, lwd = 1) +
+  geom_line(data = predict.df2, aes(x = statusquo, y = upr), col = "darkseagreen", alpha = 0.7, linetype = "dashed") +
+  geom_line(data = predict.df2, aes(x = statusquo, y = lwr), col = "darkseagreen", alpha = 0.7, linetype = "dashed") +
+  scale_y_continuous(breaks = seq(0, 1, 0.2), labels = seq(0, 1, 0.2)) +
+  scale_x_continuous(breaks = seq(-1.5, 1.5, 0.5), labels = seq(-1.5, 1.5, 0.5)) +
+  labs(x = "Support for Status Quo", y = "Voting Intention") +
+  theme_bw()
+```
+
+
 
 ## Discussion VI
 

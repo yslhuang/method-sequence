@@ -1,0 +1,231 @@
+---
+title: "Midterm Questions"
+author: "Yu-Shiuan (Lily) Huang"
+date: "May, 2024"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Hypothesis Testing and Inference (15pt)
+
+The \texttt{beauty.csv} file contains data from Hamermesh and Parker (2005) on student evaluations of instructors’ beauty and teaching quality for several courses at the University of Texas. The teaching evaluations were conducted at the end of the semester, and the beauty judgments were made later, by six students who had not attended the classes and were not aware of the course evaluations.
+
+Table 1 presents the results of a multivariate linear regression analysis that examines the relationship between course evaluations (\texttt{eval}) and the main explanatory variable, \texttt{beauty}, while controlling for several other variables (instructors' sex, age, minority status, whether he/she received an undergraduate education in an English-speaking country, and whether he/she is assigned to lower-division courses). The standard error of each coefficient is reported in parentheses. Table 2 presents the analysis of variance of the multivariate linear regression model.
+
+\begin{table}[!htbp] \centering 
+  \caption{Ordinary least-squares estimates of the determinants of course evaluations.} 
+  \label{} 
+\begin{tabular}{@{\extracolsep{5pt}}lc} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+ & \multicolumn{1}{c}{\textit{Dependent variable:}} \\ 
+\cline{2-2} 
+\\[-1.8ex] & Course Evaluations \\ 
+\hline \\[-1.8ex] 
+ Composite Standardized Beauty & 0.14 \\ 
+  & (0.03) \\ 
+ Female & $-$0.20 \\ 
+  & (0.05) \\ 
+ Age & $-$0.002 \\ 
+  & (0.003) \\ 
+ Minority & $-$0.07 \\ 
+  & (0.08) \\ 
+ Non-native English & $-$0.27 \\ 
+  & (0.11) \\ 
+ Lower division & 0.10 \\ 
+  & (0.05) \\ 
+ Constant & 4.19 \\ 
+  & (0.15) \\ 
+\hline \\[-1.8ex] 
+Observations & 463 \\ 
+R$^{2}$ & 0.10 \\ 
+Adjusted R$^{2}$ & 0.08 \\ 
+Residual Std. Error & 0.53 (df = 456) \\ 
+\hline 
+\hline \\[-1.8ex] 
+\textit{Note: Standard errors in parentheses.} \\ 
+\end{tabular} 
+\end{table} 
+
+\begin{table}[!htbp] \centering 
+  \caption{Anova} 
+\begin{tabular}{|l|c|c|c|}
+\hline
+           & \multicolumn{1}{l|}{df} & \multicolumn{1}{l|}{sum of square} & \multicolumn{1}{l|}{mean of square} \\ \hline
+beauty     & 1                       & 5.0830                             & 5.0830                              \\ \hline
+female     & 1                       & 4.3467                             & 4.3467                              \\ \hline
+age        & 1                       & 0.2551                             & 0.2551                              \\ \hline
+minority   & 1                       & 0.6398                             & 0.6398                              \\ \hline
+nonenglish & 1                       & 2.3609                             & 2.3609                              \\ \hline
+lower      & 1                       & 0.9333                             & 0.9333                              \\ \hline
+residuals  & 456                     & 128.6198                           & 0.2821                              \\ \hline
+\end{tabular}
+\end{table}
+
+```{r, warning=F, error=F, message=F, echo=F}
+df <- read.csv("/Users/yu-shiuanhuang/Desktop/method-sequence/data/beauty.csv")
+
+## regression
+mod1 <- lm(eval ~ beauty + female + age + minority + nonenglish + lower, data = df)
+```
+
+a. (7pt) Perform a two-tailed hypothesis test to assess whether there is a statistically significant relationship between course evaluations (`eval`) and the main explanatory variable, `beauty`, using a significance level of $\alpha = 0.05$. In your response, please clearly define the null and alternative hypotheses associated with this test and outline the steps you take to perform the test and interpret the results. (*t-distribution* table is provided on the last page).
+
+\color{red}
+
+$H_0$:$\beta_{\texttt{beauty}} = 0$ (There is no relationship between course evaluations and student evaluations of instructors’ beauty.)
+
+$H_A$:$\beta_{\texttt{beauty}} \neq 0$ (There is a relationship, either positive or negative, between course evaluations and student evaluations of instructors’ beauty.)
+
+
+$t^* = \frac{\hat{\beta}_\texttt{beauty} - 0}{SE_{\texttt{beauty}}} = \frac{0.14-0}{0.03} \cong 4.67$
+
+According to the t-distribution table, $t_{\frac{0.05}{2}, 456}$ falls between 1.962 and 1.984. Thus, the calculated t-statistic lies within the rejection region. This indicates that we can reject the null hypothesis, concluding that there exists a significant positive relationship between course evaluations and student evaluations of instructors’ beauty. In other words, as students rate instructors higher in terms of beauty, they tend to provide higher evaluations for the courses taught by those instructors.
+
+\color{black}
+
+b. (8pt) Conduct an F-test to evaluate the joint significance of the predictors in the multivariate linear regression model, using a significance level of $\alpha = 0.05$. In your response, please clearly define the null and alternative hypotheses associated with this test and outline the steps you take to perform the test and interpret the results. (*F-distribution* table is provided on the last page)
+
+\color{red}
+$H_0$:$\beta_{\texttt{beauty}} = \beta_{\texttt{female}} = \beta_{\texttt{age}} = \beta_{\texttt{minority}} = \beta_{\texttt{nonative}} = \beta_{\texttt{lower}} = 0$ 
+
+$H_A$:At least one of the $\beta s$ is not 0. 
+
+$F^* = \frac{RegSS/k}{RSS/(n-k-1)} = \frac{\frac{(5.0830+4.3467+0.2551+0.6398+2.3609+0.9333)}{6}}{\frac{128.6198}{456}} = \frac{2.2698}{0.2821} \cong 8.05$
+
+According to the F-distribution table, the critical value for $F_{0.05, 6, 456}$ falls between 2.10 and 2.18. Since the calculated F-statistic lies within this range, it falls within the rejection region. This implies that we can reject the null hypothesis, indicating that at least one of the variables included in the model contributes significantly to explaining the variation in the outcome variable. In other words, our model is not devoid of explanatory power; it captures meaningful relationships between the predictor variables and the outcome.
+
+\color{black}
+
+
+<center>
+![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/ttable.png){}
+</center>
+
+<center>
+![](/Users/yu-shiuanhuang/Desktop/method-sequence/figures/ftable.png){}
+</center>
+
+\newpage
+
+# Model Diagnostics (15pt)
+
+The CIA World Factbook data set contains information about 261 countries, supranational entities (e.g., the European Union), territories (e.g., American Samoa), and some other places (e.g., the Gaza Strip). The subset of the data used
+here is for 134 nations with complete data on the following four variables:
+
+- Infant mortality rate (`infant`) per 1,000 live births
+- Gross domestic product (GDP) per capita (`gdp`), in thousands of U.S. dollars.
+- Gini coefficient (`gini`) for the distribution of family income. The Gini coefficient is a standard measure of income inequality that ranges from 0 to 100, with 0 representing perfect equality and 100 maximum inequality.
+- Health expenditures (`health`) as a percentage of GDP.
+
+To explore the factors that may explain the variance in infant mortality rates (`infant`) across different countries, we regressed infant on all other variables included in the CIA World Factbook data. Before running the regression, we applied a logarithmic transformation to `infant` because its distribution is positively skewed. Table 3 presents the results of the linear regression.
+
+```{r, message=FALSE, error=FALSE, warning=F, echo=F}
+url <- "https://socialsciences.mcmaster.ca/jfox/Books/RegressionDiagnostics/CIA.txt"
+CIA <- read.table(url, header=TRUE)
+```
+
+```{r, message=FALSE, error=FALSE, warning=F}
+m.cia <- lm(log(infant) ~ gdp + health + gini, data = CIA)
+```
+
+\begin{table}[!htbp] \centering 
+  \caption{Factors Explaining Infant Mortality Rates} 
+  \label{} 
+\begin{tabular}{@{\extracolsep{5pt}}lc} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+ & \multicolumn{1}{c}{\textit{Dependent variable:}} \\ 
+\cline{2-2} 
+\\[-1.8ex] & Infant Mortality Rates \\ 
+\hline \\[-1.8ex] 
+ GDP & $-$0.04$^{***}$ \\ 
+  & (0.004) \\ 
+ Gini & $-$0.05$^{*}$ \\ 
+  & (0.02) \\ 
+ Health expenditures & 0.02$^{***}$ \\ 
+  & (0.01) \\ 
+ Constant & 3.02$^{***}$ \\ 
+  & (0.29) \\ 
+\hline \\[-1.8ex] 
+Observations & 134 \\ 
+R$^{2}$ & 0.71 \\ 
+Adjusted R$^{2}$ & 0.71 \\ 
+Residual Std. Error & 0.59 (df = 130) \\ 
+F Statistic & 107.19$^{***}$ (df = 3; 130) \\ 
+\hline 
+\hline \\[-1.8ex] 
+\textit{Note:}  & \multicolumn{1}{r}{$^{*}$p$<$0.05; $^{**}$p$<$0.01; $^{***}$p$<$0.001} \\ 
+\end{tabular} 
+\end{table} 
+
+The figure below displays the added variable plots from the multivariate linear regression we performed, as shown in Table 3. Table 4 presents the studentized residuals, hat values, and Cook's Distance statistics for some unusual cases.
+
+```{r, message=FALSE, error=FALSE, warning=F, echo=FALSE, fig.align='center', fig.width=6, fig.height=6}
+car::avPlots(m.cia)
+```
+
+\begin{table}[!htbp] \centering 
+  \caption{Studentized Residuals, Hat Values, \& Cook's Distance} 
+\begin{tabular}{|l|c|c|c|}
+\hline
+              & \multicolumn{1}{l|}{Studentized Residuals} & \multicolumn{1}{l|}{Hat} & \multicolumn{1}{l|}{Cook's D} \\ \hline
+Luxembourg    & 4.02                                       & 0.20                     & 0.92                          \\ \hline
+Singapore     & 1.41                                       & 0.24                     & 0.16                          \\ \hline
+Sri.Lanka     & -2.21                                      & 0.03                     & 0.04                          \\ \hline
+United.States & 2.18                                       & 0.15                     & 0.21                          \\ \hline
+\end{tabular}
+\end{table}
+
+
+a. (3pt) For multivariate linear regression, briefly explain why added variable plots are sometimes better for detecting influential points in the dataset compared to typical plots of residuals (either studentized or not) against predictor variables.
+
+\color{red}
+A limitation of using the typical residual plots in a multivariate linear regression model, such as plotting residuals against the values of a predictor variable, is that they may not fully illustrate the “additional contribution” of a predictor variable when considering other variables already in the model. Added-variable plots offer a more refined visualization, providing graphic insights into the marginal importance of a predictor variable, taking into account the presence of other variables in the model. 
+
+
+\color{black}
+
+b. (6pt) In the added variable plots described above, identify some problematic cases within the data. How do these unusual cases impact the regression coefficients? Select the two most influential cases you believe affect the regression coefficient estimates and discuss this using the information provided in Table 4. What would happen if these unusual cases were removed from the analysis?
+
+\color{red}
+
+The cases of Luxembourg and Sri Lanka consistently emerge as outliers across all three added-variable (AV) plots. In the GDP AV plot, Luxembourg notably exerts upward pressure on the right side, while Sri Lanka exhibits a slight downward shift on the same side. From a visual assessment, it's evident that Luxembourg significantly impacts the coefficient of GDP, leading it to be smaller than it would otherwise be. Similarly, in the health AV plot, Luxembourg notably shifts the regression line upwards on the left side, whereas Sri Lanka shows a downward shift on the same side. Like in the GDP AV plot, Luxembourg's high leverage and discrepancy significantly influence the coefficient of health, resulting in it being larger than it would typically be.
+
+Moving to the Gini AV plot, Luxembourg elevates the regression line on the right side, while Sri Lanka causes a downward shift on the left side. Intuitively, we can infer that this pair of cases affects the coefficient of the Gini index, making it larger than expected.
+
+As corroborated by Table 4, Luxembourg exhibits a notably high hat value (0.2) and a studentized residual value (4.02). The overall Cook's Distance value (0.92) underscores Luxembourg as the most influential data point, while the influence of the Sri Lanka case is comparatively smaller (0.04), which, according to the rule of thumb, is less concerning. If we were to exclude both Luxembourg and Sri Lanka from the dataset and re-run the regression analysis, it's probable that the coefficients of GDP, health, and the Gini index may change: GDP's coefficient could become larger, while those of health and the Gini index may become smaller.
+
+\color{black}
+
+\newpage
+
+The figure below displays the component plus residuals plots from the multivariate linear regression we performed, as shown in Table 3. 
+
+```{r, message=F, error=F, warning=F, echo=F, fig.align='center', fig.width=6, fig.height=6}
+car::crPlots(m.cia)
+```
+
+c. (6pt) Briefly discuss what each plot in the above component-plus-residual plots suggests regarding whether our model in Table 3 violates any Gauss-Markov assumptions.
+
+\color{red}
+
+The solid line in the C+R plots represents a smooth curve (lowess), while the dashed line represents the regression coefficient of each $x$ from the multivariate regression model. A notable difference between the residual line and the component line indicates that the predictor does not follow a linear relationship with the outcome variable.
+
+Examining the plots above, we can discern a discrepancy between the regression slopes estimated for GDP and health and the lowess curve. This discrepancy implies that our model violates the linearity assumption for both GDP and health variables. Conversely, the C+R plot for the Gini coefficient shows promising alignment, with the dashed line nearly overlapping the solid line. This alignment suggests that our model accurately estimates the relationship between infant mortality rate and the Gini coefficient across countries.
+
+\color{black}
+
+d. (3pt) Following the previous question, if the analysis suggests that our model in Table 3 violates any Gauss-Markov assumptions, how can we address these violations?
+
+\color{red}
+
+For GDP, considering its moderate positive skewness, one potential approach to mitigate the violation of the linearity assumption is to logarithmically transform the variable before incorporating it into the model. Regarding health expenditure, the presence of a convex pattern, indicated by the solid line, suggests that the true relationship between infant mortality rate and health might be more accurately captured by including a quadratic term of the health variable in the regression model.
+
+\color{black}
